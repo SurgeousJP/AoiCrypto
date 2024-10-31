@@ -1,4 +1,4 @@
-# BACSanGroup - <Project_Name>
+# AoiCrypto
 
 ## Summary (Tổng quan)
 - N/A
