@@ -3,13 +3,18 @@ import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { globalStyles } from "@/constants/GlobalStyle";
 import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
-import React from "react";
+import React, { useState } from "react";
+import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
+import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
+import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 
 export default function TestComponent() {
   const insets = useSafeAreaInsets();
 
   const router = useRouter();
   
+  const [selectedValue, setSelectedValue] = useState("1");
+  // SHADOW PROBLEM, DESIGN A CUSTOM SHADOW THAT APPLY SAME TO ALL
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}
@@ -18,8 +23,10 @@ export default function TestComponent() {
         <Text className="text-sm mb-4" style={globalStyles.fontNormal}>
           Component demo screen
         </Text>
-        <Checkbox keyValue={"test"} content={"Test"} />
-        
+        {/* <Checkbox keyValue={"test"} content={"Test"} />
+        <CustomDropdown />
+        <Searchbar />
+        <CustomSegmentedControl /> */}
         {/* <CustomButton backgroundColor={"primary"} textColor={"white"} content={"TEST BUTTON"} />
         
         <ProgressBar />
