@@ -6,16 +6,15 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IIDOFactory} from "../interfaces/IIDOFactory.sol";
 import {IDOPool} from "../IDO/IDOPool.sol";
+import {IIDOPool} from "../interfaces/IIDOPool.sol";
 import {IUniswapV3Factory} from "../interfaces/IUniswapV3Factory.sol";
 
 contract IDOFactory is IIDOFactory, Ownable {
     using SafeERC20 for IERC20;
 
-    mapping(uint256 => address) public pools;
+    mapping(uint256 => address) public idoPools;
 
-    mapping(uint256 => address) public liquidityPoolByPoolId;
-
-    mapping(address => bool) public poolIsCreated;
+    mapping(uint256 => LiquidityPool) public liquidityPoolsByPoolId;
 
     uint256 internal totalPool = 1;
 
@@ -84,20 +83,32 @@ contract IDOFactory is IIDOFactory, Ownable {
     }
 
     function depositLiquidityPool(
-        uint256 poolId
+        uint256 poolId,
+        LiquidityPoolAction action
     ) external returns (address liquidityPool) {
         address idoPool = pools[poolId];
         if (idoPool == address(0)) {
             revert InValidPoolId();
         }
 
-        address idoOwner = IDOPool(idoPool).getPoolOwner();
+        address idoOwner = IIDOPool(idoPool).getPoolOwner();
+        address tokenAddress = IIDOPool(idoPool).getPoolTokenAddress();
+        uint256 amount0 = IIDOPool(idoPool).getLiquidityWETH9();
+        uint256 amount1 = IIDOPool(idoPool).getLiquidityToken();
         if (idoOwner != _msgSender()) {
             revert NotPoolOwner();
         }
 
         liquidityPool = IDOPool(idoPool).listInDex();
         liquidityPoolByPoolId[poolId] = liquidityPool;
+
+        emit PoolDepositedLiquidityPool(
+            liquidityPool,
+            poolId,
+            tokenAddress,
+            amount0,
+            amount1
+        );
     }
 
     // VIEW FUNTIONS

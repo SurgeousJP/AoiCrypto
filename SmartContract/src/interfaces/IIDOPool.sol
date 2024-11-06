@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 interface IIDOPool {
     struct IDOPoolDetails {
-        uint256 poolId;
         address poolOwner;
         address tokenAddress;
         uint256 pricePerToken;
@@ -16,6 +15,11 @@ interface IIDOPool {
         uint256 maxInvest;
         uint256 liquidityWETH9;
         uint256 liquidityToken;
+    }
+
+    enum IDOType {
+        PUBLIC_SALE,
+        PRIVATE_SALE
     }
 
     // ERRORS
@@ -31,12 +35,16 @@ interface IIDOPool {
     error InvalidTokenPrice();
     error InvalidTokenForSale();
     error InvalidPoolTimeFrame();
+    error InvalidPoolDelayTime();
 
     error NotEnoughBalance();
     error IDOIsNotStarted();
+    error IDOIsAlreadyStarted();
     error IDOIsEnded();
+    error IDOIsNotEnded():
     error HardCapExceeded();
     error SoftCapNotReach();
+    error SoftCapReached();
 
     error MinInvestmentNotReached();
     error MaxInvestmentExceeded();
@@ -45,6 +53,7 @@ interface IIDOPool {
 
     error IDOPoolStillActive();
     error AlreadyWithdrawn();
+    error IDOIsAlreadyPublicSale();
 
     // EVENTS
     // event Whitelisted()
@@ -60,19 +69,16 @@ interface IIDOPool {
 
     event IDOPoolInvested(
         address indexed investor,
-        uint256 indexed poolId,
         uint256 amount
     );
 
     event IDOPoolWithdrawn(
         address indexed investor,
-        uint256 indexed poolId,
         uint256 amount
     );
 
     event IDOPoolRedeemed(
         address indexed investor,
-        uint256 indexed poolId,
         uint256 amount
     );
 
@@ -116,6 +122,12 @@ interface IIDOPool {
     function getPoolSoftCapReached() external view returns (bool);
 
     function getPricePerToken() external view returns (uint256);
+
+    // TODO: Overried this function
+    function getLiquidityWETH9() external view returns(uint256);
+
+    // TODO: Overried this function
+    function getLiquidityToken() external view returns(uint256);
 
     // EXECUTING FUNCTIONS
     function listInDex() external returns (address);

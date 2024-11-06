@@ -2,6 +2,20 @@
 pragma solidity ^0.8.0;
 
 interface IIDOFactory {
+    enum LiquidityPoolAction {
+        NOTHING,
+        LOCK,
+        BURN
+    }
+    
+    struct LiquidityPool {
+        uint256 idoPoolId;
+        address idoPoolAddress;
+        address liquidityPoolAddress;
+        LiquidityPoolAction action;
+        uint256 lockDuration;
+    }
+
     function createPool(
         address tokenAddress,
         uint256 pricePerToken,

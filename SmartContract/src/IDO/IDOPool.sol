@@ -6,24 +6,30 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    IDOPoolDetails internal _poolDetail;
+    uint8 public constant RATE_DECIMALS = 4;
 
-    uint256 public constant RATE_DECIMALS = 4;
+    uint8 public constant IDO_FEE_RATE = 500; // 0.05 % = 500 / 10^4
 
-    uint256 public constant IDO_FEE_RATE = 50;
+    uint8 public constant MIN_DELAY_STARTING = 10 * 60 * 60; // 10 minutes
+
+    uint256 public constant MIN_PRICE_TOKEN = 10 ** 15; // = 0.001 WETH
 
     address public immutable UNISWAP_V3_FACTORY;
 
-    bool public hasWithdrawn;
+    bytes32 public immutable MERKLE_ROOT;
 
-    mapping(address => uint256) private userDepositAmount;
-    mapping(address => bool) private whitelistedAddresses;
+    IDOPoolDetails internal _poolDetail;
 
-    bool public isPrivateSales;
+    IDOType internal idoType;
+
+    bool internal hasWithdrawn;
+
+    mapping(address => uint256) internal userDepositAmount;
 
     // MODIFIER
     modifier onlyPoolOwner() {
@@ -52,16 +58,16 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
     }
 
     modifier inWhitelisted(address _address) {
-        if (!whitelistedAddresses[_address]) {
-            revert NotWhilelisted();
-        }
+        // if (!whitelistedAddresses[_address]) {
+        //     revert NotWhilelisted();
+        // }
         _;
     }
 
     modifier notWhiteListed(address _address) {
-        if (whitelistedAddresses[_address]) {
-            revert AlreadyWhitelisted();
-        }
+        // if (whitelistedAddresses[_address]) {
+        //     revert AlreadyWhitelisted();
+        // }
         _;
     }
 
@@ -89,7 +95,7 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
     constructor(
         address owner,
         address tokenAddress,
-        uint256 pricePerToken,
+        uint256 pricePerToken, // 1 TOKEN = ? WETH
         uint256 startTime,
         uint256 endTime,
         uint256 minInvest,
@@ -99,8 +105,9 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         bool _isPrivateSales,
         uint256 liquidityWETH9,
         uint256 liquidityToken,
-        address factory
-    ) notZeroAddres(owner) Ownable(msg.sender) {
+        address factory,
+        bytes32 _merkleRoot
+    ) notZeroAddress(owner) Ownable(msg.sender) {
         if (hardCap <= 0 || hardCap <= softCap) {
             revert InvalidPoolSoftCap();
         }
@@ -116,8 +123,10 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         if (startTime < block.timestamp || startTime > endTime) {
             revert InvalidPoolTimeFrame();
         }
-
-        _poolDetail.poolOwner = owner;
+        if (startTime < MIN_DELAY_TIME + block.timestamp) {
+            revert InvalidPoolDelayTime();
+        }
+        if (pricePerToken) _poolDetail.poolOwner = owner;
         _poolDetail.tokenAddress = tokenAddress;
         _poolDetail.pricePerToken = pricePerToken;
         _poolDetail.startTime = startTime;
@@ -129,10 +138,11 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         _poolDetail.liquidityWETH9 = liquidityWETH9;
         _poolDetail.liquidityToken = liquidityToken;
 
-        hasWithdrawn = false;
-        isPrivateSales = _isPrivateSales;
+        idoType = _isPrivateSales ? IDOType.PRIVATE_SALE : IDOType.PUBLIC_SALE;
 
         UNISWAP_V3_FACTORY = factory;
+
+        MERKLE_ROOT = _merkleRoot;
     }
 
     function listInDex()
@@ -146,22 +156,116 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         returns (address)
     {}
 
-    // TODO: implement that allow only in whitelisted
-    function investPool(
-        uint256 amount
-    ) external payable override isInIDOTimeFrame {
+    function investPool() external payable override {
         address investor = _msgSender();
 
-        IDOPoolDetails memory pool = getPoolDetails();
+        if (idoType == IDOType.PRIVATE_SALE) {
+            // TODO: check the investor whether is whitelisted.
+        }
 
-        // uint256 reserveAmount =
+        uint256 amountInvestment = msg.value;
+        IDOPoolDetails memory _poolDetail_ = getPoolDetails();
+        uint256 currentTime = block.timestamp;
+        uint256 depositedAmount = userDepositAmount[investor];
+
+        if (currentTime < _poolDetail.startTime) {
+            revert IDOIsNotStarted();
+        }
+        if (currentTime > _poolDetail.endTime) {
+            revert IDOIsEnded();
+        }
+
+        if (_poolDetail_.raisedAmount + amountInvestment > hardCap) {
+            revert HardCapExceeded();
+        }
+
+        if (amountInvestment + depositedAmount < _poolDetail_.minInvest) {
+            revert MinInvestmentNotReached();
+        }
+
+        if (amountInvestment + depositedAmount > _poolDetail_.maxInvest) {
+            revert MaxInvestmentExceeded();
+        }
+
+        uint256 amountToken = (_poolDetail_.pricePerToken * amountInvestment) /
+            10 ** 18;
+        userDepositAmount[investor] += amountInvestment;
+
+        emit IDOPoolInvested(investor, amountInvestment);
     }
 
-    function joinWhitelist() external override {}
+    function cancelInvestment() external override {
+        address investor = _msgSender();
 
-    function redeemToken() external override {}
+        uint256 investedAmount = userDepositAmount[investor];
+        if (investedAmount == 0) {
+            revert NotEnoughBalance();
+        }
 
-    function refundToken() external override {}
+        IDOPoolDetails memory pool = _idoDetail;
+        uint256 currentTime = block.timestamp;
+        if (currentTime < pool.startTime) {
+            revert IDOIsNotStarted();
+        }
+        if (currentTime > pool.endTime) {
+            revert IDOIsEnded();
+        }
+
+        // TODO: Finish the cancel investment
+    }
+
+    // Redeem token after IDO finished
+    function redeemToken() external override {
+        address investor = _msgSender();
+        uint256 investedAmount = userDepositAmount[investor];
+        if (investedAmount == 0) {
+            revert NotEnoughBalance();
+        }
+        IDOPoolDetails memory pool = getPoolDetails();
+        // TODO: Check the decimal of token
+        uint256 redeemAmount = (pool.pricePerToken * investedAmount) / 10 ** 18;
+
+        IERC20(pool.tokenAddress).safeTransfer(investor, redeemAmount);
+
+        emit IDOPoolRedeemed(investor, redeemAmount);
+    }
+
+    // Refund when the pool has not reached soft cap
+    function refundToken() external override {
+        address investor = _msgSender();
+        uint256 investedAmount = userDepositAmount[investor];
+        if (investedAmount == 0) {
+            revert NotEnoughBalance();
+        }
+        IDOPoolDetails memory pool = _idoDetail;
+        uint256 currentTime = block.timestamp;
+        if (currentTime <= pool.endTime) {
+            revert IDOIsNotEnded();
+        }
+        if (pool.raisedAmount >= pool.softCap) {
+            revert SoftCapReached();
+        }
+
+        investor.transfer(investedAmount);
+    }
+
+    function changeToPublicSale() external override {
+        IDOPoolDetails memory pool = _poolDetail;
+        if (idoType == IDOType.PUBLIC_SALE) {
+            revert IDOIsAlreadyPublicSale();
+        }
+        uint256 currentTime = block.timestamp;
+        if (currentTime >= pool.startTime) {
+            revert IDOIsAlreadyStarted();
+        }
+
+        idoType = IDOType.PUBLIC_SALE;
+    }
+
+    // INTERNAL FUCNTIONS
+
+    // TODO: Implement the verifyAddress in the Merkle Root
+    // function _verifyAddress(bytes32[])
 
     // PUBLIC FUCNTIONS
 
@@ -189,10 +293,8 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
     function isWhitelisted(
         address _address
     ) external view override returns (bool) {
-        if (!isPrivateSales) {
-            return true;
-        }
-        return whitelistedAddresses[_address];
+        // TODO: implement internal function to check whitelisted
+        return false;
     }
 
     function getPoolMinInvest() external view override returns (uint256) {
