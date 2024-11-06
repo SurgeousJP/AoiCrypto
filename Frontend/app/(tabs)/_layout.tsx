@@ -1,9 +1,7 @@
-import { Tabs } from "expo-router";import React from 
-"react";
-
-
-
-import { Colors } from "@/constants/Colors";
+import { Tabs } from "expo-router";
+import React from "react";
+import { Image } from "react-native";
+import { colors, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { MaterialIcons } from "@expo/vector-icons";
 import { NativeWindStyleSheet } from "nativewind";
@@ -14,7 +12,7 @@ NativeWindStyleSheet.setOutput({
 });
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  const homeIcon = require("../../assets/icons/system-icons/Home_light.png")
   return (
     <Tabs
       screenOptions={{
@@ -34,7 +32,11 @@ export default function TabLayout() {
         options={{
           title: "Employee",
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons name={"person"} color={color} size={24} />
+            // <MaterialIcons name={"person"} color={focused ? colors.primary : colors.secondary} size={24} />
+            <Image
+              source={homeIcon}
+              style={{ tintColor: focused ? colors.primary : colors.secondary }}
+            />
           ),
         }}
       />
@@ -43,7 +45,11 @@ export default function TabLayout() {
         options={{
           title: "Employer",
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons name={"group"} color={color} size={24} />
+            <MaterialIcons
+              name={"group"}
+              color={focused ? colors.primary : colors.secondary}
+              size={24}
+            />
           ),
         }}
       />
@@ -54,7 +60,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons
               name={focused ? "verified" : "verified"}
-              color={color}
+              color={focused ? colors.primary : colors.secondary}
               size={24}
             />
           ),
@@ -67,7 +73,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons
               name={focused ? "verified" : "verified"}
-              color={color}
+              color={focused ? colors.primary : colors.secondary}
               size={24}
             />
           ),

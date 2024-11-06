@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import DividerLine from '@/components/Divider/DividerLine'
+import DividerLine from '@/components/Displays/Divider/DividerLine'
 
 interface DividerProps{
   content: string;

@@ -1,4 +1,4 @@
-import QrCodeScanner from "@/components/QrCodeScanner";
+import QrCodeScanner from "@/components/ZOldComponents/QrCodeScanner";
 import { globalStyles } from "@/constants/GlobalStyle";
 import SalaryAPI from "@/services/SalaryAPI";
 import React, { useState } from "react";
