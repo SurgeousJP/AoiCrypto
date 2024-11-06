@@ -15,7 +15,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   input: {
-    fontFamily: 'Figtree_400Regular',
+    fontFamily: 'ReadexPro_400Regular',
     minHeight: 28,
     color: '#11183C',
     paddingVertical: 0,

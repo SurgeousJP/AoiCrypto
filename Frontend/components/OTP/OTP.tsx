@@ -1,6 +1,5 @@
 import { colors } from "@/constants/Colors";
 import { globalStyles } from "@/constants/GlobalStyle";
-import { Figtree_400Regular } from "@expo-google-fonts/figtree";
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { TextInput, View } from "react-native";
@@ -36,28 +35,6 @@ const OTP = () => {
 
   return (
     <View className="flex flex-row space-x-2">
-      {/* {otp.map((otp, index) => {
-        return (
-          <View
-            key={index}
-            className={`w-12 h-12 bg-surface stroke-outline items-center rounded-lg shadow-inner ${
-              isFocus ? "border border-primary" : ""
-            }`}
-          >
-            <TextInput
-              key={index}
-              onBlur={handleBlur}
-              onFocus={handleFocus}
-              onChangeText={(text) => handleChange(text, index)}
-              className={`font-bold text-base w-6 h-6 text-center my-auto `}
-              style={{ outlineStyle: "none" }}
-              value={otp[index]}
-              keyboardType="numeric"
-              maxLength={1}
-            />
-          </View>
-        );
-      })} */}
       <OtpInput
         numberOfDigits={6}
         type="numeric"
@@ -76,7 +53,7 @@ const OTP = () => {
             globalStyles.background
           ]),
           pinCodeTextStyle: StyleSheet.flatten([
-            { fontFamily: "Figtree_400Regular", fontSize: 16, fontWeight: 'bold' },
+            { fontFamily: "ReadexPro_400Regular", fontSize: 16, fontWeight: 'bold' },
           ]),
         }}
       />

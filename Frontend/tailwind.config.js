@@ -3,10 +3,28 @@ module.exports = {
   darkMode: "class",
   content: ["app/**/*.{js,jsx,ts,tsx}", "components/**/*.{js,jsx,ts,tsx}"],
   plugins: [],
-  theme:{
+  theme: {
     extend: {
       fontFamily: {
-        figtree: ['Figtree_400Regular', 'Figtree_700Bold']
+        readexExtraLight: ["ReadexPro_200ExtraLight", "sans-serif"],
+        readexLight: ["ReadexPro_300Light", "sans-serif"],
+        readexRegular: ["ReadexPro_400Regular", "sans-serif"],
+        readexMedium: ["ReadexPro_500Medium", "sans-serif"],
+        readexSemiBold: ["ReadexPro_600SemiBold", "sans-serif"],
+        readexBold: ["ReadexPro_700Bold", "sans-serif"],
+      },
+      fontWeight: {
+        hairline: 100,
+        "extra-light": 100,
+        thin: 200,
+        light: 300,
+        normal: 400,
+        medium: 500,
+        semibold: 600,
+        bold: 700,
+        extrabold: 800,
+        "extra-bold": 800,
+        black: 900,
       },
       colors: {
         background: "#F8F9FC",
@@ -21,14 +39,14 @@ module.exports = {
         success: "#098C26",
       },
       fontSize: {
-        'xxs': '4px',   // Extra Extra Small
-        'xs': '8px',    // Extra Small
-        'sm': '14px',   // Small
-        'md': '16px',   // Medium
-        'lg': '24px',   // Large
-        'xl': '32px',   // Extra Large
-        '2xl': '40px',  // 2X Extra Large
+        xxs: "4px", // Extra Extra Small
+        xs: "8px", // Extra Small
+        sm: "14px", // Small
+        md: "16px", // Medium
+        lg: "24px", // Large
+        xl: "32px", // Extra Large
+        "2xl": "40px", // 2X Extra Large
       },
-    }
-  }
+    },
+  },
 };

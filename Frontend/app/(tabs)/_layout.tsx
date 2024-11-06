@@ -1,5 +1,7 @@
-import { Tabs } from "expo-router";
-import React from "react";
+import { Tabs } from "expo-router";import React from 
+"react";
+
+
 
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -23,7 +25,7 @@ export default function TabLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 16,
-          fontFamily: "Figtree_400Regular",
+          fontFamily: "ReadexPro_400Regular",
         },
       }}
     >

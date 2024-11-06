@@ -1,6 +1,4 @@
-import { Text, View, SafeAreaView } from "react-native";
-
-import React from "react";
+import { Text, View, SafeAreaView, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { globalStyles } from "@/constants/GlobalStyle";
@@ -12,42 +10,46 @@ import CustomSwitch from "@/components/Switch/CustomSwitch";
 import OTP from "@/components/OTP/OTP";
 import { colors } from "@/constants/Colors";
 import ProgressBar from "@/components/ProgressBar/ProgressBar";
+import CurrencyLabel from "@/components/CurrencyLabel/CurrencyLabel";
+import React from "react";
+import { Images } from "@/constants/Images";
 
 export default function TestComponent() {
   const insets = useSafeAreaInsets();
 
   const router = useRouter();
+  
   return (
     <SafeAreaView
       style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       <View className="mt-10 mx-6 p-6 rounded-xl flex flex-col flex-1 pb-12">
         <Text className="text-sm mb-4" style={globalStyles.fontNormal}>
-          Lowerbound (VND)
-          Username
-          Password
+          Component demo screen
         </Text>
-        {/* <ProgressBar />
+        <ProgressBar />
         
         <CustomButton backgroundColor={"primary"} textColor={"white"} content={"TEST BUTTON"} />
         
         <Divider content={"SurgeousJP"} />
         
         <View className="flex flex-col space-y-4">
-          <Social image={require("../../assets/logos/Apple.svg")} content={"Continue with Apple"} />
-          <Social image={require("../../assets/logos/Facebook.svg")} content={"Continue with Facebook"} />
-          <Social image={require("../../assets/logos/Google.svg")} content={"Continue with Google"} />
+          <Social imageUri={Images.apple} content={"Continue with Apple"} />
+          <Social imageUri={Images.facebook} content={"Continue with Facebook"} />
+          <Social imageUri={Images.google} content={"Continue with Google"} />
         </View>
-        
-        <CustomSwitch /> */}
+        <CustomSwitch />
 
-        {/* <OTP /> */}
+        <OTP />
 
-        {/* <Input label={"Email address"} />
-        <Input label={"Password"} isPassword={true}/> */}
+        <Input label={"Email address"} />
+        <Input label={"Password"} isPassword={true}/>
 
-        {/* <CustomButton content={"BUY"} backgroundColor={"bg-primaryBtn"} textColor={"text-white"} iconTintColor={"white"}/>
-        <CustomButton content={"BUY"} backgroundColor={"bg-white"} textColor={"text-primaryBtn"} isReverse={true} iconTintColor={colors.primary}/> */}
+        <CustomButton content={"BUY"} backgroundColor={"bg-primaryBtn"} textColor={"text-white"} iconTintColor={"white"}/>
+        <CustomButton content={"BUY"} backgroundColor={"bg-white"} textColor={"text-primaryBtn"} isReverse={true} iconTintColor={colors.primary}/>
+
+        <CurrencyLabel backgroundColor={"bg-primary"} textColor={"text-white"} content={"ETH/USD"} />
+        <CurrencyLabel backgroundColor={"bg-surface"} textColor={"text-secondary"} content={"ETH/USD"} />
       </View>
     </SafeAreaView>
   );
