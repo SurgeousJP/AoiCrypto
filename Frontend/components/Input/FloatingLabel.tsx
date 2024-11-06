@@ -635,7 +635,7 @@ const FloatingLabelInput: React.ForwardRefRenderFunction<InputRef, Props> = (
                   { opacity: 0 },
                   positionAnimations,
                   colorAnimation,
-                  { color: "#696F8C", fontFamily: "Figtree_400Regular", fontSize: 16 },
+                  { color: "#696F8C", fontFamily: "ReadexPro_400Regular", fontSize: 16 },
                 ]}
                 className="focus:ring-0"
               >

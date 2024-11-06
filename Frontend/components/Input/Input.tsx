@@ -1,16 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
-  Text,
-  Image,
-  ImageSourcePropType,
   View,
-  TextInput,
 } from "react-native";
 import { useState } from "react";
 
 import FloatingLabel from "./FloatingLabel";
-import { setGlobalStyles } from "react-native-floating-label-input";
-
 interface InputProps {
   label: string;
   isPassword?: true | false;

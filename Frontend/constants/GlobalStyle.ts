@@ -20,10 +20,10 @@ export const globalStyles = StyleSheet.create({
 
   // Font
   fontNormal: {
-    fontFamily: "Figtree_400Regular"
+    fontFamily: "ReadexPro_400Regular"
   },
   fontBold: {
-    fontFamily: "Figtree_700Bold"
+    fontFamily: "ReadexPro_700Bold"
   },
 
   //color: 

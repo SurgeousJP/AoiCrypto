@@ -11,18 +11,26 @@ import "react-native-reanimated";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import ImportPayroll from "./import";
-import { Figtree_400Regular, Figtree_700Bold } from "@expo-google-fonts/figtree"
+import {
+  ReadexPro_200ExtraLight,
+  ReadexPro_300Light,
+  ReadexPro_400Regular,
+  ReadexPro_500Medium,
+  ReadexPro_600SemiBold,
+  ReadexPro_700Bold,
+} from '@expo-google-fonts/readex-pro';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded, error] = useFonts({
-    // SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    Figtree_400Regular,
-    Figtree_700Bold
+  let [loaded, error] = useFonts({
+    ReadexPro_200ExtraLight,
+    ReadexPro_300Light,
+    ReadexPro_400Regular,
+    ReadexPro_500Medium,
+    ReadexPro_600SemiBold,
+    ReadexPro_700Bold,
   });
 
   useEffect(() => {

@@ -10,7 +10,7 @@ const Divider:React.FC<DividerProps> = (props) => {
   return (
     <View className='w-full flex flex-row items-center'>
       <DividerLine />
-      <Text className='font-figtree text-md mx-0 px-2'>{props.content}</Text>
+      <Text className='font-readexRegular text-md mx-0 px-2'>{props.content}</Text>
       <DividerLine />
     </View>
   )

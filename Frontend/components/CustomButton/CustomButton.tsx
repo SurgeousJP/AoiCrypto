@@ -10,7 +10,7 @@ interface CustomButtonProps {
 }
 
 const CustomButton: React.FC<CustomButtonProps> = (props) => {
-  const sendIcon = require("../../assets/icons/system-icons/send.svg");
+  const sendIcon = require("../../assets/icons/system-icons/send.png");
   const [isReverse, setIsReverse] = useState(false);
 
   useEffect(() => {
@@ -26,14 +26,14 @@ const CustomButton: React.FC<CustomButtonProps> = (props) => {
       className={`flex flex-row items-center justify-center space-x-2 w-[156px] h-12 rounded-xl ${props.backgroundColor} `}
     >
       {isReverse && (
-        <View className="flex flex-row space-x-2">
+        <View className="flex flex-row space-x-2 items-center">
           <Image
             className="w-5 h-5"
             source={sendIcon}
             style={{ tintColor: `${props.iconTintColor}` }}
           />
           <Text
-            className={`${props.textColor} font-figtree font-bold text-cente r text-md my-auto`}
+            className={`${props.textColor} font-readexBold text-center text-md my-auto`}
           >
             {props.content}
           </Text>
@@ -41,9 +41,9 @@ const CustomButton: React.FC<CustomButtonProps> = (props) => {
       )}
 
       {!isReverse && (
-        <View className="flex flex-row space-x-2">
+        <View className="flex flex-row space-x-2 items-center">
           <Text
-            className={`${props.textColor} font-figtree font-bold text-cente r text-md my-auto`}
+            className={`${props.textColor} font-readexBold text-center text-md my-auto`}
           >
             {props.content}
           </Text>

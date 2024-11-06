@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@expo-google-fonts/figtree": "^0.2.3",
+    "@expo-google-fonts/readex-pro": "^0.2.3",
     "@expo/vector-icons": "^14.0.2",
     "@react-native-vector-icons/material-icons": "^0.0.1-alpha.25",
     "@react-navigation/native": "^6.1.18",
@@ -52,7 +53,8 @@
     "react-native-screens": "3.31.1",
     "react-native-switch-toggles": "^1.0.1",
     "react-native-web": "~0.19.10",
-    "toggle-switch-react-native": "^3.3.0"
+    "toggle-switch-react-native": "^3.3.0",
+    "expo-asset": "~10.0.10"
   },
   "resolutions": {
     "@types/react": "17.0.24"
