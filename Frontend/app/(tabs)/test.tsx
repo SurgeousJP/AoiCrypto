@@ -2,17 +2,8 @@ import { Text, View, SafeAreaView, Image } from "react-native";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { globalStyles } from "@/constants/GlobalStyle";
-import CustomButton from "@/components/CustomButton/CustomButton";
-import Divider from "@/components/Divider/Divider";
-import Social from "@/components/Social/Social";
-import Input from "@/components/Input/Input";
-import CustomSwitch from "@/components/Switch/CustomSwitch";
-import OTP from "@/components/OTP/OTP";
-import { colors } from "@/constants/Colors";
-import ProgressBar from "@/components/ProgressBar/ProgressBar";
-import CurrencyLabel from "@/components/CurrencyLabel/CurrencyLabel";
+import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
 import React from "react";
-import { Images } from "@/constants/Images";
 
 export default function TestComponent() {
   const insets = useSafeAreaInsets();
@@ -27,10 +18,12 @@ export default function TestComponent() {
         <Text className="text-sm mb-4" style={globalStyles.fontNormal}>
           Component demo screen
         </Text>
+        <Checkbox keyValue={"test"} content={"Test"} />
+        
+        {/* <CustomButton backgroundColor={"primary"} textColor={"white"} content={"TEST BUTTON"} />
+        
         <ProgressBar />
-        
-        <CustomButton backgroundColor={"primary"} textColor={"white"} content={"TEST BUTTON"} />
-        
+
         <Divider content={"SurgeousJP"} />
         
         <View className="flex flex-col space-y-4">
@@ -50,6 +43,8 @@ export default function TestComponent() {
 
         <CurrencyLabel backgroundColor={"bg-primary"} textColor={"text-white"} content={"ETH/USD"} />
         <CurrencyLabel backgroundColor={"bg-surface"} textColor={"text-secondary"} content={"ETH/USD"} />
+         */}
+        
       </View>
     </SafeAreaView>
   );

@@ -1,4 +1,4 @@
-import { LoginModal } from "@/components/LoginModal";
+import { LoginModal } from "@/components/ZOldComponents/LoginModal";
 import { globalStyles } from "@/constants/GlobalStyle";
 import { ProofCalculationRequest } from "@/models/SalaryAPIModels";
 import SalaryAPI from "@/services/SalaryAPI";

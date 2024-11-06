@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Pressable } from "react-native";
 
-import { LoginModal } from "@/components/LoginModal";
+import { LoginModal } from "@/components/ZOldComponents/LoginModal";
 import React, { useState } from "react";
 import { useRouter } from 'expo-router'; 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
