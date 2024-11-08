@@ -13,6 +13,7 @@
 - N/A
   
 ## Preview UI (Tổng quan UI):
+[Figma UI Design](https://www.figma.com/design/9zYayDe7yRqOHxpqKOWAyA/CryptoExchange-Mobile-App-FREE-(Community))
 <!--![Demo Screen](Demo_Screen.png) -->
 
 ## Performance & Testing (Hiệu suất & Kiểm thử)
