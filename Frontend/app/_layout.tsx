@@ -18,7 +18,7 @@ import {
   ReadexPro_500Medium,
   ReadexPro_600SemiBold,
   ReadexPro_700Bold,
-} from '@expo-google-fonts/readex-pro';
+} from "@expo-google-fonts/readex-pro";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -46,13 +46,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        {/* <ImageBackground source={require('@/assets/images/dark-android-background.png')}  className="object-cover w-full h-full flex-1"> */}
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="import"/>
-          </Stack>
-        {/* </ImageBackground> */}
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        </Stack>
       </ThemeProvider>
     </SafeAreaProvider>
   );

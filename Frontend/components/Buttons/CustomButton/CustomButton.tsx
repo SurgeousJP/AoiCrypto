@@ -1,3 +1,4 @@
+import { Images } from "@/constants/Images";
 import React, { useEffect, useState } from "react";
 import { Text, Pressable, Image, View } from "react-native";
 
@@ -10,7 +11,6 @@ interface CustomButtonProps {
 }
 
 const CustomButton: React.FC<CustomButtonProps> = (props) => {
-  const sendIcon = require("../../assets/icons/system-icons/send.png");
   const [isReverse, setIsReverse] = useState(false);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const CustomButton: React.FC<CustomButtonProps> = (props) => {
         <View className="flex flex-row space-x-2 items-center">
           <Image
             className="w-5 h-5"
-            source={sendIcon}
+            source={{ uri: Images.send }}
             style={{ tintColor: `${props.iconTintColor}` }}
           />
           <Text
@@ -49,7 +49,7 @@ const CustomButton: React.FC<CustomButtonProps> = (props) => {
           </Text>
           <Image
             className="w-5 h-5"
-            source={sendIcon}
+            source={{ uri: Images.send }}
             style={{ tintColor: `${props.iconTintColor}` }}
           />
         </View>
