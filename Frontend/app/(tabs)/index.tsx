@@ -59,7 +59,7 @@ export default function HomeScreen() {
               </Text>
             </Pressable>
           </View>
-          <View className="flex flex-row space-x-2  bg-white">
+          <View className="flex flex-row space-x-2">
             <View className="flex-1 overflow-visible">
               <YProject />
             </View>
