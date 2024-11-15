@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { colors } from '@/constants/Colors';
 
 const data = [
@@ -15,7 +14,13 @@ const data = [
   { label: 'Item 8', value: '8' },
 ];
 
-const CustomDropdown = () => {
+interface CustomDropdownProps{
+  placeholder?: string,
+  width: number,
+  data: {label: string, value: string}[]
+}
+
+const CustomDropdown:React.FC<CustomDropdownProps> = (props) => {
   const [value, setValue] = useState(null);
 
   const renderItem = item => {
@@ -34,6 +39,61 @@ const CustomDropdown = () => {
     );
   };
 
+  const styles = StyleSheet.create({
+    dropdown: {
+      width: props.width,
+      height: 32,
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      padding: 12,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 1.41,
+  
+      elevation: 2,
+    },
+    icon: {
+      marginRight: 5,
+    },
+    item: {
+      fontFamily: 'ReadexPro_400Regular',
+      color: colors.textColor,
+      padding: 17,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    textItem: {
+      fontFamily: 'ReadexPro_400Regular',
+      color: colors.textColor,
+      flex: 1,
+      fontSize: 14,
+    },
+    placeholderStyle: {
+      fontFamily: 'ReadexPro_400Regular',
+      color: colors.textColor,
+      fontSize: 14,
+    },
+    selectedTextStyle: {
+      fontFamily: 'ReadexPro_400Regular',
+      color: colors.textColor,
+      fontSize: 14,
+    },
+    iconStyle: {
+      width: 20,
+      height: 20,
+    },
+    inputSearchStyle: {
+      fontFamily: 'ReadexPro_400Regular',
+      height: 40,
+      fontSize: 14,
+    },
+  });
+
   return (
     <Dropdown
       style={styles.dropdown}
@@ -41,12 +101,12 @@ const CustomDropdown = () => {
       selectedTextStyle={styles.selectedTextStyle}
       inputSearchStyle={styles.inputSearchStyle}
       iconStyle={styles.iconStyle}
-      data={data}
+      data={props.data}
       search
       maxHeight={300}
       labelField="label"
       valueField="value"
-      placeholder="Select item"
+      placeholder={props.placeholder ?? "Select item"}
       searchPlaceholder="Search..."
       value={value}
       onChange={item => {
@@ -62,57 +122,3 @@ const CustomDropdown = () => {
 
 export default CustomDropdown;
 
-const styles = StyleSheet.create({
-  dropdown: {
-    margin: 16,
-    height: 50,
-    backgroundColor: colors.surface,
-    borderRadius: 8,
-    padding: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 1.41,
-
-    elevation: 2,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  item: {
-    fontFamily: 'ReadexPro_400Regular',
-    color: colors.textColor,
-    padding: 17,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  textItem: {
-    fontFamily: 'ReadexPro_400Regular',
-    color: colors.textColor,
-    flex: 1,
-    fontSize: 16,
-  },
-  placeholderStyle: {
-    fontFamily: 'ReadexPro_400Regular',
-    color: colors.textColor,
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontFamily: 'ReadexPro_400Regular',
-    color: colors.textColor,
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    fontFamily: 'ReadexPro_400Regular',
-    height: 40,
-    fontSize: 16,
-  },
-});

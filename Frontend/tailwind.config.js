@@ -40,7 +40,7 @@ module.exports = {
       },
       fontSize: {
         xxs: "4px", // Extra Extra Small
-        xs: "8px", // Extra Small
+        xs: "12px", // Extra Small
         sm: "14px", // Small
         md: "16px", // Medium
         lg: "24px", // Large

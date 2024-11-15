@@ -1,152 +1,97 @@
-import { LoginModal } from "@/components/ZOldComponents/LoginModal";
-import { globalStyles } from "@/constants/GlobalStyle";
-import { ProofCalculationRequest } from "@/models/SalaryAPIModels";
-import SalaryAPI from "@/services/SalaryAPI";
-import React, { useState } from "react";
+import FadeInView from "@/components/Animations/FadeInView";
+import XProject from "@/components/Items/XProject";
+import YProject from "@/components/Items/YProject";
+import Header from "@/components/Layouts/Header";
+import { colors } from "@/constants/Colors";
+import React from "react";
 import {
-  ActivityIndicator,
   SafeAreaView,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  Image,
   View,
+  Text,
+  ScrollView,
+  Pressable,
+  FlatList,
 } from "react-native";
-import QRCode from "react-native-qrcode-svg";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Shadow } from "react-native-shadow-2";
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
-
-  const [isPayrollBtnVisible, setPayrollBtnVisible] = useState<boolean>(false);
-  const [identifier, setIdentifier] = useState<string>("");
-  const [salary, setSalary] = useState<string>("");
-  const [lower, setLower] = useState<string>("");
-  const [upper, setUpper] = useState<string>("");
-  const [qrData, setQrData] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const onLoginClose = () => {
-    console.log("onLoginClose");
-    setPayrollBtnVisible(true);
-  };
-
-  const handleProve = async () => {
-    const requestData: ProofCalculationRequest = {
-      identifier,
-      salary,
-      lower: Number(lower),
-      upper: Number(upper),
-    };
-
-    try {
-      setLoading(true);
-      const response = await SalaryAPI.calculateProof(requestData);
-      console.log(response.data);
-      if (response.data && response.data.data) {
-        setQrData(JSON.stringify(response.data.data));
-      }
-    } catch (error: any) {
-      // console.error("Error calculating proof:", error);
-      // console.error("Error uploading file during request:", error);
-      console.error("Error preflight during request:", error.message); // Log the error message
-      if (error.response) {
-        // The request was made, and the server responded with a status code outside of the 2xx range
-        console.error(
-          "Server responded with status code:",
-          error.response.status
-        );
-        console.error("Response data:", error.response.data); // Server's response
-      } else if (error.request) {
-        // The request was made, but no response was received
-        console.error("No response received:", error.request); // Logs details of the request
-      } else {
-        // Something happened in setting up the request that triggered an error
-        console.error("Error setting up request:", error.message);
-      }
-      console.error("Full error object:", error);
-    } finally {
-      setLoading(false); // End loading
-    }
-  };
-
+  const banner = require("@/assets/logos/Kima.png");
   return (
-    <SafeAreaView
-      style={{ flex: 1, paddingTop: insets.top, paddingBottom: insets.bottom }}
-    >
-      {!isPayrollBtnVisible && <LoginModal onClose={onLoginClose} />}
+    <FadeInView>
+      <ScrollView className="flex flex-col px-4 bg-background">
+        <Shadow
+          stretch={true}
+          offset={[0, 0]}
+          startColor={"#2F66F61F"}
+          distance={1}
+          containerStyle={{
+            borderRadius: 16,
+            marginTop: 16,
+            borderWidth: 1,
+            borderColor: "#2F66F61F",
+          }}
+          style={{ borderRadius: 16 }}
+        >
+          <View className="w-full rounded-2xl h-fit">
+            <Image
+              source={banner}
+              style={{
+                flex: 1,
+                width: "100%",
+                height: 112,
+                borderRadius: 16,
+              }}
+            />
+          </View>
+        </Shadow>
 
-      {isPayrollBtnVisible && (
-        <View className="mt-10 mx-6 bg-gray-50 p-6 rounded-xl flex flex-col">
-          <View className="flex flex-col gap-1 mb-4">
-            <Text className="text-sm" style={globalStyles.fontNormal}>
-              Identifier
+        <View className="flex flex-col mt-4">
+          <View className="flex flex-row justify-between mb-1">
+            <Text className="text-textColor text-md font-readexBold">
+              Upcoming Projects
             </Text>
-            <TextInput
-              style={globalStyles.fontNormal}
-              className="bg-white p-2 text-sm border-2 border-gray-100 rounded-lg"
-              placeholder="Type here..."
-              value={identifier}
-              onChangeText={setIdentifier} // Update state on change
-            />
+            <Pressable>
+              <Text className="text-md font-readexMedium text-primary">
+                More
+              </Text>
+            </Pressable>
           </View>
-          <View className="flex flex-col gap-1 mb-4">
-            <Text className="text-sm" style={globalStyles.fontNormal}>
-              Salary (VND)
-            </Text>
-            <TextInput
-              style={globalStyles.fontNormal}
-              className="bg-white p-2 text-sm border-2 border-gray-100 rounded-lg"
-              placeholder="Type here..."
-              value={salary}
-              onChangeText={setSalary} // Update state on change
-            />
+          <View className="flex flex-row space-x-2">
+            <View className="flex-1 overflow-visible">
+              <YProject />
+            </View>
+            <View className="flex-1 overflow-visible">
+              <YProject />
+            </View>
           </View>
-          <View className="flex flex-col gap-1 mb-4">
-            <Text className="text-sm" style={globalStyles.fontNormal}>
-              Lowerbound (VND)
-            </Text>
-            <TextInput
-              style={globalStyles.fontNormal}
-              className="bg-white p-2 text-sm border-2 border-gray-100 rounded-lg"
-              placeholder="Type here..."
-              value={lower}
-              onChangeText={setLower} // Update state on change
-            />
-          </View>
-          <View className="flex flex-col gap-1 mb-4">
-            <Text className="text-sm" style={globalStyles.fontNormal}>
-              Upperbound (VND)
-            </Text>
-            <TextInput
-              className="bg-white p-2 text-sm border-2 border-gray-100 rounded-lg"
-              placeholder="Type here..."
-              value={upper}
-              onChangeText={setUpper} // Update state on change
-            />
-          </View>
-          <TouchableOpacity activeOpacity={0.9} onPress={handleProve}>
-            <Text
-              className="text-white font-bold mt-6 p-4 w-full h-fit bg-blue-500 self-center justify-center text-center align-middle rounded-lg"
-            >
-              Prove
-            </Text>
-          </TouchableOpacity>
-
-          {loading ? (
-            <ActivityIndicator
-              size="large"
-              color="#0000ff" // You can change this color
-              style={{ marginTop: 20 }} // Add some margin if necessary
-            />
-          ) : (
-            qrData && (
-              <View className="mt-6 self-center">
-                <QRCode value={qrData} size={150} />
+          <View className="flex flex-col mt-4 mb-2">
+            <View className="flex flex-row justify-between mb-1">
+              <Text className="text-textColor text-md font-readexBold">
+                Funded Projects
+              </Text>
+              <Pressable>
+                <Text className="text-md font-readexMedium text-primary">
+                  More
+                </Text>
+              </Pressable>
+            </View>
+            <View className="flex flex-col">
+              <View className="mb-2">
+                <XProject />
               </View>
-            )
-          )}
+              <View className="mb-2">
+                <XProject />
+              </View>
+              <View className="mb-2">
+                <XProject />
+              </View>
+            </View>
+          </View>
         </View>
-      )}
-    </SafeAreaView>
+      </ScrollView>
+    </FadeInView>
   );
 }

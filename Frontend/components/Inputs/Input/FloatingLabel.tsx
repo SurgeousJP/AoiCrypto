@@ -31,11 +31,12 @@ import Animated, {
 } from "react-native-reanimated";
 import { styles } from "./styles";
 import { getValueWithCurrencyMask, getValueWithNonCurrencyMask } from "./utils";
+import { Images } from "@/constants/Images";
 
-const makeVisibleWhite = require("../../assets/icons/make_visible_white.png");
-const makeInvisibleWhite = require("../../assets/icons/make_invisible_white.png");
-const makeVisibleBlack = require("../../assets/icons/make_visible_black.png");
-const makeInvisibleBlack = require("../../assets/icons/make_invisible_black.png");
+const makeVisibleWhite = {uri: Images.makeVisibleWhite}
+const makeInvisibleWhite = {uri: Images.makeInvisibleWhite}
+const makeVisibleBlack = {uri: Images.makeVisibleBlack}
+const makeInvisibleBlack = {uri: Images.makeInvisibleBlack}
 
 export interface Props extends Omit<TextInputProps, "secureTextEntry"> {
   /** Style to the container of whole component */

@@ -18,7 +18,14 @@ import {
   ReadexPro_500Medium,
   ReadexPro_600SemiBold,
   ReadexPro_700Bold,
-} from '@expo-google-fonts/readex-pro';
+} from "@expo-google-fonts/readex-pro";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
+import Header from "@/components/Layouts/Header";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
+import { colors } from "@/constants/Colors";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,17 +50,49 @@ export default function RootLayout() {
     return null;
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        {/* <ImageBackground source={require('@/assets/images/dark-android-background.png')}  className="object-cover w-full h-full flex-1"> */}
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-            <Stack.Screen name="import"/>
+      <View
+        style={{
+          flex: 1,
+          paddingTop: insets.top + 8,
+          paddingBottom: insets.bottom,
+          backgroundColor: colors.surface,
+        }}
+      >
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack
+            screenOptions={{ headerShown: true }}
+            initialRouteName="(tabs)"
+          >
+            <Stack.Screen
+              name="login/index"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => <Header />,
+              }}
+            />
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => <Header />,
+              }}
+            />
           </Stack>
-        {/* </ImageBackground> */}
-      </ThemeProvider>
+        </ThemeProvider>
+      </View>
     </SafeAreaProvider>
   );
 }
+
+export const unstable_settings = {
+  // Ensure any route can link back to `/`
+  initialRouteName: '(tabs)',
+};

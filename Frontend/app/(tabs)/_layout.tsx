@@ -3,79 +3,83 @@ import React from "react";
 import { Image } from "react-native";
 import { colors, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { MaterialIcons } from "@expo/vector-icons";
 import { NativeWindStyleSheet } from "nativewind";
-import { globalStyles } from "@/constants/GlobalStyle";
+
+import Home from "@/assets/icons/system-icons-svg/Home.svg";
+import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
+import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
+import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
+import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const homeIcon = require("../../assets/icons/system-icons/Home_light.png")
+
+  
   return (
     <Tabs
       screenOptions={{
+        // unmountOnBlur: true,
+        tabBarHideOnKeyboard: true, // Hides the tab bar when the keyboard appears
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarStyle: {
-          height: 60,
+          height: 78,
+          paddingTop: 8,
+          paddingBottom: 8,
+          elevation: 15
         },
         tabBarLabelStyle: {
-          fontSize: 16,
+          fontSize: 14,
           fontFamily: "ReadexPro_400Regular",
         },
+        
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Employee",
+          title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            // <MaterialIcons name={"person"} color={focused ? colors.primary : colors.secondary} size={24} />
-            <Image
-              source={homeIcon}
-              style={{ tintColor: focused ? colors.primary : colors.secondary }}
-            />
+            <Home stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
       <Tabs.Screen
-        name="employer"
+        name="projects"
         options={{
-          title: "Employer",
+          title: "Projects",
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name={"group"}
-              color={focused ? colors.primary : colors.secondary}
-              size={24}
-            />
+            <Calendar stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
       <Tabs.Screen
-        name="verifier"
+        name="portfolio"
         options={{
-          title: "Verifier",
+          title: "Portfolio",
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name={focused ? "verified" : "verified"}
-              color={focused ? colors.primary : colors.secondary}
-              size={24}
-            />
+            <Pipe stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
       <Tabs.Screen
-        name="test"
+        name="staking"
         options={{
-          title: "Test",
+          title: "Staking",
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name={focused ? "verified" : "verified"}
-              color={focused ? colors.primary : colors.secondary}
-              size={24}
-            />
+            <Layers stroke={focused ? colors.primary : colors.secondary}/>
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="missions"
+        options={{
+          title: "Missions",
+          tabBarIcon: ({ color, focused }) => (
+            <Dollar stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
