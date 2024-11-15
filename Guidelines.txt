@@ -1,0 +1,2 @@
+- Image does not load SVG element properly -> Use SVG transformer
+- Shadow property like shadowBlur, shadowOffset only works with iOS, use elevation for Android instead, but it is limited so we use: react-native-shadow-2

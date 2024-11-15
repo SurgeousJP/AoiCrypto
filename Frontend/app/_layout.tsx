@@ -19,6 +19,13 @@ import {
   ReadexPro_600SemiBold,
   ReadexPro_700Bold,
 } from "@expo-google-fonts/readex-pro";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
+import Header from "@/components/Layouts/Header";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { View } from "react-native";
+import { colors } from "@/constants/Colors";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,13 +50,33 @@ export default function RootLayout() {
     return null;
   }
 
+  const insets = useSafeAreaInsets();
+
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
+      <View
+        style={{
+          flex: 1,
+          paddingTop: insets.top + 8,
+          paddingBottom: insets.bottom,
+          backgroundColor: colors.surface,
+        }}
+      >
+        <ThemeProvider
+          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        >
+          <Stack screenOptions={{ headerShown: true }}>
+            <Stack.Screen
+              name="(tabs)"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => <Header />,
+              }}
+            />
+          </Stack>
+        </ThemeProvider>
+      </View>
     </SafeAreaProvider>
   );
 }

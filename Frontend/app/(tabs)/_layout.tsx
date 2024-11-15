@@ -5,18 +5,21 @@ import { colors, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { NativeWindStyleSheet } from "nativewind";
 
+import Home from "@/assets/icons/system-icons-svg/Home.svg";
+import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
+import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
+import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
+import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
+import { Shadow } from "react-native-shadow-2";
+
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  
-  const homeIcon = require("@/assets/icons/system-icons/Home_light.png");
-  const projectIcon = require("@/assets/icons/system-icons/Calendar_light.png");
-  const portfolioIcon = require("@/assets/icons/system-icons/Pipe_light.png");
-  const stakingIcon = require("@/assets/icons/system-icons/Layers_light.png");
-  const missionIcon = require("@/assets/icons/system-icons/Dollarv3.png");
+
   return (
+    <Shadow startColor={"#2F66F61F"} distance={4} offset={[0, -1]} stretch={true} containerStyle={{position: "absolute", left: 0, right: 0, bottom: 0}}>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
@@ -24,7 +27,7 @@ export default function TabLayout() {
         tabBarStyle: {
           height: 78,
           paddingTop: 8,
-          paddingBottom: 8
+          paddingBottom: 8,
         },
         tabBarLabelStyle: {
           fontSize: 14,
@@ -37,11 +40,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            // <MaterialIcons name={"person"} color={focused ? colors.primary : colors.secondary} size={24} />
-            <Image
-              source={homeIcon}
-              style={{ tintColor: focused ? colors.primary : colors.secondary }}
-            />
+            <Home stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
@@ -50,10 +49,7 @@ export default function TabLayout() {
         options={{
           title: "Projects",
           tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={projectIcon}
-              style={{ tintColor: focused ? colors.primary : colors.secondary }}
-            />
+            <Calendar stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
@@ -62,10 +58,7 @@ export default function TabLayout() {
         options={{
           title: "Portfolio",
           tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={portfolioIcon}
-              style={{ tintColor: focused ? colors.primary : colors.secondary }}
-            />
+            <Pipe stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
@@ -74,10 +67,7 @@ export default function TabLayout() {
         options={{
           title: "Staking",
           tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={stakingIcon}
-              style={{ tintColor: focused ? colors.primary : colors.secondary }}
-            />
+            <Layers stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
@@ -86,13 +76,11 @@ export default function TabLayout() {
         options={{
           title: "Missions",
           tabBarIcon: ({ color, focused }) => (
-            <Image
-              source={missionIcon}
-              style={{ tintColor: focused ? colors.primary : colors.secondary }}
-            />
+            <Dollar stroke={focused ? colors.primary : colors.secondary}/>
           ),
         }}
       />
     </Tabs>
+    </Shadow>
   );
 }

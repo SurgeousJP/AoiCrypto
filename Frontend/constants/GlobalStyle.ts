@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { colors } from "./Colors";
 
 export const globalStyles = StyleSheet.create({
   // Layout
@@ -51,18 +52,5 @@ export const globalStyles = StyleSheet.create({
   outline: {
     borderColor: "#D7D9E4", // Outline color for borders
     borderWidth: 1, // Border width
-  },
-  innerShadow: {
-    borderRadius: 10,
-    overflow: 'hidden', // To hide the overflow of inner shadow
-    // Shadow properties for outer shadow simulation
-    shadowColor: 'rgba(0, 0, 0, 0.05)', // Similar to rgb(0, 0, 0, 0.05)
-    shadowOffset: {
-      width: 0,
-      height: 2, // Vertical offset to simulate inset
-    },
-    shadowOpacity: 1, // Full opacity for the shadow effect
-    shadowRadius: 4, // Radius for the blur effect
-    elevation: 4, // Android elevation for shadow
   },
 });
