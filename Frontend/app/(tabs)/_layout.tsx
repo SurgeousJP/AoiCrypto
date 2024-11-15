@@ -10,7 +10,6 @@ import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
 import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
 import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
 import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
-import { Shadow } from "react-native-shadow-2";
 
 NativeWindStyleSheet.setOutput({
   default: "native",
@@ -19,7 +18,6 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <Shadow startColor={"#2F66F61F"} distance={4} offset={[0, -1]} stretch={true} containerStyle={{position: "absolute", left: 0, right: 0, bottom: 0}}>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
@@ -28,6 +26,7 @@ export default function TabLayout() {
           height: 78,
           paddingTop: 8,
           paddingBottom: 8,
+          elevation: 15
         },
         tabBarLabelStyle: {
           fontSize: 14,
@@ -81,6 +80,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-    </Shadow>
   );
 }

@@ -1,2 +1,3 @@
 - Image does not load SVG element properly -> Use SVG transformer
 - Shadow property like shadowBlur, shadowOffset only works with iOS, use elevation for Android instead, but it is limited so we use: react-native-shadow-2
+- Width full seems not working properly as in web for diving equal size of flex items with space between in a flex row container, use flex-1 instead
