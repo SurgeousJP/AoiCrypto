@@ -20,6 +20,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        unmountOnBlur: true,
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarStyle: {
@@ -32,6 +33,7 @@ export default function TabLayout() {
           fontSize: 14,
           fontFamily: "ReadexPro_400Regular",
         },
+        
       }}
     >
       <Tabs.Screen
