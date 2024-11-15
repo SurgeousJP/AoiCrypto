@@ -17,10 +17,12 @@ NativeWindStyleSheet.setOutput({
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  
   return (
     <Tabs
       screenOptions={{
-        unmountOnBlur: true,
+        // unmountOnBlur: true,
+        tabBarHideOnKeyboard: true, // Hides the tab bar when the keyboard appears
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
         tabBarStyle: {

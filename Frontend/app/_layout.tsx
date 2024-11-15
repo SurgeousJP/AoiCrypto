@@ -65,7 +65,18 @@ export default function RootLayout() {
         <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
-          <Stack screenOptions={{ headerShown: true }}>
+          <Stack
+            screenOptions={{ headerShown: true }}
+            initialRouteName="(tabs)"
+          >
+            <Stack.Screen
+              name="login/index"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => <Header />,
+              }}
+            />
             <Stack.Screen
               name="(tabs)"
               options={{
@@ -80,3 +91,8 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+export const unstable_settings = {
+  // Ensure any route can link back to `/`
+  initialRouteName: '(tabs)',
+};
