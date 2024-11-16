@@ -1,6 +1,6 @@
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
-import SearchProject from "@/components/Items/SearchProject";
+import SearchProject from "@/components/Items/Project/SearchProject";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import { useNavigation, useRouter } from "expo-router";
 import React from "react";
@@ -25,14 +25,10 @@ export default function Projects() {
   return (
       <ScrollView className="flex flex-col px-4 bg-background">
         <View className="w-full pt-4 mb-4">
-          <Searchbar />
+          <Searchbar placeholder="Search project" />
         </View>
-        {/* <View className="w-full mb-4">
-          <CustomSegmentedControl screens={["All", "Etherum"]} />
-        </View> */}
-
         <View className="flex flex-col mb-4">
-          <View className="flex flex-row justify-end mb-2">
+          <View className="flex flex-row justify-end mb-4">
             <CustomDropdown placeholder="Number of results "width={'100%'} data={searchValues} />
           </View>
           <Shadow 
@@ -43,14 +39,14 @@ export default function Projects() {
             containerStyle={{ overflow: "visible", marginBottom: 8 }}
             style={{ borderRadius: 8 }}
           >
-            <View className="flex flex-row bg-surface space-x-[18px] px-2 py-2 rounded-lg">
+            <View className="flex flex-row bg-surface justify-between px-2 py-2 rounded-lg">
               <Text className="font-readexRegular text-[12px] w-[88px]">
                 Project name
               </Text>
               <Text className="font-readexRegular text-[12px] w-[74px]">
                 Contribution
               </Text>
-              <Text className="font-readexRegular text-[12px] w-[51px] mr-5">
+              <Text className="font-readexRegular text-[12px] w-[56px]">
                 Ended in
               </Text>
               <Text className="font-readexRegular text-[12px] ">ATH</Text>

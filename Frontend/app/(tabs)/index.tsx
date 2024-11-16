@@ -1,5 +1,5 @@
-import XProject from "@/components/Items/XProject";
-import YProject from "@/components/Items/YProject";
+import XProject from "@/components/Items/Project/XProject";
+import YProject from "@/components/Items/Project/YProject";
 import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import React from "react";

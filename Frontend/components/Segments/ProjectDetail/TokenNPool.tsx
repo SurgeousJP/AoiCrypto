@@ -29,7 +29,7 @@ const TokenNPool = () => {
       <View className="mt-2">
         <Container>
           <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
-            <Text className="font-readexBold text-md text-primary mb-2">
+            <Text className="font-readexBold text-md text-primary">
               Token
             </Text>
             {tokenOverview.map((p) => {
@@ -49,7 +49,7 @@ const TokenNPool = () => {
       <View className="mt-2">
         <Container>
           <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
-            <Text className="font-readexBold text-md text-primary mb-2">
+            <Text className="font-readexBold text-md text-primary">
               Pool Info
             </Text>
             {poolInfo.map((p) => {

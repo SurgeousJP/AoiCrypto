@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
 import { Shadow } from "react-native-shadow-2";
-import CurrencyLabel from "../Displays/CurrencyLabel/CurrencyLabel";
+import CurrencyLabel from "../../Displays/CurrencyLabel/CurrencyLabel";
 
 const SearchProject = () => {
   const projectLogo = require("@/assets/images/ProjectLogo.png");

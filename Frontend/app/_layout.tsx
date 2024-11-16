@@ -69,7 +69,7 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Stack
-            screenOptions={{ headerShown: true }}
+            screenOptions={{ headerShown: true, animation: 'fade', animationDuration: 1000 }}
             initialRouteName="(tabs)"
           >
             <Stack.Screen
@@ -90,6 +90,20 @@ export default function RootLayout() {
             />
             <Stack.Screen
               name="project/[project]"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => (
+                  <ScreenHeader
+                    LeftComponent={<Back stroke={colors.secondary} />}
+                    CenterComponent={<AoiCryptoLogo />}
+                    RightComponent={<Setting fill={colors.secondary}/>}
+                  ></ScreenHeader>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="mission/[mission]"
               options={{
                 headerShown: true,
                 headerShadowVisible: false,

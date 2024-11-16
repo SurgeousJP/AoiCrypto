@@ -11,16 +11,15 @@ const Description = () => {
             <Text className="font-readexBold text-md text-primary">
               Highlights
             </Text>
-            <Text className="font-readexRegular">
-              - Highstreet creates the Shopify experience on an MMORPG for
-              brands
+            <Text className="font-readexRegular  leading-loose">
+              - Highstreet creates the Shopify experience on an MMORPG for brands
             </Text>
-            <Text className="font-readexRegular">
+            <Text className="font-readexRegular leading-normal">
               - In an ultimate metaverse experience, users can easily set up
               shop and start interacting with products integrated as in-game
               objects.
             </Text>
-            <Text className="font-readexRegular">
+            <Text className="font-readexRegular leading-normal">
               - Highstreet emphasizes hybrid marketplaces, where the rules of
               how a market should work can be rewritten based on the hottest
               goods.

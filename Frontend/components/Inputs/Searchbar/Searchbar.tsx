@@ -5,7 +5,11 @@ import { Shadow } from "react-native-shadow-2";
 import Search from "@/assets/icons/system-icons-svg/Search.svg";
 import Close from "@/assets/icons/system-icons-svg/Close.svg";
 
-const Searchbar = () => {
+interface SearchbarProps{
+  placeholder?: string,
+}
+
+const Searchbar:React.FC<SearchbarProps> = (props) => {
   const [isFocused, setIsFocused] = useState(false);
   const [text, setText] = useState("");
   return (
@@ -21,7 +25,7 @@ const Searchbar = () => {
           <Search stroke={isFocused ? colors.primary : colors.secondary} />
           <TextInput
             className="font-readexRegular flex-1"
-            placeholder="AoiCrypto search"
+            placeholder={props.placeholder ?? "AoiCrypto search"}
             placeholderTextColor={colors.outline}
             value={text}
             onChangeText={(text) => setText(text)}
