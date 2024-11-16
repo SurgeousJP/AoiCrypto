@@ -1,7 +1,6 @@
-import FadeInView from "@/components/Animations/FadeInView";
 import XProject from "@/components/Items/XProject";
 import YProject from "@/components/Items/YProject";
-import Header from "@/components/Layouts/Header";
+import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import React from "react";
 import {
@@ -20,7 +19,6 @@ export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const banner = require("@/assets/logos/Kima.png");
   return (
-    <FadeInView>
       <ScrollView className="flex flex-col px-4 bg-background">
         <Shadow
           stretch={true}
@@ -79,19 +77,18 @@ export default function HomeScreen() {
               </Pressable>
             </View>
             <View className="flex flex-col">
-              <View className="mb-2">
+              <Pressable className="mb-2">
                 <XProject />
-              </View>
-              <View className="mb-2">
+              </Pressable>
+              <Pressable className="mb-2">
                 <XProject />
-              </View>
-              <View className="mb-2">
+              </Pressable>
+              <Pressable className="mb-2">
                 <XProject />
-              </View>
+              </Pressable>
             </View>
           </View>
         </View>
       </ScrollView>
-    </FadeInView>
   );
 }

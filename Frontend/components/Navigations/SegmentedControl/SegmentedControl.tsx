@@ -7,7 +7,8 @@ import { ReadexPro_200ExtraLight, ReadexPro_300Light, ReadexPro_400Regular, Read
 import { SplashScreen } from 'expo-router';
 
 interface SegmentedControlProp{
-  screens: string[]
+  screens: string[],
+  components: any[],
 }
 
 const CustomSegmentedControl:React.FC<SegmentedControlProp> = (props) => {
@@ -58,6 +59,10 @@ const CustomSegmentedControl:React.FC<SegmentedControlProp> = (props) => {
         onChange={handleChange}
         style={styles.segmentedControl}        
       />
+
+      <View className='mt-2 w-full flex-1'>
+        {props.components[selectedIndex]}
+      </View>
     </View>
   );
 };

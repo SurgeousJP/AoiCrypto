@@ -1,10 +1,10 @@
-import FadeInView from "@/components/Animations/FadeInView";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import SearchProject from "@/components/Items/SearchProject";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
+import { useNavigation, useRouter } from "expo-router";
 import React from "react";
-import { SafeAreaView, ScrollView, View, Text } from "react-native";
+import { SafeAreaView, ScrollView, View, Text, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Shadow } from "react-native-shadow-2";
 
@@ -15,19 +15,25 @@ export default function Projects() {
     { label: "Show 5 results", value: 5 },
     { label: "Show 10 results", value: 10 },
   ];
+
+  const router = useRouter();
+  
+  const handleProjectNavigation = (e) => {
+    router.navigate("/project/1");
+  }
+
   return (
-    <FadeInView>
       <ScrollView className="flex flex-col px-4 bg-background">
         <View className="w-full pt-4 mb-4">
           <Searchbar />
         </View>
-        <View className="w-full mb-4">
+        {/* <View className="w-full mb-4">
           <CustomSegmentedControl screens={["All", "Etherum"]} />
-        </View>
+        </View> */}
 
         <View className="flex flex-col mb-4">
           <View className="flex flex-row justify-end mb-2">
-            <CustomDropdown placeholder="Number of results " width={'100%'} data={searchValues} />
+            <CustomDropdown placeholder="Number of results "width={'100%'} data={searchValues} />
           </View>
           <Shadow 
             stretch={true}
@@ -51,12 +57,11 @@ export default function Projects() {
             </View>
           </Shadow>
           {Array.from({ length: 8 }).map((_, index) => (
-            <View key={index} className="mb-2">
+            <Pressable key={index} className="mb-2" onPress={handleProjectNavigation}>
               <SearchProject />
-            </View>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
-    </FadeInView>
   );
 }

@@ -17,7 +17,6 @@ NativeWindStyleSheet.setOutput({
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
-  
   return (
     <Tabs
       screenOptions={{
@@ -48,7 +47,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="projects"
+        name="project"
         options={{
           title: "Projects",
           tabBarIcon: ({ color, focused }) => (

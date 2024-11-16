@@ -6,7 +6,7 @@ import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
 import { colors } from "@/constants/Colors";
 import { Shadow } from "react-native-shadow-2";
 
-const Header = () => {
+const TabHeader = () => {
   return (
     <Shadow stretch={true} offset={[0,1]} startColor={"#2F66F61F"} distance={2} >
       <View className="flex flex-row justify-between items-center bg-surface py-2 px-4">
@@ -17,4 +17,4 @@ const Header = () => {
     </Shadow>
   );
 };
-export default Header;
+export default TabHeader;

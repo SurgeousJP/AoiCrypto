@@ -13,6 +13,9 @@ module.exports = {
         readexSemiBold: ["ReadexPro_600SemiBold", "sans-serif"],
         readexBold: ["ReadexPro_700Bold", "sans-serif"],
       },
+      boxShadow: {
+        'custom-blue': '0 3px 4px rgba(47, 102, 246, 1)', // Adjusted to match the desired shadow color and opacity
+      },
       fontWeight: {
         hairline: 100,
         "extra-light": 100,

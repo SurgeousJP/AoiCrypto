@@ -645,7 +645,7 @@ const FloatingLabelInput: React.ForwardRefRenderFunction<InputRef, Props> = (
             )}
             <View className="flex flex-row w-full justify-between items-center">
               <TextInput
-                className="bg-blue mt-2 text-sm"
+                className="bg-blue mt-2 text-sm font-readexRegular"
                 style={{
                   outlineStyle: "none",
                   borderColor: isFocused ? "transparent" : undefined,
