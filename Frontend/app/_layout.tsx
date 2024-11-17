@@ -1,16 +1,7 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useState, useEffect } from "react";
-import "react-native-reanimated";
+import Header from "@/components/Layouts/Header";
+import SettingsHeader from "@/components/Layouts/SettingsHeader";
+import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import React from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
 import {
   ReadexPro_200ExtraLight,
   ReadexPro_300Light,
@@ -19,13 +10,21 @@ import {
   ReadexPro_600SemiBold,
   ReadexPro_700Bold,
 } from "@expo-google-fonts/readex-pro";
-import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
-import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
-import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
-import Header from "@/components/Layouts/Header";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+} from "@react-navigation/native";
+import { useFonts } from "expo-font";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import React, { useEffect } from "react";
 import { View } from "react-native";
-import { colors } from "@/constants/Colors";
+import "react-native-reanimated";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -78,6 +77,14 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen
+              name="settings/index"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => <SettingsHeader title="Settings" />,
+              }}
+            />
+            <Stack.Screen
               name="(tabs)"
               options={{
                 headerShown: true,
@@ -94,5 +101,5 @@ export default function RootLayout() {
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
-  initialRouteName: '(tabs)',
+  initialRouteName: "(tabs)",
 };

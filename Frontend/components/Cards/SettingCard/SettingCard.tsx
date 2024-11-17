@@ -1,10 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface SettingCardProps {
   pos: "top" | "mid" | "bot";
   label?: string;
+  title: string;
+  action?: React.ReactNode;
+  icon?: React.ReactNode;
 }
 
 const getCardStyle = (pos: "top" | "mid" | "bot") => {
@@ -20,7 +23,7 @@ const getCardStyle = (pos: "top" | "mid" | "bot") => {
   }
 };
 
-function SettingCard({ pos, label }: SettingCardProps) {
+function SettingCard({ pos, label, icon, title, action }: SettingCardProps) {
   const profileIcon = require("../../../assets/icons/system-icons/Profile.png");
 
   return (
@@ -30,18 +33,19 @@ function SettingCard({ pos, label }: SettingCardProps) {
       )} items-center w-[343px] h-[56px] justify-between p-4 bg-white`}
     >
       <View className="flex flex-row items-center">
-        {!label && <Image source={profileIcon} className="w-6 h-6 mr-3" />}
+        {icon}
         <Text
-          className={`text-sm font-readexRegular  ${
+          className={`text-sm ml-2 font-readexRegular  ${
             !label ? "text-black" : "text-gray-500"
           }`}
         >
-          Profile
+          {title}
         </Text>
       </View>
-      {!label && (
+      {!label && !action && (
         <Ionicons name="chevron-forward-outline" size={20} color={"gray"} />
       )}
+      {action && action}
       {label && (
         <Text className="text-black readexRegular font-semibold ">{label}</Text>
       )}
