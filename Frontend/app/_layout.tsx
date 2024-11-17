@@ -94,14 +94,6 @@ export default function RootLayout() {
               }}
             />
             <Stack.Screen
-              name="settings/index"
-              options={{
-                headerShown: true,
-                headerShadowVisible: false,
-                header: ({ options }) => <SettingsHeader title="Settings" />,
-              }}
-            />
-            <Stack.Screen
               name="(tabs)"
               options={{
                 headerShown: true,
