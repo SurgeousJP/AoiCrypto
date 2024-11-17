@@ -1,9 +1,10 @@
 import Tag from "@/components/Buttons/Tags/Tag";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import MissionCard from "@/components/Items/Mission/MissionCard";
-import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { colors } from "@/constants/Colors";
+import { useFocusEffect, useRouter } from "expo-router";
+import React, { useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, View, Text } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 
 export default function Missions() {
@@ -11,6 +12,24 @@ export default function Missions() {
   const handleNavigateMissionDetail = (e) => {
     router.navigate("/mission/1");
   }
+
+  // const [loading, setLoading] = useState(true);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     setLoading(true);
+  //     const timer = setTimeout(() => setLoading(false), 100); // Simulate loading
+  //     return () => clearTimeout(timer);
+  //   }, [])
+  // );
+
+  // if (loading) {
+  //   return (
+  //     <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+  //       <ActivityIndicator size="large" color={colors.primary} />
+  //       <Text className="font-readexRegular text-primary text-md">Loading</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <ScrollView className="flex flex-col px-4 bg-background">

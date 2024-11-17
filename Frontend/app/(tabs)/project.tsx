@@ -1,10 +1,9 @@
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import SearchProject from "@/components/Items/Project/SearchProject";
-import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
-import { useNavigation, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React from "react";
-import { SafeAreaView, ScrollView, View, Text, Pressable } from "react-native";
+import { ScrollView, View, Text, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Shadow } from "react-native-shadow-2";
 
@@ -21,6 +20,24 @@ export default function Projects() {
   const handleProjectNavigation = (e) => {
     router.navigate("/project/1");
   }
+
+  // const [loading, setLoading] = useState(true);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     setLoading(true);
+  //     const timer = setTimeout(() => setLoading(false), 100); // Simulate loading
+  //     return () => clearTimeout(timer);
+  //   }, [])
+  // );
+
+  // if (loading) {
+  //   return (
+  //     <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+  //       <ActivityIndicator size="large" color={colors.primary} />
+  //       <Text className="font-readexRegular text-primary text-md">Loading</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
       <ScrollView className="flex flex-col px-4 bg-background">

@@ -8,7 +8,7 @@ interface NormalButtonInterface{
 const NormalButton:React.FC<NormalButtonInterface> = (props) => {
   return (
     <Pressable
-      className={`w-full flex flex-row items-center justify-center space-x-2 h-fit rounded-xl bg-primary `}
+      className={`w-full flex flex-row items-center justify-center space-x-2 p-1 h-fit rounded-xl bg-primary `}
     >
       <View className="flex flex-row space-x-2 items-center">
         <Text

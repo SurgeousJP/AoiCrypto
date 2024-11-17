@@ -20,7 +20,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        // unmountOnBlur: true,
+        unmountOnBlur: false,
         tabBarHideOnKeyboard: true, // Hides the tab bar when the keyboard appears
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
