@@ -3,33 +3,32 @@ import WarningCard from "@/components/Cards/WarningCard/WarningCard";
 import React from "react";
 import { Text, View } from "react-native";
 
-function Stake() {
+function StakeSegment() {
   return (
     <View>
-      {" "}
       <View className="flex flex-col items-center">
-        <Text className="text-center mt-4 text-blue-600 text-[32px] font-bold font-readexRegular leading-[38px]">
+        <Text className="text-center mt-4 text-blue-600 text-xl font-readexBold leading-[38px]">
           0
         </Text>
-        <Text className="text-center mt-1 text-blue-600 text-base font-bold font-readexRegular leading-none">
+        <Text className="text-center mt-1 text-blue-600 text-md font-readexBold leading-none mb-2">
           0.00 AOIS
-          <br />
-        </Text>
-        <Text className="text-center mb-1 text-blue-600 text-sm font-bold font-readexRegular leading-none">
-          in wallet
+          {"\n"}
+          <Text className="text-center mb-1 text-blue-600 text-md font-readexBold leading-none">
+            in wallet
+          </Text>
         </Text>
         <PrimaryButton
           onPress={() => {
             console.log("test");
           }}
-          content="Stake all"
+          content="Withdraw all"
         />
         <View className="mt-6">
           <WarningCard
-            iconColor={"#d5e0fd"}
-            content="Your staked AOIS will be locked for the entire staking period. Early
-        withdrawals are not permitted, ensuring commitment and stability in the
-        ecosystem."
+            iconColor="#fed0d0"
+            content={
+              "Withdrawing your staked AOIS will reduce your AOIS Power and associated benefits. Please consider the impact on your tier status and IDO participation."
+            }
           />
         </View>
       </View>
@@ -105,4 +104,4 @@ function Stake() {
   );
 }
 
-export default Stake;
+export default StakeSegment;

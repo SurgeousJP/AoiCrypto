@@ -22,21 +22,27 @@ function AOISPower() {
           </Text>
         </View>
       </View>
-      <View className="flex flex-col space-y-3 mt-4">
-        <View>
-          <AOISPowerCard
-            percentage={"Allowlist Probability "}
-            tier={"AOIS Power"}
-          />
+      <View className="flex flex-col mt-4">
+        <View className="mb-4 bg-surface px-4 py-2">
+          <View className="flex flex-row items-center justify-between w-full">
+            <View>
+              <Text className="text-md font-readexRegular text-black">
+                AOIS Power
+              </Text>
+            </View>
+            <Text className="text-md font-readexRegular text-black ml-2">
+              Allowlist Probability
+            </Text>
+          </View>
         </View>
-        <View>
+        <View className="mb-4">
           <AOISPowerCard
             quantity={"1,000+"}
             percentage={"20.79%"}
             tier={"AOIS Bronze"}
           />
         </View>
-        <View>
+        <View className="mb-4">
           <AOISPowerCard
             quantity={"2,000+"}
             percentage={"35.62%"}

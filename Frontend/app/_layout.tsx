@@ -19,10 +19,10 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -55,6 +55,13 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
+
+  const router = useRouter();
+  const handleBack = (e) => {
+    if (router.canGoBack()) {
+      router.back();
+    }
+  };
 
   return (
     <SafeAreaProvider>
@@ -108,7 +115,11 @@ export default function RootLayout() {
                 headerShadowVisible: false,
                 header: ({ options }) => (
                   <ScreenHeader
-                    LeftComponent={<Back stroke={colors.secondary} />}
+                    LeftComponent={
+                      <Pressable onPress={handleBack}>
+                        <Back stroke={colors.secondary} />
+                      </Pressable>
+                    }
                     CenterComponent={<AoiCryptoLogo />}
                     RightComponent={<Setting fill={colors.secondary} />}
                   ></ScreenHeader>
@@ -122,7 +133,29 @@ export default function RootLayout() {
                 headerShadowVisible: false,
                 header: ({ options }) => (
                   <ScreenHeader
-                    LeftComponent={<Back stroke={colors.secondary} />}
+                    LeftComponent={
+                      <Pressable onPress={handleBack}>
+                        <Back stroke={colors.secondary} />
+                      </Pressable>
+                    }
+                    CenterComponent={<AoiCryptoLogo />}
+                    RightComponent={<Setting fill={colors.secondary} />}
+                  ></ScreenHeader>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="dashboard/[user]"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => (
+                  <ScreenHeader
+                    LeftComponent={
+                      <Pressable onPress={handleBack}>
+                        <Back stroke={colors.secondary} />
+                      </Pressable>
+                    }
                     CenterComponent={<AoiCryptoLogo />}
                     RightComponent={<Setting fill={colors.secondary} />}
                   ></ScreenHeader>

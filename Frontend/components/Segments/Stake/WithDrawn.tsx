@@ -6,17 +6,16 @@ import { Text, View } from "react-native";
 function WithDrawn() {
   return (
     <View>
-      {" "}
       <View className="flex flex-col items-center">
-        <Text className="text-center mt-4 text-blue-600 text-[32px] font-bold font-readexRegular leading-[38px]">
+        <Text className="text-center mt-4 text-blue-600 text-xl font-readexBold leading-[38px]">
           0
         </Text>
-        <Text className="text-center mt-1 text-blue-600 text-base font-bold font-readexRegular leading-none">
+        <Text className="text-center mt-1 text-blue-600 text-md font-readexBold leading-none mb-2">
           0.00 AOIS
-          <br />
-        </Text>
-        <Text className="text-center mb-1 text-blue-600 text-sm font-bold font-readexRegular leading-none">
-          in wallet
+          {"\n"}
+          <Text className="text-center mb-1 text-blue-600 text-md font-readexBold leading-none">
+            in wallet
+          </Text>
         </Text>
         <PrimaryButton
           onPress={() => {
