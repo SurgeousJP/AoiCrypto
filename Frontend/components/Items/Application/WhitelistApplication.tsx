@@ -1,9 +1,9 @@
+import CurrencyLabel from "@/components/Displays/CurrencyLabel/CurrencyLabel";
 import React from "react";
 import { View, Image, Text } from "react-native";
 import { Shadow } from "react-native-shadow-2";
-import CurrencyLabel from "../Displays/CurrencyLabel/CurrencyLabel";
 
-const SearchProject = () => {
+const WhitelistApplication = () => {
   const projectLogo = require("@/assets/images/ProjectLogo.png");
   return (
     <Shadow
@@ -23,16 +23,24 @@ const SearchProject = () => {
             <Text className="font-readexRegular text-[12px]">Polytrade</Text>
           </View>
         </View>
-          <Text className="font-readexRegular text-[12px] flex-1 text-right">
-            $300,000
+        <Text className="font-readexRegular text-[12px]  text-right">
+          $300,000
+        </Text>
+        <Text className="font-readexRegular text-[12px]  text-right ">
+          Oct 31, 2024
+        </Text>
+        <View
+          className={`w-fit h-fit px-1 py-[2px] flex flex-row bg-success rounded-md`}
+        >
+          <Text
+            className={`mx-auto my-auto font-readexRegular text-[12px] text-white`}
+          >
+            SUCCESS
           </Text>
-          <Text className="font-readexRegular text-[12px] flex-1 text-right mr-4">
-            Oct 31, 2024
-          </Text>
-          <CurrencyLabel backgroundColor={"bg-error"} textColor={"text-surface"} content={"+469%"} />
+        </View>
       </View>
     </Shadow>
   );
 };
 
-export default SearchProject;
+export default WhitelistApplication;

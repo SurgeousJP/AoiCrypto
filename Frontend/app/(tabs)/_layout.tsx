@@ -14,14 +14,14 @@ import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
-  
   return (
     <Tabs
       screenOptions={{
-        // unmountOnBlur: true,
+        unmountOnBlur: false,
         tabBarHideOnKeyboard: true, // Hides the tab bar when the keyboard appears
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: false,
@@ -48,7 +48,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="projects"
+        name="project"
         options={{
           title: "Projects",
           tabBarIcon: ({ color, focused }) => (

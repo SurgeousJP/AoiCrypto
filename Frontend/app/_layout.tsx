@@ -1,5 +1,8 @@
-import Header from "@/components/Layouts/Header";
+import Back from "@/assets/icons/system-icons-svg/Back.svg";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import SettingsHeader from "@/components/Layouts/SettingsHeader";
+import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
@@ -18,17 +21,21 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { View } from "react-native";
 import "react-native-reanimated";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import ScreenHeader from "@/components/Layouts/ScreenHeader";
+import React from "react";
+import "react-native-reanimated";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const insets = useSafeAreaInsets();
+
   const colorScheme = useColorScheme();
   let [loaded, error] = useFonts({
     ReadexPro_200ExtraLight,
@@ -49,8 +56,6 @@ export default function RootLayout() {
     return null;
   }
 
-  const insets = useSafeAreaInsets();
-
   return (
     <SafeAreaProvider>
       <View
@@ -65,7 +70,11 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <Stack
-            screenOptions={{ headerShown: true }}
+            screenOptions={{
+              headerShown: true,
+              animation: "fade",
+              animationDuration: 1000,
+            }}
             initialRouteName="(tabs)"
           >
             <Stack.Screen
@@ -73,7 +82,15 @@ export default function RootLayout() {
               options={{
                 headerShown: true,
                 headerShadowVisible: false,
-                header: ({ options }) => <Header />,
+                header: ({ options }) => <TabHeader />,
+              }}
+            />
+            <Stack.Screen
+              name="settings/index"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => <SettingsHeader title="Settings" />,
               }}
             />
             <Stack.Screen
@@ -89,7 +106,35 @@ export default function RootLayout() {
               options={{
                 headerShown: true,
                 headerShadowVisible: false,
-                header: ({ options }) => <Header />,
+                header: ({ options }) => <TabHeader />,
+              }}
+            />
+            <Stack.Screen
+              name="project/[project]"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => (
+                  <ScreenHeader
+                    LeftComponent={<Back stroke={colors.secondary} />}
+                    CenterComponent={<AoiCryptoLogo />}
+                    RightComponent={<Setting fill={colors.secondary} />}
+                  ></ScreenHeader>
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="mission/[mission]"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => (
+                  <ScreenHeader
+                    LeftComponent={<Back stroke={colors.secondary} />}
+                    CenterComponent={<AoiCryptoLogo />}
+                    RightComponent={<Setting fill={colors.secondary} />}
+                  ></ScreenHeader>
+                ),
               }}
             />
           </Stack>

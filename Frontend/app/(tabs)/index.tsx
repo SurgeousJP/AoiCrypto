@@ -1,9 +1,10 @@
-import FadeInView from "@/components/Animations/FadeInView";
-import XProject from "@/components/Items/XProject";
-import YProject from "@/components/Items/YProject";
-import Header from "@/components/Layouts/Header";
+import { styles } from "@/components/Inputs/Input/styles";
+import XProject from "@/components/Items/Project/XProject";
+import YProject from "@/components/Items/Project/YProject";
+import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
-import React from "react";
+import { useFocusEffect } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   Image,
@@ -11,17 +12,28 @@ import {
   Text,
   ScrollView,
   Pressable,
-  FlatList,
+  ActivityIndicator,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Shadow } from "react-native-shadow-2";
 
 export default function HomeScreen() {
-  const insets = useSafeAreaInsets();
+  
   const banner = require("@/assets/logos/Kima.png");
+  
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { setLoading(loading => false) },[])
+  
+  if (loading) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
+
   return (
-    <FadeInView>
-      <ScrollView className="flex flex-col px-4 bg-background">
+    <ScrollView className="flex flex-col px-4 bg-background">
         <Shadow
           stretch={true}
           offset={[0, 0]}
@@ -79,19 +91,18 @@ export default function HomeScreen() {
               </Pressable>
             </View>
             <View className="flex flex-col">
-              <View className="mb-2">
+              <Pressable className="mb-2">
                 <XProject />
-              </View>
-              <View className="mb-2">
+              </Pressable>
+              <Pressable className="mb-2">
                 <XProject />
-              </View>
-              <View className="mb-2">
+              </Pressable>
+              <Pressable className="mb-2">
                 <XProject />
-              </View>
+              </Pressable>
             </View>
           </View>
         </View>
-      </ScrollView>
-    </FadeInView>
+    </ScrollView>
   );
 }
