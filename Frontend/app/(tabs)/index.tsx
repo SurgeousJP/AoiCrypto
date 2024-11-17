@@ -4,7 +4,7 @@ import YProject from "@/components/Items/Project/YProject";
 import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import { useFocusEffect } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   Image,
@@ -20,23 +20,17 @@ export default function HomeScreen() {
   
   const banner = require("@/assets/logos/Kima.png");
   
-  // const [loading, setLoading] = useState(true);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     setLoading(true);
-  //     const timer = setTimeout(() => setLoading(false), 100); // Simulate loading
-  //     return () => clearTimeout(timer);
-  //   }, [])
-  // );
-
-  // if (loading) {
-  //   return (
-  //     <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
-  //       <ActivityIndicator size="large" color={colors.primary} />
-  //       <Text className="font-readexRegular text-primary text-md">Loading</Text>
-  //     </View>
-  //   );
-  // }
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { setLoading(loading => false) },[])
+  
+  if (loading) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView className="flex flex-col px-4 bg-background">

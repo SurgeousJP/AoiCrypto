@@ -1,13 +1,14 @@
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import SearchProject from "@/components/Items/Project/SearchProject";
+import { colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
-import React from "react";
-import { ScrollView, View, Text, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, View, Text, Pressable, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Shadow } from "react-native-shadow-2";
 
-export default function Projects() {
+export default function ProjectScreen() {
   const insets = useSafeAreaInsets();
   const searchValues = [
     { label: "Show 2 results", value: 2 },
@@ -21,23 +22,17 @@ export default function Projects() {
     router.navigate("/project/1");
   }
 
-  // const [loading, setLoading] = useState(true);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     setLoading(true);
-  //     const timer = setTimeout(() => setLoading(false), 100); // Simulate loading
-  //     return () => clearTimeout(timer);
-  //   }, [])
-  // );
-
-  // if (loading) {
-  //   return (
-  //     <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
-  //       <ActivityIndicator size="large" color={colors.primary} />
-  //       <Text className="font-readexRegular text-primary text-md">Loading</Text>
-  //     </View>
-  //   );
-  // }
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { setLoading(loading => false) },[])
+  
+  if (loading) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
 
   return (
       <ScrollView className="flex flex-col px-4 bg-background">

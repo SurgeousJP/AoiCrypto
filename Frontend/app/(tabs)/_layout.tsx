@@ -14,6 +14,7 @@ import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 NativeWindStyleSheet.setOutput({
   default: "native",
 });
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 

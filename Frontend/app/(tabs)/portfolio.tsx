@@ -4,14 +4,26 @@ import ProfileSegment from "@/components/Segments/Portfolio/Profile";
 import Description from "@/components/Segments/ProjectDetail/Description";
 import Overview from "@/components/Segments/ProjectDetail/Overview";
 import TokenNPool from "@/components/Segments/ProjectDetail/TokenNPool";
-import React from "react";
+import { colors } from "@/constants/Colors";
+import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   ScrollView,
-  View,
+  View, Text
 } from "react-native";
 
-export default function Portfolio() {
-
+export default function PortfolioScreen() {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { setLoading(loading => false) },[])
+  
+  if (loading) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
