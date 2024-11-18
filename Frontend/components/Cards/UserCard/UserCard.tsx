@@ -29,8 +29,8 @@ function UserCard() {
       </View>
       <View className="p-1.5 bg-[#ccffc4] rounded-2xl justify-center items-center flex flex-row">
         <Ionicons name="checkmark-circle-outline" size={24} color={"#098c26"} />
-        <View className="text-slate-900 ml-1 text-sm font-normal font-readexRegular leading-none">
-          Verified
+        <View className="text-slate-900 ml-1 ">
+          <Text className="text-sm font-readexRegular leading-none">Verified</Text>
         </View>
       </View>
     </View>

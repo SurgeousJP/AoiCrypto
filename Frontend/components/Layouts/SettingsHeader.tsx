@@ -2,6 +2,9 @@ import Ionicons from "@expo/vector-icons/Ionicons"; // Ensure this is installed:
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import Back from "@/assets/icons/system-icons-svg/Back.svg";
+import { colors } from "@/constants/Colors";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 
 interface SettingsHeaderProps {
   title: string; // Optional title prop
@@ -14,11 +17,11 @@ const SettingsHeader: React.FC<SettingsHeaderProps> = ({ title }) => {
     <View className="flex-row items-center justify-between bg-white px-4 py-2">
       {/* Back Button */}
       <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
-        <Ionicons name="chevron-back" size={24} color="gray" />
+        <Back stroke={colors.secondary} width={24} height={24}/>
       </TouchableOpacity>
 
       {/* Title */}
-      <Text className="text-lg font-semibold">{title}</Text>
+      <Text className="text-lg font-readexSemiBold">{title}</Text>
 
       {/* Search Button */}
       <TouchableOpacity

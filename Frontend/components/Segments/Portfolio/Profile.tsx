@@ -28,7 +28,7 @@ const ProfileSegment = () => {
             <Text className="font-readexSemiBold text-md">
               Portfolio Report
             </Text>
-            <Text className="font-readexBold text-xl">$2,760.23$</Text>
+            <Text className="font-readexBold text-xl">$2,760.23</Text>
             <Text className="font-readexSemiBold text-md mb-2">+2.60%</Text>
             <Chart />
           </View>
