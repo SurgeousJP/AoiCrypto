@@ -2,42 +2,35 @@
 pragma solidity ^0.8.0;
 
 import {IIDOPool} from "../interfaces/IIDOPool.sol";
+import {IIDOFactory} from "../interfaces/IIDOFactory.sol";
+import {IAoiFactory} from "../interfaces/DEX/IAoiFactory.sol";
+import {IAoiPair} from "../interfaces/DEX/IAoiPair.sol";
+import {IAoiRouter} from "../interfaces/DEX/IAoiRouter.sol";
+import {IDOPoolState} from "./IDOPoolState.sol";
+
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC20Metadata} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
-contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
+import {SafeTransferLib} from "@solady/utils/SafeTransferLib.sol";
+import {FixedPointMathLib} from "@solady/utils/FixedPointMathLib.sol";
+
+contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
+    using FixedPointMathLib for uint256;
+    using SafeTransferLib for address;
+    using MerkleProof for bytes32[];
 
-    uint8 public constant RATE_DECIMALS = 4;
-
-    uint8 public constant IDO_FEE_RATE = 500; // 0.05 % = 500 / 10^4
-
-    uint8 public constant MIN_DELAY_STARTING = 10 * 60 * 60; // 10 minutes
-
-    uint256 public constant MIN_PRICE_TOKEN = 10 ** 15; // = 0.001 WETH
-
-    address public immutable UNISWAP_V3_FACTORY;
-
-    bytes32 public immutable MERKLE_ROOT;
-
-    IDOPoolDetails internal _poolDetail;
+    IDOPoolDetails internal poolDetail;
 
     IDOType internal idoType;
 
-    bool internal hasWithdrawn;
-
-    mapping(address => uint256) internal userDepositAmount;
+    mapping(address => Investor) internal investors;
 
     // MODIFIER
-    modifier onlyPoolOwner() {
-        if (_msgSender() != _poolDetail.poolOwner) {
-            revert NotPoolOwner();
-        }
-        _;
-    }
 
     modifier notZeroAddress(address _address) {
         if (_address == address(0)) {
@@ -48,209 +41,245 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
 
     modifier isInIDOTimeFrame() {
         uint256 currentTime = block.timestamp;
-        if (currentTime < _poolDetail.startTime) {
+        if (currentTime < poolDetail.startTime) {
             revert IDOIsNotStarted();
         }
-        if (currentTime > _poolDetail.endTime) {
+        if (currentTime > poolDetail.endTime) {
             revert IDOIsEnded();
         }
         _;
     }
 
-    modifier inWhitelisted(address _address) {
-        // if (!whitelistedAddresses[_address]) {
-        //     revert NotWhilelisted();
-        // }
-        _;
-    }
-
-    modifier notWhiteListed(address _address) {
-        // if (whitelistedAddresses[_address]) {
-        //     revert AlreadyWhitelisted();
-        // }
-        _;
-    }
-
-    modifier inWithdrawnTime() {
-        if (block.timestamp < _poolDetail.endTime) {
+    modifier isIDOFinished() {
+        if (block.timestamp <= poolDetail.endTime) {
             revert IDOPoolStillActive();
         }
         _;
     }
 
     modifier softCapReached() {
-        if (_poolDetail.softCap > _poolDetail.raisedAmount) {
-            revert SoftCapNotReach();
+        if (poolDetail.softCap > poolDetail.raisedAmount) {
+            revert SoftCapNotReached();
         }
         _;
     }
 
-    modifier notWithdrawn() {
-        if (hasWithdrawn) {
-            revert AlreadyWithdrawn();
+    modifier softCapNotReached() {
+        if (poolDetail.softCap <= poolDetail.raisedAmount) {
+            revert SoftCapReached();
+        }
+        _;
+    }
+
+    modifier notListedDex() {
+        if (hasListedDex) {
+            revert AlreadyListedDex();
         }
         _;
     }
 
     constructor(
-        address owner,
-        address tokenAddress,
-        uint256 pricePerToken, // 1 TOKEN = ? WETH
-        uint256 startTime,
-        uint256 endTime,
-        uint256 minInvest,
-        uint256 maxInvest,
-        uint256 hardCap,
-        uint256 softCap,
-        bool _isPrivateSales,
-        uint256 liquidityWETH9,
-        uint256 liquidityToken,
-        address factory,
-        bytes32 _merkleRoot
-    ) notZeroAddress(owner) Ownable(msg.sender) {
-        if (hardCap <= 0 || hardCap <= softCap) {
-            revert InvalidPoolSoftCap();
+        address _WETH,
+        address _AOI_DEX_FACTORY,
+        address _AOI_DEX_ROUTER
+    )
+        IDOPoolState(_WETH, _AOI_DEX_FACTORY, _AOI_DEX_ROUTER)
+        Ownable(msg.sender)
+    {}
+
+    function initialize(
+        IDOPoolDetails memory _poolDetail,
+        address _poolOwner
+    ) external override onlyOwner {
+        if (initialized) {
+            revert IDOPoolInitialized();
         }
-        if (softCap <= 0) {
-            revert InvalidPoolHardCap();
+        if (_poolDetail.tokenAddress == address(0)) {
+            revert ZeroAddress();
         }
-        if (maxInvest <= 0 || maxInvest >= hardCap || maxInvest < minInvest) {
-            revert InvalidPoolMaxInvestment();
+        if (_poolDetail.pricePerToken == 0) {
+            revert InvalidTokenPrice();
         }
-        if (minInvest <= 0) {
-            revert InvalidPoolMinInvestment();
-        }
-        if (startTime < block.timestamp || startTime > endTime) {
+        if (
+            _poolDetail.startTime < block.timestamp ||
+            _poolDetail.startTime > _poolDetail.endTime
+        ) {
             revert InvalidPoolTimeFrame();
         }
-        if (startTime < MIN_DELAY_TIME + block.timestamp) {
+        if (_poolDetail.startTime < MIN_DELAY_STARTING + block.timestamp) {
             revert InvalidPoolDelayTime();
         }
-        if (pricePerToken) _poolDetail.poolOwner = owner;
-        _poolDetail.tokenAddress = tokenAddress;
-        _poolDetail.pricePerToken = pricePerToken;
-        _poolDetail.startTime = startTime;
-        _poolDetail.endTime = endTime;
-        _poolDetail.softCap = softCap;
-        _poolDetail.hardCap = hardCap;
-        _poolDetail.minInvest = minInvest;
-        _poolDetail.maxInvest = maxInvest;
-        _poolDetail.liquidityWETH9 = liquidityWETH9;
-        _poolDetail.liquidityToken = liquidityToken;
-
-        idoType = _isPrivateSales ? IDOType.PRIVATE_SALE : IDOType.PUBLIC_SALE;
-
-        UNISWAP_V3_FACTORY = factory;
-
-        MERKLE_ROOT = _merkleRoot;
+        if (
+            _poolDetail.maxInvest == 0 ||
+            _poolDetail.maxInvest >= _poolDetail.hardCap ||
+            _poolDetail.maxInvest < _poolDetail.minInvest
+        ) {
+            revert InvalidPoolMaxInvestment();
+        }
+        if (_poolDetail.minInvest <= 0) {
+            revert InvalidPoolMinInvestment();
+        }
+        if (
+            _poolDetail.hardCap <= 0 ||
+            _poolDetail.hardCap <= _poolDetail.softCap
+        ) {
+            revert InvalidPoolSoftCap();
+        }
+        if (_poolDetail.softCap <= 0) {
+            revert InvalidPoolHardCap();
+        }
+        if (_poolDetail.liquidityWETH9 < MIN_WETH) {
+            revert InvalidLiquidityAmount();
+        }
+        poolDetail = _poolDetail;
+        idoType = _poolDetail.whitelistedRoot == bytes32(0)
+            ? IDOType.PUBLIC_SALE
+            : IDOType.PRIVATE_SALE;
+        poolOwner = _poolOwner;
+        initialized = true;
     }
 
-    function listInDex()
+    function listInDex(
+        address to
+    )
         external
         override
         onlyOwner
         nonReentrant
-        inWithdrawnTime
-        softCapReached
-        notWithdrawn
-        returns (address)
-    {}
+        returns (address liquidityPoolAddress)
+    {
+        IERC20(poolDetail.tokenAddress).approve(
+            AOI_DEX_ROUTER,
+            poolDetail.liquidityToken
+        );
+        // Create LP & Add liquidityPool
+        (, , uint liquidity) = IAoiRouter(AOI_DEX_ROUTER).addLiquidityETH{
+            value: poolDetail.liquidityWETH9
+        }(
+            poolDetail.tokenAddress,
+            poolDetail.liquidityToken,
+            poolDetail.liquidityToken,
+            poolDetail.liquidityWETH9,
+            to,
+            block.timestamp
+        );
+        // Get the LP address
+        liquidityPoolAddress = IAoiFactory(AOI_DEX_FACTORY).getPair(
+            poolDetail.tokenAddress,
+            WETH
+        );
+        require(liquidityPoolAddress != address(0));
 
-    function investPool() external payable override {
-        address investor = _msgSender();
-
-        if (idoType == IDOType.PRIVATE_SALE) {
-            // TODO: check the investor whether is whitelisted.
-        }
-
-        uint256 amountInvestment = msg.value;
-        IDOPoolDetails memory _poolDetail_ = getPoolDetails();
-        uint256 currentTime = block.timestamp;
-        uint256 depositedAmount = userDepositAmount[investor];
-
-        if (currentTime < _poolDetail.startTime) {
-            revert IDOIsNotStarted();
-        }
-        if (currentTime > _poolDetail.endTime) {
-            revert IDOIsEnded();
-        }
-
-        if (_poolDetail_.raisedAmount + amountInvestment > hardCap) {
-            revert HardCapExceeded();
-        }
-
-        if (amountInvestment + depositedAmount < _poolDetail_.minInvest) {
-            revert MinInvestmentNotReached();
-        }
-
-        if (amountInvestment + depositedAmount > _poolDetail_.maxInvest) {
-            revert MaxInvestmentExceeded();
-        }
-
-        uint256 amountToken = (_poolDetail_.pricePerToken * amountInvestment) /
-            10 ** 18;
-        userDepositAmount[investor] += amountInvestment;
-
-        emit IDOPoolInvested(investor, amountInvestment);
+        emit IDOPoolListed(
+            poolDetail.tokenAddress,
+            liquidityPoolAddress,
+            poolDetail.liquidityWETH9,
+            poolDetail.liquidityToken,
+            liquidity
+        );
     }
 
-    function cancelInvestment() external override {
-        address investor = _msgSender();
+    function investPrivatePool(
+        bytes32[] memory proof,
+        bytes32 leaf
+    ) external payable override isInIDOTimeFrame {
+        IDOPoolDetails memory _poolDetail = poolDetail;
+        address investorAddress = _msgSender();
 
-        uint256 investedAmount = userDepositAmount[investor];
-        if (investedAmount == 0) {
+        // Check whether ido is private sales
+        if (
+            (idoType == IDOType.PRIVATE_SALE &&
+                _verifyProof(
+                    proof,
+                    _poolDetail.whitelistedRoot,
+                    investorAddress
+                ) ==
+                false) || idoType == IDOType.PUBLIC_SALE
+        ) {
+            revert IDOPoolIsPrivate();
+        }
+        _invest(investorAddress, msg.value);
+    }
+
+    function investPublicPool() external payable override isInIDOTimeFrame {
+        address investorAddress = _msgSender();
+        if (idoType == IDOType.PRIVATE_SALE) {
+            revert IDOPoolIsPublic();
+        }
+        _invest(investorAddress, msg.value);
+    }
+
+    // Cancel whole invested amount.
+    function cancelInvestment() external override isInIDOTimeFrame {
+        address investorAddress = _msgSender();
+
+        Investor memory investor = investors[investorAddress];
+        uint256 investedAmount = investor.depositedAmount;
+        uint256 tokenAmount = investor.tokenAmount;
+        if (investedAmount == 0 || tokenAmount == 0) {
             revert NotEnoughBalance();
         }
 
-        IDOPoolDetails memory pool = _idoDetail;
-        uint256 currentTime = block.timestamp;
-        if (currentTime < pool.startTime) {
-            revert IDOIsNotStarted();
-        }
-        if (currentTime > pool.endTime) {
-            revert IDOIsEnded();
-        }
+        // Save state
+        investors[investorAddress].depositedAmount = 0;
+        investors[investorAddress].tokenAmount = 0;
+        poolDetail.raisedAmount -= investedAmount; // TODO: need to check again to avoid lacking of token amount
+        poolDetail.raisedTokenAmount -= tokenAmount;
 
-        // TODO: Finish the cancel investment
+        // Transfer whole invested amount back to investor
+        investorAddress.safeTransferETH(investedAmount);
+
+        emit IDOPoolWithdrawn(investorAddress, investedAmount);
     }
 
     // Redeem token after IDO finished
-    function redeemToken() external override {
-        address investor = _msgSender();
-        uint256 investedAmount = userDepositAmount[investor];
-        if (investedAmount == 0) {
+    function claimToken() external override isIDOFinished softCapReached {
+        address investorAddress = _msgSender();
+        Investor memory investor = investors[investorAddress];
+        if (investor.claimed) {
+            revert InvestorClaimed();
+        }
+        uint256 claimAmount = investors[investorAddress].tokenAmount;
+        if (claimAmount == 0) {
             revert NotEnoughBalance();
         }
-        IDOPoolDetails memory pool = getPoolDetails();
-        // TODO: Check the decimal of token
-        uint256 redeemAmount = (pool.pricePerToken * investedAmount) / 10 ** 18;
 
-        IERC20(pool.tokenAddress).safeTransfer(investor, redeemAmount);
+        // Transfer token to investor
+        IERC20(poolDetail.tokenAddress).safeTransfer(
+            investorAddress,
+            claimAmount
+        );
 
-        emit IDOPoolRedeemed(investor, redeemAmount);
+        // Save state
+        investors[investorAddress].claimed = true;
+
+        emit IDOPoolClaimed(investorAddress, claimAmount);
     }
 
     // Refund when the pool has not reached soft cap
-    function refundToken() external override {
-        address investor = _msgSender();
-        uint256 investedAmount = userDepositAmount[investor];
+    function refundToken() external override isIDOFinished softCapNotReached {
+        address investorAddress = _msgSender();
+        Investor memory investor = investors[investorAddress];
+        if (investor.claimed) {
+            revert InvestorClaimed();
+        }
+        uint256 investedAmount = investor.depositedAmount;
         if (investedAmount == 0) {
             revert NotEnoughBalance();
         }
-        IDOPoolDetails memory pool = _idoDetail;
-        uint256 currentTime = block.timestamp;
-        if (currentTime <= pool.endTime) {
-            revert IDOIsNotEnded();
-        }
-        if (pool.raisedAmount >= pool.softCap) {
-            revert SoftCapReached();
-        }
+        // Save state
+        investors[investorAddress].claimed = true;
+        // Transfer ETH back to investor
+        investorAddress.safeTransferETH(investedAmount);
 
-        investor.transfer(investedAmount);
+        emit IDOPoolRefunded(investorAddress, investedAmount);
     }
 
-    function changeToPublicSale() external override {
-        IDOPoolDetails memory pool = _poolDetail;
+    function withdrawRemainingToken() external payable override {}
+
+    // Only used when ido type is private and cannot change back to private type again
+    function changeToPublicSale() external override onlyOwner {
+        IDOPoolDetails memory pool = poolDetail;
         if (idoType == IDOType.PUBLIC_SALE) {
             revert IDOIsAlreadyPublicSale();
         }
@@ -260,13 +289,50 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         }
 
         idoType = IDOType.PUBLIC_SALE;
+
+        emit IDOPoolChangedToPublic();
     }
 
     // INTERNAL FUCNTIONS
+    function _verifyProof(
+        bytes32[] memory proof,
+        bytes32 root,
+        address addr
+    ) internal view returns (bool) {
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encode(addr))));
+        return proof.verify(root, leaf);
+    }
 
-    // TODO: Implement the verifyAddress in the Merkle Root
-    // function _verifyAddress(bytes32[])
+    function _invest(
+        address investorAddress,
+        uint256 amountInvestment
+    ) internal {
+        IDOPoolDetails memory _poolDetail = poolDetail;
+        Investor memory investor = investors[investorAddress];
+        if (_poolDetail.hardCap < _poolDetail.raisedAmount + amountInvestment) {
+            revert HardCapExceeded();
+        }
+        if (
+            amountInvestment + investor.depositedAmount < _poolDetail.minInvest
+        ) {
+            revert MinInvestmentNotReached();
+        }
+        if (
+            amountInvestment + investor.depositedAmount > _poolDetail.maxInvest
+        ) {
+            revert MaxInvestmentExceeded();
+        }
+        uint256 amountToken = poolDetail.pricePerToken.mulWad(amountInvestment);
+        require(amountToken > 0);
 
+        // Save state
+        poolDetail.raisedAmount += amountInvestment;
+        poolDetail.raisedTokenAmount += amountToken;
+        investors[investorAddress].depositedAmount += amountInvestment;
+        investors[investorAddress].tokenAmount += amountToken;
+
+        emit IDOPoolInvested(investorAddress, amountInvestment);
+    }
     // PUBLIC FUCNTIONS
 
     function getPoolDetails()
@@ -275,68 +341,70 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         override
         returns (IDOPoolDetails memory)
     {
-        return _poolDetail;
+        return poolDetail;
     }
 
     function getPoolRaisedAmount() external view override returns (uint256) {
-        return _poolDetail.raisedAmount;
+        return poolDetail.raisedAmount;
     }
 
     function getPoolSoftCap() external view override returns (uint256) {
-        return _poolDetail.softCap;
+        return poolDetail.softCap;
     }
 
     function getPoolHardCap() external view override returns (uint256) {
-        return _poolDetail.hardCap;
+        return poolDetail.hardCap;
     }
 
     function isWhitelisted(
         address _address
-    ) external view override returns (bool) {
+    ) external pure override returns (bool) {
         // TODO: implement internal function to check whitelisted
-        return false;
+        return _address == address(0);
     }
 
     function getPoolMinInvest() external view override returns (uint256) {
-        return _poolDetail.minInvest;
+        return poolDetail.minInvest;
     }
 
     function getPoolMaxInvest() external view override returns (uint256) {
-        return _poolDetail.maxInvest;
+        return poolDetail.maxInvest;
     }
 
-    function isPoolActive() external view override returns (uint256) {
-        return block.timestamp < _poolDetail.endTime;
+    function isPoolActive() external view override returns (bool) {
+        return block.timestamp < poolDetail.endTime;
     }
 
     function getTimeLeftEnding() external view override returns (uint256) {
         uint256 currentTime = block.timestamp;
         return
-            _poolDetail.endTime > currentTime
-                ? _poolDetail.endTime - currentTime
+            poolDetail.endTime > currentTime
+                ? poolDetail.endTime - currentTime
                 : 0;
     }
 
     function getUserDepositAmount(
         address _address
     ) external view override returns (uint256) {
-        return userDepositAmount[_address];
+        Investor memory investor = investors[_address];
+        return investor.depositedAmount;
     }
 
     function getPoolOwner() external view override returns (address) {
-        return _poolDetail.owner;
+        return poolOwner;
     }
 
     function getAmountToTopUp() external view override returns (uint256) {
-        uint256 hardCap = getPoolHardCap();
-        uint8 poolTokenDecimals = IERC20(getPoolTokenAddress()).decimals();
+        uint256 hardCap = poolDetail.hardCap;
+        uint8 poolTokenDecimals = IERC20Metadata(poolDetail.tokenAddress)
+            .decimals();
         uint256 toBeToppedUp = (hardCap * (10 ** poolTokenDecimals)) /
-            _poolDetail.pricePerToken;
+            poolDetail.pricePerToken;
         return toBeToppedUp;
     }
 
-    function getPoolTokenAddress() external view override returns (uint256) {
-        return _poolDetail.tokenAddress;
+    function getPoolTokenAddress() external view override returns (address) {
+        return poolDetail.tokenAddress;
     }
 
     function getPoolTokenToppedUpAmount()
@@ -345,25 +413,47 @@ contract IDOPool is IIDOPool, Ownable, ReentrancyGuard {
         override
         returns (uint256)
     {
-        return IERC20(getPoolTokenAddress()).balanceOf(address(this));
+        return IERC20(poolDetail.tokenAddress).balanceOf(address(this));
     }
 
     function getPoolStartTime() external view override returns (uint256) {
-        return _poolDetail.startTime;
+        return poolDetail.startTime;
     }
 
     function getPoolEndTime() external view override returns (uint256) {
-        return _poolDetail.endTime;
+        return poolDetail.endTime;
     }
 
     function getPoolSoftCapReached() external view override returns (bool) {
-        uint256 raisedAmount = _poolDetail.raisedAmount;
-        uint256 softCap = _poolDetail.softCap;
+        uint256 raisedAmount = poolDetail.raisedAmount;
+        uint256 softCap = poolDetail.softCap;
         return softCap == 0 ? false : raisedAmount >= softCap;
     }
 
     function getPricePerToken() external view override returns (uint256) {
-        return _poolDetail.pricePerToken;
+        return poolDetail.pricePerToken;
+    }
+
+    function getLiquidityTokenAmount()
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return poolDetail.liquidityToken;
+    }
+
+    function getLiquidityWETH9Amount()
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return poolDetail.liquidityWETH9;
+    }
+
+    function getPoolTokenAmount() external view override returns (uint256) {
+        return poolDetail.raisedTokenAmount;
     }
 
     // RECEIVE FUNCTIONS
