@@ -4,3 +4,6 @@
 [submodule "SmartContract/lib/openzeppelin-contracts"]
 	path = SmartContract/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "SmartContract/lib/solady"]
+	path = SmartContract/lib/solady
+	url = https://github.com/vectorized/solady

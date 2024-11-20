@@ -1,40 +1,40 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {IIDOPool} from "../interfaces/IIDOPool.sol";
+
 interface IIDOFactory {
     enum LiquidityPoolAction {
         NOTHING,
         LOCK,
         BURN
     }
-    
+
     struct LiquidityPool {
         uint256 idoPoolId;
         address idoPoolAddress;
+        address tokenAddress;
+        uint256 tokenAmount;
+        uint256 wethAmount;
         address liquidityPoolAddress;
         LiquidityPoolAction action;
-        uint256 lockDuration;
+        address to;
+        uint256 lockExpired;
     }
 
     function createPool(
-        address tokenAddress,
-        uint256 pricePerToken,
-        uint256 startTime,
-        uint256 endTime,
-        uint256 minInvest,
-        uint256 maxInvest,
-        uint256 softCap,
-        uint256 hardCap,
-        bool isPrivateSales,
-        uint256 liquidityWETH9,
-        uint256 liquidityToken
-    ) external payable returns (uint256, address);
+        IIDOPool.IDOPoolDetails memory poolDetails,
+        LiquidityPoolAction action,
+        uint256 lockExpired
+    ) external payable returns (address);
 
-    function depositLiquidityPool(
+    function depositLiquidityPool(uint256 poolId) external returns (address);
+
+    // VIEW FUNCTIONS
+
+    function getLiquidityPoolAddress(
         uint256 poolId
-    ) external returns (address);
-
-    function getLiquidityPoolAddress(uint256 poolId) external view returns(address);
+    ) external view returns (address);
 
     function getIdoPoolAddress(uint256 poolId) external view returns (address);
 
@@ -42,9 +42,21 @@ interface IIDOFactory {
 
     function checkPoolIsValid(uint256 poolId) external view returns (bool);
 
-    error InValidPoolId();
-    
+    error InvalidPoolId();
+
     error NotPoolOwner();
+
+    error ActionIsNotNothing();
+
+    error InvalidAction();
+
+    error IdoPoolAlreadyDeposited();
+
+    error InvalidTokenAddress();
+
+    error InvalidPricePerToken();
+
+    error InvalidLockExpired();
 
     event PoolCreated(
         address indexed owner,
@@ -56,9 +68,6 @@ interface IIDOFactory {
 
     event PoolDepositedLiquidityPool(
         address indexed liquidityPool,
-        uint256 indexed poolId,
-        address tokenAddress,
-        uint256 amountToken1,
-        uint256 amountToken2
-    )
+        uint256 indexed poolId
+    );
 }
