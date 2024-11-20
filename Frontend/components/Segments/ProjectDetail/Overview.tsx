@@ -20,26 +20,29 @@ const Overview = () => {
   return (
     <View className="w-full flex flex-col">
       <View className="mt-2 flex flex-col w-full">
-      <Container>
-          <View className="bg-surface rounded-lg overflow-scroll px-4 py-2 pt-0">
-            <View className="w-full flex flex-col mb-2 ">
-              <ImageBackground
-                source={projectIllust}
-                className="w-full h-[183px]"
-              />
-            </View>
-            <View className="flex flex-row space-x-2">
-              <Image source={projectLogo} className="w-8 h-8" />
-              <View className="flex flex-col">
-                <Text className="text-md font-readexBold mb-1">Highstreet</Text>
-                <Text className="text-sm text-secondary font-readexLight mb-1">
-                  Shopify on an MMORPG
-                </Text>
+        <View className="mb-2">
+          <Container>
+            <View className="bg-surface rounded-lg overflow-scroll px-4 py-2 pt-0">
+              <View className="w-full flex flex-col mb-2">
+                <ImageBackground
+                  source={projectIllust}
+                  className="w-full h-[183px]"
+                />
+              </View>
+              <View className="flex flex-row space-x-2">
+                <Image source={projectLogo} className="w-8 h-8" />
+                <View className="flex flex-col">
+                  <Text className="text-md font-readexBold mb-1">
+                    Highstreet
+                  </Text>
+                  <Text className="text-sm text-secondary font-readexLight mb-1">
+                    Shopify on an MMORPG
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        </Container>
-
+          </Container>
+        </View>
         <Container>
           <View className="bg-surface rounded-lg p-4 flex flex-col h-fit">
             <Progress.Bar

@@ -1,20 +1,12 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
-import { Shadow } from "react-native-shadow-2";
 
 const XProject = () => {
-  const projectLogo = require("@/assets/images/ProjectLogo.png");
+  const projectLogo = require("@/assets/images/ProjectLogo.png"); 
   return (
-    <Shadow
-      stretch={true}
-      offset={[0, 1]}
-      startColor={"#2F66F61F"}
-      distance={2}
-      style={{ borderRadius: 8 }}
-    >
       <View
         id="project-card"
-        className="flex flex-row h-fit w-full bg-surface rounded-lg overflow-hidden py-2 px-4 items-center justify-between"
+        className="flex flex-row h-fit w-full bg-surface rounded-lg overflow-hidden py-2 px-4 items-center justify-between" style={{elevation: 1}}
       >
         <View className="flex flex-row space-x-2 items-center">
           <Image source={projectLogo} className="w-8 h-8" />
@@ -32,7 +24,6 @@ const XProject = () => {
             </Text>
           </View>
       </View>
-    </Shadow>
   );
 };
 

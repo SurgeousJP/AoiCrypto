@@ -1,7 +1,7 @@
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
-import SettingsHeader from "@/components/Layouts/SettingsHeader";
+import TitleHeader from "@/components/Layouts/TitleHeader";
 import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -35,7 +35,12 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
-
+  const router = useRouter();
+  const handleBack = (e) => {
+    if (router.canGoBack()) {
+      router.back();
+    }
+  };
   const colorScheme = useColorScheme();
   let [loaded, error] = useFonts({
     ReadexPro_200ExtraLight,
@@ -47,7 +52,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded) { 
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -55,13 +60,6 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-
-  const router = useRouter();
-  const handleBack = (e) => {
-    if (router.canGoBack()) {
-      router.back();
-    }
-  };
 
   return (
     <SafeAreaProvider>
@@ -97,13 +95,13 @@ export default function RootLayout() {
               options={{
                 headerShown: true,
                 headerShadowVisible: false,
-                header: ({ options }) => <SettingsHeader title="Settings" />,
+                header: ({ options }) => <TitleHeader title="Settings" />,
               }}
             />
             <Stack.Screen
               name="(tabs)"
               options={{
-                headerShown: true,
+                headerShown: false,
                 headerShadowVisible: false,
                 header: ({ options }) => <TabHeader />,
               }}
@@ -112,17 +110,19 @@ export default function RootLayout() {
               name="project/[project]"
               options={{
                 headerShown: true,
-                headerShadowVisible: false,
+                headerShadowVisible: true,
                 header: ({ options }) => (
-                  <ScreenHeader
-                    LeftComponent={
-                      <Pressable onPress={handleBack}>
-                        <Back stroke={colors.secondary} />
-                      </Pressable>
-                    }
-                    CenterComponent={<AoiCryptoLogo />}
-                    RightComponent={<Setting fill={colors.secondary} />}
-                  ></ScreenHeader>
+                  <TitleHeader title={"Project Detail"} />
+                ),
+              }}
+            />
+            <Stack.Screen
+              name="project/whitelistForm"
+              options={{
+                headerShown: true,
+                headerShadowVisible: true,
+                header: ({ options }) => (
+                  <TitleHeader title={"Join the Allowlist"} />
                 ),
               }}
             />
@@ -132,33 +132,7 @@ export default function RootLayout() {
                 headerShown: true,
                 headerShadowVisible: false,
                 header: ({ options }) => (
-                  <ScreenHeader
-                    LeftComponent={
-                      <Pressable onPress={handleBack}>
-                        <Back stroke={colors.secondary} />
-                      </Pressable>
-                    }
-                    CenterComponent={<AoiCryptoLogo />}
-                    RightComponent={<Setting fill={colors.secondary} />}
-                  ></ScreenHeader>
-                ),
-              }}
-            />
-            <Stack.Screen
-              name="dashboard/[user]"
-              options={{
-                headerShown: true,
-                headerShadowVisible: false,
-                header: ({ options }) => (
-                  <ScreenHeader
-                    LeftComponent={
-                      <Pressable onPress={handleBack}>
-                        <Back stroke={colors.secondary} />
-                      </Pressable>
-                    }
-                    CenterComponent={<AoiCryptoLogo />}
-                    RightComponent={<Setting fill={colors.secondary} />}
-                  ></ScreenHeader>
+                  <TitleHeader title={"Mission Detail"} />
                 ),
               }}
             />

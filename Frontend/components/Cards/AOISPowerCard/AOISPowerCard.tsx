@@ -10,7 +10,7 @@ interface AOISPowerCardProps {
 function AOISPowerCard({ quantity, percentage, tier }: AOISPowerCardProps) {
   return (
     <TouchableOpacity
-      className={`flex flex-row rounded-lg items-center shadow-md w-full h-[68px]  p-4 bg-white`}
+      className={`flex flex-row rounded-lg items-center shadow-md w-full h-[68px]  p-4 bg-surface border-border border-[1px]`} style={{elevation: 2}}
     >
       <View className="flex flex-row items-center justify-between w-full">
         <View>

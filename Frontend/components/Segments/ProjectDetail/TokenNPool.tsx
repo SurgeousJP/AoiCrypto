@@ -46,7 +46,7 @@ const TokenNPool = () => {
           </View>
         </Container>
       </View>
-      <View className="mt-2">
+      <View className="mt-4">
         <Container>
           <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
             <Text className="font-readexBold text-md text-primary">

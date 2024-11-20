@@ -48,6 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="project"
         options={{
+          headerShown: false,
           title: "Projects",
           tabBarIcon: ({ color, focused }) => (
             <Calendar stroke={focused ? colors.primary : colors.secondary} />

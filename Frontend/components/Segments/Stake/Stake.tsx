@@ -1,5 +1,6 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import WarningCard from "@/components/Cards/WarningCard/WarningCard";
+import Container from "@/components/Layouts/Container";
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -21,7 +22,7 @@ function StakeSegment() {
           onPress={() => {
             console.log("test");
           }}
-          content="Withdraw all"
+          content="Stake all"
         />
         <View className="mt-6">
           <WarningCard
@@ -35,70 +36,74 @@ function StakeSegment() {
       <Text className="text-textColor text-md mt-3 font-readexBold">
         Upcoming Projects
       </Text>
-      <View className="space-y-2 p-3 rounded-md mt-2 bg-white shadow">
-        <View className="flex flex-row items-center justify-between">
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            AOIs Power Tier
-          </Text>
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            N/A{" "}
-            <Text className="text-sm text-slate-500 font-readexRegular">
-              {`(<1,000)`}
-            </Text>
-          </Text>
-        </View>
-        <View className="flex flex-row items-center justify-between">
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            Lottery Probability
-          </Text>
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            Not Eligible{" "}
-            <Text className="text-sm text-slate-500 font-readexRegular">
-              {`(<1,000)`}
-            </Text>
-          </Text>
-        </View>
-        <View className="flex flex-row items-center justify-between">
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            IDO Cooldown
-          </Text>
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            Not Eligible{" "}
-            <Text className="text-sm text-slate-500 font-readexRegular">
-              {`(<1,000)`}
-            </Text>
-          </Text>
-        </View>
-        <View className="flex flex-row items-center justify-between">
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            Lock-up Period
-          </Text>
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            7 days
-          </Text>
-        </View>
-        <View className="flex flex-row items-center justify-between">
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            Total Staked{" "}
-          </Text>
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            0{" "}
-            <Text className="text-sm text-slate-500 font-readexRegular">
-              {`AOIS`}
-            </Text>
-          </Text>
-        </View>
-        <View className="flex flex-row items-center justify-between">
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            AOIS Power Gain{" "}
-          </Text>
-          <Text className="text-sm text-slate-900 font-readexRegular">
-            0{" "}
-            <Text className="text-sm text-slate-500 font-readexRegular">
-              {`AOIS POWER`}
-            </Text>
-          </Text>
-        </View>
+      <View className="mt-2">
+        <Container>
+          <View className="space-y-2 p-3 rounded-md  bg-surface border-border border-[1px]">
+            <View className="flex flex-row items-center justify-between">
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                AOIs Power Tier
+              </Text>
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                N/A{" "}
+                <Text className="text-sm text-slate-500 font-readexRegular">
+                  {`(<1,000)`}
+                </Text>
+              </Text>
+            </View>
+            <View className="flex flex-row items-center justify-between">
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                Lottery Probability
+              </Text>
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                Not Eligible{" "}
+                <Text className="text-sm text-slate-500 font-readexRegular">
+                  {`(<1,000)`}
+                </Text>
+              </Text>
+            </View>
+            <View className="flex flex-row items-center justify-between">
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                IDO Cooldown
+              </Text>
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                Not Eligible{" "}
+                <Text className="text-sm text-slate-500 font-readexRegular">
+                  {`(<1,000)`}
+                </Text>
+              </Text>
+            </View>
+            <View className="flex flex-row items-center justify-between">
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                Lock-up Period
+              </Text>
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                7 days
+              </Text>
+            </View>
+            <View className="flex flex-row items-center justify-between">
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                Total Staked{" "}
+              </Text>
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                0{" "}
+                <Text className="text-sm text-slate-500 font-readexRegular">
+                  {`AOIS`}
+                </Text>
+              </Text>
+            </View>
+            <View className="flex flex-row items-center justify-between">
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                AOIS Power Gain{" "}
+              </Text>
+              <Text className="text-sm text-slate-900 font-readexRegular">
+                0{" "}
+                <Text className="text-sm text-slate-500 font-readexRegular">
+                  {`AOIS POWER`}
+                </Text>
+              </Text>
+            </View>
+          </View>
+        </Container>
       </View>
     </View>
   );
