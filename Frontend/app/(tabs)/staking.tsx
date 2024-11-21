@@ -1,5 +1,4 @@
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
-import TitleHeader from "@/components/Layouts/TitleHeader";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import AOISPower from "@/components/Segments/Stake/AOISPower";
 import StakeSegment from "@/components/Segments/Stake/Stake";
@@ -7,7 +6,7 @@ import WithDrawn from "@/components/Segments/Stake/WithDrawn";
 import { colors } from "@/constants/Colors";
 import { Link, useNavigation } from "expo-router";
 import React from "react";
-import { ScrollView, TouchableOpacity, View, Text } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 

@@ -5,7 +5,7 @@ import { colors } from "@/constants/Colors";
 import React from "react";
 import { FlatList, ScrollView, View, Text } from "react-native";
 
-const HistorySegment = () => {
+const ApplicationSegment = () => {
   const projectState = [
     { label: "Public", value: "Public" },
     { label: "Presale", value: "Presale" },
@@ -23,7 +23,7 @@ const HistorySegment = () => {
       style: "font-readexBold text-sm",
     },
     {
-      value: "Invested",
+      value: "Apply date",
       style: "font-readexBold text-sm",
     },
     {
@@ -32,33 +32,17 @@ const HistorySegment = () => {
     },
   ];
   const rowData = [
-    headerData,
     [
       {
         value: "Wilder World",
         style: "font-readexRegular text-sm",
       },
       {
-        value: "2500 ETH",
+        value: "31/12/2024",
         style: "font-readexRegular text-sm",
       },
       {
-        value: "Ongoing",
-        style: "font-readexRegular text-sm text-success",
-      },
-    ],
-    [
-      {
-        value: "Wilder World",
-        style: "font-readexRegular text-sm",
-      },
-
-      {
-        value: "2500 ETH",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "Ongoing",
+        value: "Accepted",
         style: "font-readexRegular text-sm text-success",
       },
     ],
@@ -68,11 +52,11 @@ const HistorySegment = () => {
         style: "font-readexRegular text-sm",
       },
       {
-        value: "2500 ETH",
+        value: "31/12/2024",
         style: "font-readexRegular text-sm",
       },
       {
-        value: "Ongoing",
+        value: "Accepted",
         style: "font-readexRegular text-sm text-success",
       },
     ],
@@ -82,39 +66,11 @@ const HistorySegment = () => {
         style: "font-readexRegular text-sm",
       },
       {
-        value: "2500 ETH",
+        value: "31/12/2024",
         style: "font-readexRegular text-sm",
       },
       {
-        value: "Ongoing",
-        style: "font-readexRegular text-sm text-success",
-      },
-    ],
-    [
-      {
-        value: "Wilder World",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "2500 ETH",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "Ongoing",
-        style: "font-readexRegular text-sm text-success",
-      },
-    ],
-    [
-      {
-        value: "Wilder World",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "2500 ETH",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "Ongoing",
+        value: "Accepted",
         style: "font-readexRegular text-sm text-success",
       },
     ],
@@ -131,7 +87,7 @@ const HistorySegment = () => {
       >
         <View className="p-4 flex flex-row space-x-3 items-center">
           <View className="w-[188px] h-8">
-            <Searchbar placeholder={"Project search"} />
+            <Searchbar placeholder={"Application search"} />
           </View>
           <View className="h-8 w-24">
             <CustomDropdown
@@ -153,7 +109,7 @@ const HistorySegment = () => {
       <FlatList
         style={{ paddingHorizontal: 0, borderColor: colors.border, borderWidth: 0.5, elevation: 1 }}
         contentContainerStyle={{ flexGrow: 1, gap: 0 }}
-        data={[...rowData]}
+        data={[headerData, ...rowData]}
         keyExtractor={(item, index) => index.toString()}
         renderItem={(item) => {
           return (
@@ -167,4 +123,4 @@ const HistorySegment = () => {
   );
 };
 
-export default HistorySegment;
+export default ApplicationSegment;

@@ -30,9 +30,11 @@ const Searchbar: React.FC<SearchbarProps> = (props) => {
           }}
         />
       </View>
-      <TouchableOpacity>
-        <Search stroke={colors.secondary} width={20} height={2}/>
-      </TouchableOpacity>
+      <View className="w-5 h-5">
+        <TouchableOpacity>
+          <Search stroke={colors.secondary} width={20} height={20} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
