@@ -136,14 +136,12 @@ const HistorySegment = () => {
           <View className="h-8 w-24">
             <CustomDropdown
               placeholder="Stage"
-              width={null}
               data={projectState}
             />
           </View>
           <View className="h-8 w-28">
             <CustomDropdown
               placeholder="Status"
-              width={null}
               data={whitelistState}
             />
           </View>

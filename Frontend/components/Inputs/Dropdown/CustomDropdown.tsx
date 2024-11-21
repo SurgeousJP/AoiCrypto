@@ -5,7 +5,7 @@ import { colors } from "@/constants/Colors";
 
 interface CustomDropdownProps {
   placeholder?: string;
-  width: number;
+  width?: number;
   data: { label: string; value: string }[];
 }
 

@@ -52,7 +52,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded) { 
+    if (loaded) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
@@ -86,7 +86,7 @@ export default function RootLayout() {
               name="login/index"
               options={{
                 headerShown: true,
-                headerShadowVisible: false,
+                headerShadowVisible: true,
                 header: ({ options }) => <TabHeader />,
               }}
             />
@@ -94,7 +94,7 @@ export default function RootLayout() {
               name="settings/index"
               options={{
                 headerShown: true,
-                headerShadowVisible: false,
+                headerShadowVisible: true,
                 header: ({ options }) => <TitleHeader title="Settings" />,
               }}
             />
@@ -130,9 +130,20 @@ export default function RootLayout() {
               name="mission/[mission]"
               options={{
                 headerShown: true,
-                headerShadowVisible: false,
+                headerShadowVisible: true,
                 header: ({ options }) => (
                   <TitleHeader title={"Mission Detail"} />
+                ),
+              }}
+            />
+
+            <Stack.Screen
+              name="notification/index"
+              options={{
+                headerShown: true,
+                headerShadowVisible: true,
+                header: ({ options }) => (
+                  <TitleHeader title={"Notifications"} />
                 ),
               }}
             />

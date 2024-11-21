@@ -1,6 +1,7 @@
+import { colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface SettingCardProps {
   pos: "top" | "mid" | "bot";
@@ -8,6 +9,7 @@ interface SettingCardProps {
   title: string;
   action?: React.ReactNode;
   icon?: React.ReactNode;
+  onChevronClick?: () => void;
 }
 
 const getCardStyle = (pos: "top" | "mid" | "bot") => {
@@ -23,8 +25,19 @@ const getCardStyle = (pos: "top" | "mid" | "bot") => {
   }
 };
 
-function SettingCard({ pos, label, icon, title, action }: SettingCardProps) {
-  const profileIcon = require("../../../assets/icons/system-icons/Profile.png");
+function SettingCard({
+  pos,
+  label,
+  icon,
+  title,
+  action,
+  onChevronClick,
+}: SettingCardProps) {
+  const handleChevronClick = (e) => {
+    if (onChevronClick) {
+      onChevronClick();
+    }
+  };
 
   return (
     <TouchableOpacity
@@ -43,7 +56,14 @@ function SettingCard({ pos, label, icon, title, action }: SettingCardProps) {
         </Text>
       </View>
       {!label && !action && (
-        <Ionicons name="chevron-forward-outline" size={20} color={"gray"} />
+        <View className="flex flex-row space-x-2">
+          <View className="w-6 h-6 rounded-xl bg-primary">
+            <Text className="text-sm text-white mx-auto my-auto">5</Text>
+          </View>
+          <Pressable className="opacity-80" onPress={handleChevronClick}>
+            <Ionicons name="chevron-forward-outline" size={24} color={colors.secondary} />
+          </Pressable>
+        </View>
       )}
       {action && action}
       {label && (
