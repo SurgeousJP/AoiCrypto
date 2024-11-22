@@ -80,7 +80,8 @@ export default function RootLayout() {
               animation: "fade",
               animationDuration: 1000,
             }}
-            initialRouteName="(tabs)"
+            // initialRouteName="(tabs)"
+            initialRouteName="seller"
           >
             <Stack.Screen
               name="login/index"
@@ -147,6 +148,24 @@ export default function RootLayout() {
                 ),
               }}
             />
+
+            <Stack.Screen
+              name="seller"
+              options={{
+                headerShown: false,
+                headerShadowVisible: false,
+              }}
+            />
+            <Stack.Screen
+              name="project/createOverview"
+              options={{
+                headerShown: true,
+                headerShadowVisible: false,
+                header: ({ options }) => (
+                  <TitleHeader title={"Add project"} />
+                ),
+              }}
+            />
           </Stack>
         </ThemeProvider>
       </View>
@@ -156,5 +175,6 @@ export default function RootLayout() {
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
-  initialRouteName: "(tabs)",
+  // initialRouteName: "(tabs)",
+  initialRouteName: "seller",
 };

@@ -10,8 +10,6 @@ interface SearchHeaderProps {
 }
 
 const SearchHeader: React.FC<SearchHeaderProps> = (props) => {
-  const router = useRouter();
-
   return (
     <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
       <Searchbar placeholder={props.placeholder ?? "N/A"} />

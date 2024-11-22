@@ -1,8 +1,9 @@
-import Chart from "@/components/Displays/Chart/Chart";
+import LineChartComponent from "@/components/Displays/Chart/LineChart";
 import Container from "@/components/Layouts/Container";
 import React from "react";
 import { View, Text } from "react-native";
 import SummarySegment from "../Staking/Summary";
+import PieChart from 'react-native-pie-chart'
 
 const ProfileSegment = () => {
   return (
@@ -31,7 +32,7 @@ const ProfileSegment = () => {
             </Text>
             <Text className="font-readexBold text-xl">$2,760.23</Text>
             <Text className="font-readexSemiBold text-md mb-2">+2.60%</Text>
-            <Chart />
+            <LineChartComponent />
           </View>
         </Container>
       </View>

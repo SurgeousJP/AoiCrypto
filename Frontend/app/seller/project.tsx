@@ -14,8 +14,11 @@ import Move from "@/assets/icons/system-icons-svg/Move.svg";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import DividerLine from "@/components/Displays/Divider/DividerLine";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
+import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
+import { Link } from "expo-router";
+import Add from "@/assets/icons/system-icons-svg/Add.svg";
 
-export default function ProjectScreen() {
+export default function AdminProjectScreen() {
   const projectState = [
     { label: "Public", value: "Public" },
     { label: "Presale", value: "Presale" },
@@ -36,7 +39,7 @@ export default function ProjectScreen() {
 
   if (loading) {
     return (
-      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background ">
         <ActivityIndicator size="large" color={colors.primary} />
         <Text className="font-readexRegular text-primary text-md">Loading</Text>
       </View>
@@ -44,9 +47,14 @@ export default function ProjectScreen() {
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 pb-2">
       <View className="bg-surface mb-4">
-        <SearchHeader placeholder={"Projects"} />
+        <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
+          <Searchbar placeholder={"Search project"} />
+          <Link href={"/project/createOverview"}>
+            <Add width={24} height={24} stroke={colors.secondary}/>
+          </Link>
+        </View>
       </View>
 
       <View
