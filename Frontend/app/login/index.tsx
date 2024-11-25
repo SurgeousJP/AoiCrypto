@@ -4,8 +4,8 @@ import Metamask from "@/assets/logos/Metamask.svg";
 import WalletConnect from "@/assets/logos/WalletConnect.svg";
 import Coinbase from "@/assets/logos/Coinbase.svg";
 import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
-import { useAppKit } from "@reown/appkit-wagmi-react-native";
-import { useSignMessage } from 'wagmi'
+import { useAppKit, useWalletInfo } from "@reown/appkit-wagmi-react-native";
+import { useAccount } from "wagmi";
 
 
 const Login = () => {
@@ -14,15 +14,16 @@ const Login = () => {
     open();
   }
 
-  const { data, isError, isPending, isSuccess, signMessage } = useSignMessage()
-
+  const { walletInfo } = useWalletInfo();
   useEffect(() => {
-    signMessage({ message: 'hello world' });
-  }, [])
-
+    console.log(walletInfo);
+  }, [walletInfo]);
+  
+  const { address, isConnected } = useAccount();
   useEffect(() => {
-    console.log("Data");
-  }, [data, isError, isPending, isSuccess])
+    console.log("Address: ", address);
+    console.log("Is connected: ", isConnected);
+  }, [address, isConnected]);
 
   return (
     <ScrollView className="w-full pt-8 px-4 bg-background">
