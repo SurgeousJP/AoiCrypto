@@ -4,10 +4,11 @@ import StepIndicator from "react-native-step-indicator";
 import {Text, View} from "react-native"
 interface StepIndicatorProps {
   labels: string[],
-  currentPosition: number
+  currentPosition: number,
+  mode: string
 }
 
-const StepIndicatorComponent = ({labels, currentPosition}) => {
+const StepIndicatorComponent:React.FC<StepIndicatorProps> = ({labels, currentPosition, mode}) => {
   const placeHolderLabels = [
     "Cart",
     "Delivery Address",
@@ -35,7 +36,7 @@ const StepIndicatorComponent = ({labels, currentPosition}) => {
     labelColor: "#000000",
     labelFontFamily: "ReadexPro_400Regular",
     labelSize: 16,
-    currentStepLabelColor: "",
+    currentStepLabelColor: "#ffffff",
   };
 
   return (
@@ -44,9 +45,9 @@ const StepIndicatorComponent = ({labels, currentPosition}) => {
       stepCount={3}
       customStyles={customStyles}
       currentPosition={currentPosition ?? 1}
-      labels={labels ?? placeHolderLabels}
+      labels={labels.length > 0 ? labels : placeHolderLabels}
       renderStepIndicator={(obj) => {
-        return <Text className="font-readexBold">{obj.position + 1}</Text>
+        return <Text className={`font-readexBold ${obj.position + 1 == currentPosition ? "text-white" : "Text-black"}`}>{obj.position + 1}</Text>
       }}
       renderLabel={(obj) => {
         return <View className="flex text-left"><Text className="font-readexRegular text-left" style={{writingDirection: 'ltr'}}>{obj.label}</Text></View>

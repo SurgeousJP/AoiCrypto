@@ -166,6 +166,12 @@ export default function RootLayout() {
                 ),
               }}
             />
+            <Stack.Screen
+              name="project/createStepOne"
+              options={{
+                headerShown: false,
+              }}
+            />
           </Stack>
         </ThemeProvider>
       </View>
