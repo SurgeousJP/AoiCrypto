@@ -28,14 +28,14 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import "@walletconnect/react-native-compat";
 import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, arbitrum } from "@wagmi/core/chains";
+import { sepolia } from "@wagmi/core/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import {
   createAppKit,
   defaultWagmiConfig,
   AppKit,
 } from "@reown/appkit-wagmi-react-native";
-import { AOICRYPTO_PROJECT_ID } from "@env";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,9 +69,9 @@ export default function RootLayout() {
 
   const queryClient = new QueryClient();
 
-  const projectId = AOICRYPTO_PROJECT_ID;
+  const projectId = process.env.EXPO_PUBLIC_AOICRYPTO_PROJECT_ID;
 
-  const chains = [mainnet, polygon, arbitrum] as const;
+  const chains = [sepolia] as const;
 
   const metadata = {
     name: "AoiCrypto AppKit WalletConnect",
@@ -91,8 +91,8 @@ export default function RootLayout() {
   createAppKit({
     projectId,
     wagmiConfig,
-    defaultChain: mainnet, // Optional
-    enableAnalytics: true, // Optional - defaults to your Cloud configuration
+    defaultChain: sepolia, 
+    enableAnalytics: true,
   });
 
   return (

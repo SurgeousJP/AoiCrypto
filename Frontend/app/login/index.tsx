@@ -1,16 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import Metamask from "@/assets/logos/Metamask.svg";
 import WalletConnect from "@/assets/logos/WalletConnect.svg";
 import Coinbase from "@/assets/logos/Coinbase.svg";
 import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
-import { useAppKit } from '@reown/appkit-wagmi-react-native'
+import { useAppKit } from "@reown/appkit-wagmi-react-native";
+import { useSignMessage } from 'wagmi'
+
 
 const Login = () => {
   const { open } = useAppKit();
   const handleLogin = (e) => {
     open();
   }
+
+  const { data, isError, isPending, isSuccess, signMessage } = useSignMessage()
+
+  useEffect(() => {
+    signMessage({ message: 'hello world' });
+  }, [])
+
+  useEffect(() => {
+    console.log("Data");
+  }, [data, isError, isPending, isSuccess])
 
   return (
     <ScrollView className="w-full pt-8 px-4 bg-background">
