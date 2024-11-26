@@ -1,4 +1,5 @@
 import AOISPowerCard from "@/components/Cards/AOISPowerCard/AOISPowerCard";
+import Container from "@/components/Layouts/Container";
 import React from "react";
 import { Text, View } from "react-native";
 function AOISPower() {
@@ -23,7 +24,7 @@ function AOISPower() {
         </View>
       </View>
       <View className="flex flex-col mt-4">
-        <View className="mb-4 bg-surface px-4 py-2">
+        <View className="mb-4 bg-surface px-4 py-2 rounded-md border-border border-[1px]" style={{elevation: 2}}>
           <View className="flex flex-row items-center justify-between w-full">
             <View>
               <Text className="text-md font-readexRegular text-black">
@@ -35,6 +36,7 @@ function AOISPower() {
             </Text>
           </View>
         </View>
+
         <View className="mb-4">
           <AOISPowerCard
             quantity={"1,000+"}

@@ -30,6 +30,7 @@ module.exports = {
         black: 900,
       },
       colors: {
+        border: "#DFDFDF",
         background: "#F8F9FC",
         surface: "#FFFFFF",
         outline: "#D7D9E4",

@@ -7,11 +7,11 @@ import { Dimensions } from "react-native";
 
 import { LineChart } from "react-native-chart-kit";
 
-interface ChartProps {
+interface LineChartProps {
   data: any;
 }
 
-const Chart = () => {
+const LineChartComponent = () => {
   let [loaded, error] = useFonts({
     ReadexPro_400Regular,
     ReadexPro_700Bold,
@@ -87,4 +87,4 @@ const Chart = () => {
   );
 };
 
-export default Chart;
+export default LineChartComponent;

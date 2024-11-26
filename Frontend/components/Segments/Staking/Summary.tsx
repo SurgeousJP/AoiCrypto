@@ -29,15 +29,7 @@ const SummarySegment = () => {
         const Icon = summary.icon;
         return (
           <View className="mt-2">
-            <Shadow
-              stretch={true}
-              startColor="#2F66F61F"
-              distance={2}
-              offset={[0, 2]}
-              paintInside={true}
-              style={{ margin: 1, borderRadius: 12 }}
-            >
-              <View className="flex flex-row justify-between p-4 rounded-xl bg-surface overflow-hidden">
+              <View className="flex flex-row justify-between p-4 rounded-xl bg-surface overflow-hidden border-border border-[1px]" style={{elevation: 2}}>
                 <View className="flex flex-row space-x-2">
                   <Icon stroke={colors.secondary} />
                   <Text className="font-readexRegular text-black">
@@ -46,7 +38,6 @@ const SummarySegment = () => {
                 </View>
                 <Text className="font-readexRegular">{summary.value}</Text>
               </View>
-            </Shadow>
           </View>
         );
       })}

@@ -10,7 +10,7 @@ interface TagProps{
 
 const Tag: React.FC<TagProps> = (props) => {
   return (
-    <Pressable className={`w-fit p-2 items-center justify-center ${props.backgroundStyle} rounded-lg`}>
+    <Pressable className={`w-fit p-2 items-center justify-center ${props.backgroundStyle} rounded-lg border-border border-[1px]`} style={{elevation: 2}}>
       <Text className={`font-readexRegular text-sm ${props.textStyle}`}>{props.label} ({props.count})</Text>
     </Pressable>
   )

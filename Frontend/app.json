@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.aoicrypto"
     },
     "web": {
       "bundler": "metro",
@@ -36,7 +37,8 @@
           ]
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "./queries.js"
     ],
     "experiments": {
       "typedRoutes": true

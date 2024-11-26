@@ -1,9 +1,7 @@
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
+import ApplicationSegment from "@/components/Segments/Portfolio/Applications";
 import HistorySegment from "@/components/Segments/Portfolio/History";
 import ProfileSegment from "@/components/Segments/Portfolio/Profile";
-import Description from "@/components/Segments/ProjectDetail/Description";
-import Overview from "@/components/Segments/ProjectDetail/Overview";
-import TokenNPool from "@/components/Segments/ProjectDetail/TokenNPool";
 import { colors } from "@/constants/Colors";
 import React, { useEffect, useState } from "react";
 import {
@@ -33,8 +31,8 @@ export default function PortfolioScreen() {
       <View className="px-4 py-4">
         <View className="pt-4 flex flex-col">
           <CustomSegmentedControl
-            screens={["History", "Profile"]}
-            components={[<HistorySegment />, <ProfileSegment />]}
+            screens={["History", "Profile", "Applications"]}
+            components={[<HistorySegment />, <ProfileSegment />, <ApplicationSegment />]}
           />
         </View>
       </View>

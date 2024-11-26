@@ -1,21 +1,12 @@
 import React from "react";
 import { View, Image, Text } from "react-native";
-import { Shadow } from "react-native-shadow-2";
-import CurrencyLabel from "../../Displays/CurrencyLabel/CurrencyLabel";
+import CurrencyLabel from "@/components/Displays/CurrencyLabel/CurrencyLabel";
 
 const SearchProject = () => {
   const projectLogo = require("@/assets/images/ProjectLogo.png");
   return (
-    <Shadow
-      stretch={true}
-      offset={[0, 1]}
-      startColor={"#2F66F61F"}
-      distance={2}
-      style={{ borderRadius: 8 }}
-    >
       <View
-        id="project-card"
-        className="flex flex-row h-fit w-full bg-surface rounded-lg overflow-hidden py-2 items-center justify-between px-1"
+        className="flex flex-row h-fit w-full bg-surface rounded-lg items-center justify-between px-1 py-2 border-border border" style={{elevation: 1}}
       >
         <View className="flex flex-row space-x-1 items-center">
           <Image source={projectLogo} className="w-5 h-5" />
@@ -31,7 +22,6 @@ const SearchProject = () => {
           </Text>
           <CurrencyLabel backgroundColor={"bg-error"} textColor={"text-surface"} content={"+469%"} />
       </View>
-    </Shadow>
   );
 };
 

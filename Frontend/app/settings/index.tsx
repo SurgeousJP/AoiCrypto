@@ -2,11 +2,19 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import SettingCard from "@/components/Cards/SettingCard/SettingCard";
 import UserCard from "@/components/Cards/UserCard/UserCard";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
 import Switch from "react-native-switch-toggles";
 
 function Settings() {
+
+  const router = useRouter();
+
+  const navToNotificationScreen = () => {
+    router.navigate("/notification");
+  }
+
   return (
     <ScrollView
       className="flex flex-col w-full bg-background"
@@ -78,6 +86,7 @@ function Settings() {
           }
           title="Notifications"
           pos={"bot"}
+          onChevronClick={navToNotificationScreen}
         />
         <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
           More
