@@ -3,16 +3,25 @@ import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/Se
 import AOISLevelSegment from "@/components/Segments/Staking/AOISLevel";
 import SummarySegment from "@/components/Segments/Staking/Summary";
 import { colors } from "@/constants/Colors";
-import React, { useEffect, useState } from "react";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { router } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 export default function StakingScreen() {
-  const [loading, setLoading] = useState(true);
+  const [isRendering, setRendering] = useState(true);
   useEffect(() => {
-    setLoading((loading) => false);
+    setRendering(false);
   }, []);
 
-  if (loading) {
+  const userContext = useContext(AuthContext);
+  useEffect(() => {
+    if (!isRendering && !userContext.isLoading && userContext.status !== 'connected'){
+      router.push('/login');
+    }
+  }, [userContext, isRendering]);
+
+  if (isRendering) {
     return (
       <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
         <ActivityIndicator size="large" color={colors.primary} />

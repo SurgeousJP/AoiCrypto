@@ -1,10 +1,34 @@
 import NotificationRow from "@/components/Items/Notification/NotificationRow";
 import Row from "@/components/Items/Project/Row";
 import { colors } from "@/constants/Colors";
-import React from "react";
-import { ScrollView, View, Text, FlatList } from "react-native";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { router } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ScrollView, View, Text, FlatList, ActivityIndicator } from "react-native";
 
 const NotificationScreen = () => {
+
+  const [isRendering, setRendering] = useState(true);
+  useEffect(() => {
+    setRendering(false);
+  }, []);
+
+  const userContext = useContext(AuthContext);
+  useEffect(() => {
+    if (!isRendering && !userContext.isLoading && userContext.status !== 'connected'){
+      router.push('/login');
+    }
+  }, [userContext, isRendering]);
+
+  if (isRendering) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
+
   const data = [
     {
       title: "Whitelist Application Succeeded",
