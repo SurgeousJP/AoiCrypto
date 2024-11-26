@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {Test, console, console2} from "lib/forge-std/src/Test.sol";
 import {IAoiPair} from "../interfaces/DEX/IAoiPair.sol";
 import {AoiPair} from "../DEX/AoiPair.sol";
 
@@ -32,7 +33,7 @@ library AoiLibrary {
                             hex"ff",
                             factory,
                             keccak256(abi.encodePacked(token0, token1)), // salt
-                            type(AoiPair).creationCode
+                            keccak256(type(AoiPair).creationCode)
                         )
                     )
                 )
@@ -45,9 +46,9 @@ library AoiLibrary {
         address factory,
         address tokenA,
         address tokenB
-    ) internal view returns (uint reserveA, uint reserveB) {
+    ) internal view returns (uint256 reserveA, uint256 reserveB) {
         (address token0, ) = sortTokens(tokenA, tokenB);
-        (uint reserve0, uint reserve1, ) = IAoiPair(
+        (uint256 reserve0, uint256 reserve1, ) = IAoiPair(
             pairFor(factory, tokenA, tokenB)
         ).getReserves();
         (reserveA, reserveB) = tokenA == token0
@@ -57,10 +58,10 @@ library AoiLibrary {
 
     // given some amount of an asset and pair reserves, returns an equivalent amount of the other asset
     function quote(
-        uint amountA,
-        uint reserveA,
-        uint reserveB
-    ) internal pure returns (uint amountB) {
+        uint256 amountA,
+        uint256 reserveA,
+        uint256 reserveB
+    ) internal pure returns (uint256 amountB) {
         require(amountA > 0, "AoiCryptoLibrary: INSUFFICIENT_AMOUNT");
         require(
             reserveA > 0 && reserveB > 0,
@@ -71,48 +72,48 @@ library AoiLibrary {
 
     // given an input amount of an asset and pair reserves, returns the maximum output amount of the other asset
     function getAmountOut(
-        uint amountIn,
-        uint reserveIn,
-        uint reserveOut
-    ) internal pure returns (uint amountOut) {
+        uint256 amountIn,
+        uint256 reserveIn,
+        uint256 reserveOut
+    ) internal pure returns (uint256 amountOut) {
         require(amountIn > 0, "AoiCryptoLibrary: INSUFFICIENT_INPUT_AMOUNT");
         require(
             reserveIn > 0 && reserveOut > 0,
             "AoiCryptoLibrary: INSUFFICIENT_LIQUIDITY"
         );
-        uint amountInWithFee = amountIn * 997;
-        uint numerator = amountInWithFee * reserveOut;
-        uint denominator = reserveIn * 1000 + amountInWithFee;
+        uint256 amountInWithFee = amountIn * 997;
+        uint256 numerator = amountInWithFee * reserveOut;
+        uint256 denominator = reserveIn * 1000 + amountInWithFee;
         amountOut = numerator / denominator;
     }
 
     // given an output amount of an asset and pair reserves, returns a required input amount of the other asset
     function getAmountIn(
-        uint amountOut,
-        uint reserveIn,
-        uint reserveOut
-    ) internal pure returns (uint amountIn) {
+        uint256 amountOut,
+        uint256 reserveIn,
+        uint256 reserveOut
+    ) internal pure returns (uint256 amountIn) {
         require(amountOut > 0, "AoiCryptoLibrary: INSUFFICIENT_OUTPUT_AMOUNT");
         require(
             reserveIn > 0 && reserveOut > 0,
             "AoiCryptoLibrary: INSUFFICIENT_LIQUIDITY"
         );
-        uint numerator = reserveIn * amountOut * 1000;
-        uint denominator = (reserveOut - amountOut) * 997;
+        uint256 numerator = reserveIn * amountOut * 1000;
+        uint256 denominator = (reserveOut - amountOut) * 997;
         amountIn = (numerator / denominator) + 1; // rounded up
     }
 
     // performs chained getAmountOut calculations on any number of pairs
     function getAmountsOut(
         address factory,
-        uint amountIn,
+        uint256 amountIn,
         address[] memory path
-    ) internal view returns (uint[] memory amounts) {
+    ) internal view returns (uint256[] memory amounts) {
         require(path.length >= 2, "AoiCryptoLibrary: INVALID_PATH");
-        amounts = new uint[](path.length);
+        amounts = new uint256[](path.length);
         amounts[0] = amountIn;
-        for (uint i; i < path.length - 1; i++) {
-            (uint reserveIn, uint reserveOut) = getReserves(
+        for (uint256 i; i < path.length - 1; i++) {
+            (uint256 reserveIn, uint256 reserveOut) = getReserves(
                 factory,
                 path[i],
                 path[i + 1]
@@ -124,14 +125,14 @@ library AoiLibrary {
     // performs chained getAmountIn calculations on any number of pairs
     function getAmountsIn(
         address factory,
-        uint amountOut,
+        uint256 amountOut,
         address[] memory path
-    ) internal view returns (uint[] memory amounts) {
+    ) internal view returns (uint256[] memory amounts) {
         require(path.length >= 2, "AoiCryptoLibrary: INVALID_PATH");
-        amounts = new uint[](path.length);
+        amounts = new uint256[](path.length);
         amounts[amounts.length - 1] = amountOut;
-        for (uint i = path.length - 1; i > 0; i--) {
-            (uint reserveIn, uint reserveOut) = getReserves(
+        for (uint256 i = path.length - 1; i > 0; i--) {
+            (uint256 reserveIn, uint256 reserveOut) = getReserves(
                 factory,
                 path[i - 1],
                 path[i]

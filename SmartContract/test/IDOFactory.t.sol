@@ -2,15 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "./utils/BaseTest.sol";
-// import {Vm} from "@forge-std/Vm.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
+
 import {IDOPool} from "../src/IDO/IDOPool.sol";
 import {IIDOPool} from "../src/interfaces/IIDOPool.sol";
 import {IIDOFactory} from "../src/interfaces/IIDOFactory.sol";
-
+import {IAoiERC20} from "../src/interfaces/DEX/IAoiERC20.sol";
 import {AoiPair} from "../src/DEX/AoiPair.sol";
 import {IAoiPair} from "../src/interfaces/DEX/IAoiPair.sol";
 
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import {FixedPointMathLib} from "@solady/utils/FixedPointMathLib.sol";
 
 contract IDOFactoryTest is BaseTest {
@@ -23,6 +24,12 @@ contract IDOFactoryTest is BaseTest {
     function setUp() public override {
         super.setUp();
         mockERC20 = new MockERC20();
+        // Similating investment
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = makeAddr(string(abi.encode("investor", i)));
+            vm.deal(investor, 10 ether);
+            investors.push(investor);
+        }
     }
 
     function test_createNewPublicIDOPoolSuccessful() public {
@@ -30,17 +37,20 @@ contract IDOFactoryTest is BaseTest {
         IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
             tokenAddress: address(mockERC20),
             pricePerToken: 0.001 ether,
-            startTime: startTime,
             raisedAmount: 0,
             raisedTokenAmount: 0,
-            endTime: startTime + 1 weeks,
             softCap: 5 ether,
             hardCap: 10 ether,
             minInvest: 0.05 ether,
             maxInvest: 0.1 ether,
             liquidityWETH9: 2 ether,
             liquidityToken: 10_000_000 ether,
-            whitelistedRoot: EMPTY_ROOT
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
         });
         uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
             poolDetail.pricePerToken
@@ -58,6 +68,9 @@ contract IDOFactoryTest is BaseTest {
         address payable idoPoolAddress = payable(
             idoFactory.createPool{value: poolDetail.liquidityWETH9}(
                 poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
                 action,
                 lockExpired
             )
@@ -72,8 +85,8 @@ contract IDOFactoryTest is BaseTest {
 
         assert(idoPool.getPoolTokenAddress() == address(mockERC20));
         assert(idoPool.getPricePerToken() == poolDetail.pricePerToken);
-        assert(idoPool.getPoolStartTime() == poolDetail.startTime);
-        assert(idoPool.getPoolEndTime() == poolDetail.endTime);
+        assert(idoPool.getPoolStartTime() == poolTime.startTime);
+        assert(idoPool.getPoolEndTime() == poolTime.endTime);
         assert(idoPool.getPoolRaisedAmount() == 0);
         assert(idoPool.getPoolTokenAmount() == 0);
         assert(idoPool.getPoolSoftCap() == poolDetail.softCap);
@@ -107,17 +120,20 @@ contract IDOFactoryTest is BaseTest {
         IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
             tokenAddress: address(mockERC20),
             pricePerToken: 0.001 ether,
-            startTime: startTime,
             raisedAmount: 0,
             raisedTokenAmount: 0,
-            endTime: startTime + 1 weeks,
             softCap: 5 ether,
             hardCap: 10 ether,
             minInvest: 0.05 ether,
             maxInvest: 0.1 ether,
             liquidityWETH9: 2 ether,
             liquidityToken: 10_000_000 ether,
-            whitelistedRoot: EMPTY_ROOT
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
         });
         uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
             poolDetail.pricePerToken
@@ -132,9 +148,12 @@ contract IDOFactoryTest is BaseTest {
         mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
         vm.startPrank(addr1);
         mockERC20.approve(address(idoFactory), type(uint256).max);
-        vm.expectRevert();
+        vm.expectRevert(IIDOPool.InvalidPoolDelayTime.selector);
         idoFactory.createPool{value: poolDetail.liquidityWETH9}(
             poolDetail,
+            poolTime,
+            false,
+            EMPTY_ROOT,
             action,
             lockExpired
         );
@@ -145,17 +164,20 @@ contract IDOFactoryTest is BaseTest {
         IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
             tokenAddress: address(mockERC20),
             pricePerToken: 0.001 ether,
-            startTime: startTime,
             raisedAmount: 0,
             raisedTokenAmount: 0,
-            endTime: 0,
             softCap: 5 ether,
             hardCap: 10 ether,
             minInvest: 0.05 ether,
             maxInvest: 0.1 ether,
             liquidityWETH9: 2 ether,
             liquidityToken: 10_000_000 ether,
-            whitelistedRoot: EMPTY_ROOT
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: 0,
+            startPublicSale: startTime + 1 days
         });
         uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
             poolDetail.pricePerToken
@@ -170,9 +192,12 @@ contract IDOFactoryTest is BaseTest {
         mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
         vm.startPrank(addr1);
         mockERC20.approve(address(idoFactory), type(uint256).max);
-        vm.expectRevert();
+        vm.expectRevert(IIDOPool.InvalidPoolTimeFrame.selector);
         idoFactory.createPool{value: poolDetail.liquidityWETH9}(
             poolDetail,
+            poolTime,
+            false,
+            EMPTY_ROOT,
             action,
             lockExpired
         );
@@ -188,17 +213,20 @@ contract IDOFactoryTest is BaseTest {
         IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
             tokenAddress: address(mockERC20),
             pricePerToken: 0.001 ether,
-            startTime: startTime,
             raisedAmount: 0,
             raisedTokenAmount: 0,
-            endTime: startTime + 1 weeks,
             softCap: 1,
             hardCap: hardCap,
             minInvest: 1,
             maxInvest: maxInvest,
             liquidityWETH9: 2 ether,
             liquidityToken: 10_000_000 ether,
-            whitelistedRoot: EMPTY_ROOT
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
         });
         uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
             poolDetail.pricePerToken
@@ -213,35 +241,38 @@ contract IDOFactoryTest is BaseTest {
         mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
         vm.startPrank(addr1);
         mockERC20.approve(address(idoFactory), type(uint256).max);
-        vm.expectRevert();
+        vm.expectRevert(IIDOPool.InvalidPoolMaxInvestment.selector);
         idoFactory.createPool{value: poolDetail.liquidityWETH9}(
             poolDetail,
+            poolTime,
+            false,
+            EMPTY_ROOT,
             action,
             lockExpired
         );
     }
 
-    function test_listInDexSuccesfullyWithFullHardCap() public {
-        // bytes memory bytecode = type(AoiPair).creationCode;
-        // console.log(
-        //     hex"96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f"
-        // );
-        // console.log(vm.toString(bytecode));
+    function test_listInDexSuccessfullyWithFullHardCap() public {
         uint256 startTime = block.timestamp + uint256(MIN_DELAY_STARTING);
+        uint256 lpToken0Amount = 10_000_000 ether;
+        uint256 lpETHAmount = 2 ether;
         IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
             tokenAddress: address(mockERC20),
             pricePerToken: 0.001 ether,
-            startTime: startTime,
             raisedAmount: 0,
             raisedTokenAmount: 0,
-            endTime: startTime + 1 weeks,
             softCap: 5 ether,
             hardCap: 10 ether,
             minInvest: 0.05 ether,
             maxInvest: 0.1 ether,
-            liquidityWETH9: 2 ether,
-            liquidityToken: 10_000_000 ether,
-            whitelistedRoot: EMPTY_ROOT
+            liquidityWETH9: lpETHAmount,
+            liquidityToken: lpToken0Amount,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
         });
         uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
             poolDetail.pricePerToken
@@ -260,6 +291,94 @@ contract IDOFactoryTest is BaseTest {
         address payable idoPoolAddress = payable(
             idoFactory.createPool{value: poolDetail.liquidityWETH9}(
                 poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
+                action,
+                lockExpired
+            )
+        );
+        vm.stopPrank();
+        assert(idoFactory.getTotalPool() == 1);
+        idoPool = IDOPool(idoPoolAddress);
+        vm.warp(startTime);
+
+        bytes32[] memory proof;
+
+        // Investing
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = investors[i];
+            vm.prank(investor);
+            idoPool.investPool{value: poolDetail.maxInvest}(proof);
+        }
+
+        // Check fullhard cap
+        assert(idoPool.getPoolRaisedAmount() == poolDetail.hardCap);
+
+        // Calculate the expected lp amount
+        uint256 lpAmountExpected = Math.sqrt(lpToken0Amount * lpETHAmount) -
+            MINIMUM_LIQUIDITY;
+
+        // Skip to end IDO for listing
+        vm.warp(poolTime.endTime);
+
+        // Listing DEX
+        vm.prank(addr1);
+        (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
+            .depositLiquidityPool(1);
+
+        // Check after deposit
+        IAoiPair lpPair = IAoiPair(liquidityPoolAddress);
+        assert(lpPair.token0() == address(mockERC20));
+        assert(lpPair.token1() == address(WETH));
+        assert(lpAmountExpected == lpAmount);
+        (uint256 reserve0, uint256 reserve1, ) = lpPair.getReserves();
+        assert(reserve0 == poolDetail.liquidityToken);
+        assert(reserve1 == poolDetail.liquidityWETH9);
+    }
+
+    function test_listInDexSuccessfullyWithLockLpToken() public {
+        uint256 startTime = block.timestamp + uint256(MIN_DELAY_STARTING);
+        uint256 lpToken0Amount = 10_000_000 ether;
+        uint256 lpETHAmount = 2 ether;
+        IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
+            tokenAddress: address(mockERC20),
+            pricePerToken: 0.001 ether,
+            raisedAmount: 0,
+            raisedTokenAmount: 0,
+            softCap: 5 ether,
+            hardCap: 10 ether,
+            minInvest: 0.05 ether,
+            maxInvest: 0.1 ether,
+            liquidityWETH9: lpETHAmount,
+            liquidityToken: lpToken0Amount,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
+        });
+        uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
+            poolDetail.pricePerToken
+        );
+        IIDOFactory.LiquidityPoolAction action = IIDOFactory
+            .LiquidityPoolAction
+            .LOCK;
+        uint256 lockExpired = startTime + 2 weeks;
+
+        require(addr1.balance > poolDetail.hardCap + poolDetail.liquidityWETH9);
+
+        mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
+        vm.startPrank(addr1);
+        mockERC20.approve(address(idoFactory), type(uint256).max);
+        assert(idoFactory.getTotalPool() == 0);
+        address payable idoPoolAddress = payable(
+            idoFactory.createPool{value: poolDetail.liquidityWETH9}(
+                poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
                 action,
                 lockExpired
             )
@@ -275,31 +394,436 @@ contract IDOFactoryTest is BaseTest {
             investors.push(investor);
         }
 
+        bytes32[] memory proof;
+
         // Investing
         for (uint256 i = 0; i < 100; i++) {
             address investor = investors[i];
             vm.prank(investor);
-            idoPool.investPublicPool{value: poolDetail.maxInvest}();
+            idoPool.investPool{value: poolDetail.maxInvest}(proof);
         }
 
         // Check fullhard cap
         assert(idoPool.getPoolRaisedAmount() == poolDetail.hardCap);
-        // Listing DEX
-        console.log(tokenAmountInHardCap);
-        console.log(poolDetail.liquidityToken);
-        console.log(poolDetail.liquidityWETH9);
-        vm.prank(addr1);
-        console.log(address(idoFactory));
-        address liquidityPoolAddress = idoFactory.depositLiquidityPool(1);
 
-        console.log(liquidityPoolAddress);
+        // Calculate the expected lp amount
+        uint256 lpAmountExpected = Math.sqrt(lpToken0Amount * lpETHAmount) -
+            MINIMUM_LIQUIDITY;
+
+        // Skip to end IDO for listing
+        vm.warp(poolTime.endTime);
+
+        // Listing DEX
+        vm.prank(addr1);
+        (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
+            .depositLiquidityPool(1);
 
         // Check after deposit
+        assert(idoFactory.getLpAmount(1) == lpAmountExpected);
         IAoiPair lpPair = IAoiPair(liquidityPoolAddress);
         assert(lpPair.token0() == address(mockERC20));
         assert(lpPair.token1() == address(WETH));
+        assert(lpAmountExpected == lpAmount);
         (uint256 reserve0, uint256 reserve1, ) = lpPair.getReserves();
         assert(reserve0 == poolDetail.liquidityToken);
         assert(reserve1 == poolDetail.liquidityWETH9);
+        IAoiERC20 lpPairERC20 = IAoiERC20(liquidityPoolAddress);
+
+        // Skip locked Time
+        vm.warp(lockExpired + 2);
+
+        assert(IAoiERC20(liquidityPoolAddress).balanceOf(addr1) == 0);
+        assert(
+            IAoiERC20(liquidityPoolAddress).balanceOf(address(idoFactory)) ==
+                lpAmountExpected
+        );
+        // Unlock lp token
+        vm.prank(addr1);
+        idoFactory.receiveLpToken(1);
+
+        assert(
+            IAoiERC20(liquidityPoolAddress).balanceOf(address(idoFactory)) == 0
+        );
+        assert(
+            IAoiERC20(liquidityPoolAddress).balanceOf(addr1) == lpAmountExpected
+        );
+    }
+
+    function test_listInDexSuccessfullyWithBurnLpToken() public {
+        uint256 startTime = block.timestamp + uint256(MIN_DELAY_STARTING);
+        uint256 lpToken0Amount = 10_000_000 ether;
+        uint256 lpETHAmount = 2 ether;
+        uint256 softCap = 5 ether;
+        uint256 hardCap = 10 ether;
+        uint256 minInvest = 0.05 ether;
+        uint256 maxInvest = minInvest * 2;
+        IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
+            tokenAddress: address(mockERC20),
+            pricePerToken: 0.001 ether,
+            raisedAmount: 0,
+            raisedTokenAmount: 0,
+            softCap: softCap,
+            hardCap: hardCap,
+            minInvest: minInvest,
+            maxInvest: maxInvest,
+            liquidityWETH9: lpETHAmount,
+            liquidityToken: lpToken0Amount,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
+        });
+        uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
+            poolDetail.pricePerToken
+        );
+        IIDOFactory.LiquidityPoolAction action = IIDOFactory
+            .LiquidityPoolAction
+            .BURN;
+        uint256 lockExpired = 0;
+
+        require(addr1.balance > poolDetail.hardCap + poolDetail.liquidityWETH9);
+
+        mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
+        vm.startPrank(addr1);
+        mockERC20.approve(address(idoFactory), type(uint256).max);
+        assert(idoFactory.getTotalPool() == 0);
+        address payable idoPoolAddress = payable(
+            idoFactory.createPool{value: poolDetail.liquidityWETH9}(
+                poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
+                action,
+                lockExpired
+            )
+        );
+        vm.stopPrank();
+        assert(idoFactory.getTotalPool() == 1);
+        idoPool = IDOPool(idoPoolAddress);
+        vm.warp(startTime);
+        // Similating investment
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = makeAddr(string(abi.encode("investor", i)));
+            vm.deal(investor, 10 ether);
+            investors.push(investor);
+        }
+
+        bytes32[] memory proof;
+
+        // Investing
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = investors[i];
+            vm.prank(investor);
+            idoPool.investPool{value: poolDetail.maxInvest}(proof);
+        }
+
+        // Check fullhard cap
+        assert(idoPool.getPoolRaisedAmount() == poolDetail.hardCap);
+
+        // Calculate the expected lp amount
+        uint256 lpAmountExpected = Math.sqrt(lpToken0Amount * lpETHAmount) -
+            MINIMUM_LIQUIDITY;
+
+        // Skip to end IDO for listing
+        vm.warp(poolTime.endTime);
+
+        // Listing DEX
+        vm.prank(addr1);
+        (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
+            .depositLiquidityPool(1);
+
+        // Check after deposit
+        assert(idoFactory.getLpAmount(1) == lpAmountExpected);
+        IAoiPair lpPair = IAoiPair(liquidityPoolAddress);
+        assert(lpPair.token0() == address(mockERC20));
+        assert(lpPair.token1() == address(WETH));
+        assert(lpAmountExpected == lpAmount);
+        (uint256 reserve0, uint256 reserve1, ) = lpPair.getReserves();
+        assert(reserve0 == poolDetail.liquidityToken);
+        assert(reserve1 == poolDetail.liquidityWETH9);
+        IAoiERC20 lpPairERC20 = IAoiERC20(liquidityPoolAddress);
+        assert(lpPairERC20.balanceOf(addr1) == 0);
+        assert(lpPairERC20.balanceOf(address(idoFactory)) == 0);
+
+        // Unlock lp token - Should be reverted
+        vm.startPrank(addr1);
+        vm.expectRevert(IIDOFactory.LiquidityIsNotLocked.selector);
+        idoFactory.receiveLpToken(1);
+        vm.stopPrank();
+    }
+
+    function test_listInDexSuccessfullyWithReachedSoftCap() public {
+        uint256 startTime = block.timestamp + uint256(MIN_DELAY_STARTING);
+        uint256 lpToken0Amount = 10_000_000 ether;
+        uint256 lpETHAmount = 2 ether;
+        IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
+            tokenAddress: address(mockERC20),
+            pricePerToken: 0.001 ether,
+            raisedAmount: 0,
+            raisedTokenAmount: 0,
+            softCap: 5 ether,
+            hardCap: 10 ether,
+            minInvest: 0.05 ether,
+            maxInvest: 0.1 ether,
+            liquidityWETH9: lpETHAmount,
+            liquidityToken: lpToken0Amount,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
+        });
+        uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
+            poolDetail.pricePerToken
+        );
+        IIDOFactory.LiquidityPoolAction action = IIDOFactory
+            .LiquidityPoolAction
+            .NOTHING;
+        uint256 lockExpired = 0;
+
+        require(addr1.balance > poolDetail.hardCap + poolDetail.liquidityWETH9);
+
+        mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
+        vm.startPrank(addr1);
+        mockERC20.approve(address(idoFactory), type(uint256).max);
+        assert(idoFactory.getTotalPool() == 0);
+        address payable idoPoolAddress = payable(
+            idoFactory.createPool{value: poolDetail.liquidityWETH9}(
+                poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
+                action,
+                lockExpired
+            )
+        );
+        vm.stopPrank();
+        assert(idoFactory.getTotalPool() == 1);
+        idoPool = IDOPool(idoPoolAddress);
+        vm.warp(startTime);
+        // Similating investment
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = makeAddr(string(abi.encode("investor", i)));
+            vm.deal(investor, 10 ether);
+            investors.push(investor);
+        }
+
+        bytes32[] memory proof;
+
+        // Investing
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = investors[i];
+            vm.prank(investor);
+            idoPool.investPool{value: poolDetail.maxInvest}(proof);
+            if (idoPool.getPoolRaisedAmount() >= idoPool.getPoolSoftCap()) {
+                break; // Ensuring only reaching soft cap
+            }
+        }
+
+        // Check fullhard cap
+        assert(idoPool.getPoolRaisedAmount() >= idoPool.getPoolSoftCap());
+
+        // Calculate the expected lp amount
+        uint256 lpAmountExpected = Math.sqrt(lpToken0Amount * lpETHAmount) -
+            MINIMUM_LIQUIDITY;
+
+        // Skip to end IDO for listing
+        vm.warp(poolTime.endTime);
+
+        // Listing DEX
+        vm.prank(addr1);
+        (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
+            .depositLiquidityPool(1);
+
+        // Check after deposit
+        assert(idoFactory.getLpAmount(1) == lpAmountExpected);
+        IAoiPair lpPair = IAoiPair(liquidityPoolAddress);
+        assert(lpPair.token0() == address(mockERC20));
+        assert(lpPair.token1() == address(WETH));
+        assert(lpAmountExpected == lpAmount);
+        (uint256 reserve0, uint256 reserve1, ) = lpPair.getReserves();
+        assert(reserve0 == poolDetail.liquidityToken);
+        assert(reserve1 == poolDetail.liquidityWETH9);
+        IAoiERC20 lpPairERC20 = IAoiERC20(liquidityPoolAddress);
+        assert(lpPairERC20.balanceOf(addr1) == lpAmountExpected);
+        assert(lpPairERC20.balanceOf(address(idoFactory)) == 0);
+    }
+
+    function test_listInDexFailedWithNotEnd() public {
+        uint256 startTime = block.timestamp + uint256(MIN_DELAY_STARTING);
+        uint256 lpToken0Amount = 10_000_000 ether;
+        uint256 lpETHAmount = 2 ether;
+        IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
+            tokenAddress: address(mockERC20),
+            pricePerToken: 0.001 ether,
+            raisedAmount: 0,
+            raisedTokenAmount: 0,
+            softCap: 5 ether,
+            hardCap: 10 ether,
+            minInvest: 0.05 ether,
+            maxInvest: 0.1 ether,
+            liquidityWETH9: lpETHAmount,
+            liquidityToken: lpToken0Amount,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
+        });
+        uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
+            poolDetail.pricePerToken
+        );
+        IIDOFactory.LiquidityPoolAction action = IIDOFactory
+            .LiquidityPoolAction
+            .NOTHING;
+        uint256 lockExpired = 0;
+
+        require(addr1.balance > poolDetail.hardCap + poolDetail.liquidityWETH9);
+
+        mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
+        vm.startPrank(addr1);
+        mockERC20.approve(address(idoFactory), type(uint256).max);
+        assert(idoFactory.getTotalPool() == 0);
+        address payable idoPoolAddress = payable(
+            idoFactory.createPool{value: poolDetail.liquidityWETH9}(
+                poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
+                action,
+                lockExpired
+            )
+        );
+        vm.stopPrank();
+        assert(idoFactory.getTotalPool() == 1);
+        idoPool = IDOPool(idoPoolAddress);
+        vm.warp(startTime);
+        // Similating investment
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = makeAddr(string(abi.encode("investor", i)));
+            vm.deal(investor, 10 ether);
+            investors.push(investor);
+        }
+
+        bytes32[] memory proof;
+
+        // Investing
+        for (uint256 i = 0; i < 100; i++) {
+            if (
+                idoPool.getPoolRaisedAmount() + poolDetail.maxInvest >=
+                idoPool.getPoolSoftCap()
+            ) {
+                break; // Ensuring only reaching soft cap
+            }
+            address investor = investors[i];
+            vm.prank(investor);
+            idoPool.investPool{value: poolDetail.maxInvest}(proof);
+        }
+
+        // Check fullhard cap
+        assert(idoPool.getPoolRaisedAmount() < idoPool.getPoolSoftCap());
+
+        // Calculate the expected lp amount
+        uint256 lpAmountExpected = Math.sqrt(lpToken0Amount * lpETHAmount) -
+            MINIMUM_LIQUIDITY;
+
+        // Listing DEX
+        vm.prank(addr1);
+        vm.expectRevert(IIDOPool.IDOIsNotEnded.selector);
+        (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
+            .depositLiquidityPool(1);
+    }
+
+    function test_listInDexFailedWithNotReachedSoftCap() public {
+        uint256 startTime = block.timestamp + uint256(MIN_DELAY_STARTING);
+        uint256 lpToken0Amount = 10_000_000 ether;
+        uint256 lpETHAmount = 2 ether;
+        IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
+            tokenAddress: address(mockERC20),
+            pricePerToken: 0.001 ether,
+            raisedAmount: 0,
+            raisedTokenAmount: 0,
+            softCap: 5 ether,
+            hardCap: 10 ether,
+            minInvest: 0.05 ether,
+            maxInvest: 0.1 ether,
+            liquidityWETH9: lpETHAmount,
+            liquidityToken: lpToken0Amount,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: startTime,
+            endTime: startTime + 1 weeks,
+            startPublicSale: startTime + 1 days
+        });
+        uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
+            poolDetail.pricePerToken
+        );
+        IIDOFactory.LiquidityPoolAction action = IIDOFactory
+            .LiquidityPoolAction
+            .NOTHING;
+        uint256 lockExpired = 0;
+
+        require(addr1.balance > poolDetail.hardCap + poolDetail.liquidityWETH9);
+
+        mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
+        vm.startPrank(addr1);
+        mockERC20.approve(address(idoFactory), type(uint256).max);
+        assert(idoFactory.getTotalPool() == 0);
+        address payable idoPoolAddress = payable(
+            idoFactory.createPool{value: poolDetail.liquidityWETH9}(
+                poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
+                action,
+                lockExpired
+            )
+        );
+        vm.stopPrank();
+        assert(idoFactory.getTotalPool() == 1);
+        idoPool = IDOPool(idoPoolAddress);
+        vm.warp(startTime);
+        // Similating investment
+        for (uint256 i = 0; i < 100; i++) {
+            address investor = makeAddr(string(abi.encode("investor", i)));
+            vm.deal(investor, 10 ether);
+            investors.push(investor);
+        }
+
+        bytes32[] memory proof;
+
+        // Investing
+        for (uint256 i = 0; i < 100; i++) {
+            if (
+                idoPool.getPoolRaisedAmount() + poolDetail.maxInvest >=
+                idoPool.getPoolSoftCap()
+            ) {
+                break; // Ensuring only reaching soft cap
+            }
+            address investor = investors[i];
+            vm.prank(investor);
+            idoPool.investPool{value: poolDetail.maxInvest}(proof);
+        }
+
+        // Check fullhard cap
+        assert(idoPool.getPoolRaisedAmount() < idoPool.getPoolSoftCap());
+
+        // Calculate the expected lp amount
+        uint256 lpAmountExpected = Math.sqrt(lpToken0Amount * lpETHAmount) -
+            MINIMUM_LIQUIDITY;
+
+        // Skip to end IDO for listing
+        vm.warp(poolTime.endTime);
+
+        // Listing DEX
+        vm.prank(addr1);
+        vm.expectRevert(IIDOPool.SoftCapNotReached.selector);
+        (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
+            .depositLiquidityPool(1);
     }
 }
