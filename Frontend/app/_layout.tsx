@@ -1,3 +1,4 @@
+// Import
 import TitleHeader from "@/components/Layouts/TitleHeader";
 import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
@@ -16,16 +17,15 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+import { router, Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
-import { View } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { ActivityIndicator, View, Text } from "react-native";
 import "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
 import "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
 import "@walletconnect/react-native-compat";
 import { WagmiProvider } from "wagmi";
 import { sepolia } from "@wagmi/core/chains";
@@ -36,17 +36,16 @@ import {
   defaultWagmiConfig,
   AppKit,
 } from "@reown/appkit-wagmi-react-native";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import { path } from "@/constants/Path";
+import AuthProvider, { AuthContext } from "@/contexts/AuthProvider";
+// Import
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const handleBack = (e) => {
-    if (router.canGoBack()) {
-      router.back();
-    }
-  };
+
   const colorScheme = useColorScheme();
   let [loaded, error] = useFonts({
     ReadexPro_200ExtraLight,
@@ -56,16 +55,15 @@ export default function RootLayout() {
     ReadexPro_600SemiBold,
     ReadexPro_700Bold,
   });
-
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-
   if (!loaded) {
     return null;
   }
+  // Font loading
 
   const queryClient = new QueryClient();
 
@@ -91,128 +89,145 @@ export default function RootLayout() {
   createAppKit({
     projectId,
     wagmiConfig,
-    defaultChain: sepolia, 
+    defaultChain: sepolia,
     enableAnalytics: true,
   });
+  const [isLoading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [])
+
+  const { isConnected: isAuthenticated } = useContext(AuthContext);
+  if (!isAuthenticated && !isLoading) {
+    router.push("/login");
+  }
 
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <View
-            style={{
-              flex: 1,
-              paddingTop: insets.top + 8,
-              paddingBottom: insets.bottom,
-              backgroundColor: colors.surface,
-            }}
-          >
-            <ThemeProvider
-              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        <AuthProvider>
+          <SafeAreaProvider>
+            <View
+              style={{
+                flex: 1,
+                paddingTop: insets.top + 8,
+                paddingBottom: insets.bottom,
+                backgroundColor: colors.surface,
+              }}
             >
-              <Stack
-                screenOptions={{
-                  headerShown: true,
-                  animation: "fade",
-                  animationDuration: 1000,
-                }}
-                // initialRouteName="(tabs)"
-                initialRouteName="login"
+              <ThemeProvider
+                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
               >
-                <Stack.Screen
-                  name="login/index"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: true,
-                    header: ({ options }) => <TabHeader />,
-                  }}
-                />
-                <Stack.Screen
-                  name="settings/index"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: true,
-                    header: ({ options }) => <TitleHeader title="Settings" />,
-                  }}
-                />
-                <Stack.Screen
-                  name="(tabs)"
-                  options={{
+                <Stack
+                  screenOptions={{
                     headerShown: false,
-                    headerShadowVisible: false,
-                    header: ({ options }) => <TabHeader />,
+                    animation: "fade",
+                    animationDuration: 1000,
                   }}
-                />
-                <Stack.Screen
-                  name="project/[project]"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: true,
-                    header: ({ options }) => (
-                      <TitleHeader title={"Project Detail"} />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="project/whitelistForm"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: true,
-                    header: ({ options }) => (
-                      <TitleHeader title={"Join the Allowlist"} />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="mission/[mission]"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: true,
-                    header: ({ options }) => (
-                      <TitleHeader title={"Mission Detail"} />
-                    ),
-                  }}
-                />
-
-                <Stack.Screen
-                  name="notification/index"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: true,
-                    header: ({ options }) => (
-                      <TitleHeader title={"Notifications"} />
-                    ),
-                  }}
-                />
-
-                <Stack.Screen
-                  name="seller"
-                  options={{
-                    headerShown: false,
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="project/createOverview"
-                  options={{
-                    headerShown: true,
-                    headerShadowVisible: false,
-                    header: ({ options }) => (
-                      <TitleHeader title={"Add project"} />
-                    ),
-                  }}
-                />
-                <Stack.Screen
-                  name="project/createStepOne"
-                  options={{
-                    headerShown: false,
-                  }}
-                />
-              </Stack>
-            </ThemeProvider>
-          </View>
-        </SafeAreaProvider>
-        <AppKit />
+                  // initialRouteName="(tabs)"
+                  // initialRouteName={"(tabs)"}
+                >
+                  <Stack.Screen
+                    name={path.userSetting}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: true,
+                      header: ({ options }) => <TitleHeader title="Settings" />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.userTab}
+                    options={{
+                      headerShown: false,
+                      headerShadowVisible: false,
+                      header: ({ options }) => <TabHeader />,
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.userProjectDetail}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: true,
+                      header: ({ options }) => (
+                        <TitleHeader title={"Project Detail"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.userWhitelistForm}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: true,
+                      header: ({ options }) => (
+                        <TitleHeader title={"Join the Allowlist"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.userMission}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: true,
+                      header: ({ options }) => (
+                        <TitleHeader title={"Mission Detail"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.userNotification}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: true,
+                      header: ({ options }) => (
+                        <TitleHeader title={"Notifications"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.sellerTab}
+                    options={{
+                      headerShown: false,
+                      headerShadowVisible: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.createProjectOverview}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: false,
+                      header: ({ options }) => (
+                        <TitleHeader title={"Add project"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.createProjectStepOne}
+                    options={{
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.login}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: true,
+                      header: ({ options }) => (
+                        <View
+                          className="flex flex-row justify-center items-center bg-surface py-2 px-4 "
+                          style={{ elevation: 2 }}
+                        >
+                          <AoiCryptoLogo />
+                        </View>
+                      ),
+                    }}
+                  />
+                </Stack>
+              </ThemeProvider>
+            </View>
+          </SafeAreaProvider>
+          <AppKit />
+        </AuthProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
@@ -221,5 +236,5 @@ export default function RootLayout() {
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   // initialRouteName: "(tabs)",
-  initialRouteName: "login/index",
+  // initialRouteName: path.userTab,
 };

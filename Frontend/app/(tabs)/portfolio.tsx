@@ -24,18 +24,15 @@ export default function PortfolioScreen() {
   }
 
   return (
-    <ScrollView
-      className="bg-background"
-      contentContainerStyle={{ flexGrow: 1 }}
-    >
-      <View className="px-4 py-4">
-        <View className="pt-4 flex flex-col">
+    <View className="flex flex-col flex-1 bg-background">
+      <View className="px-4 py-4 flex-1">
+        <View className="pt-4 flex-1">
           <CustomSegmentedControl
             screens={["History", "Profile", "Applications"]}
             components={[<HistorySegment />, <ProfileSegment />, <ApplicationSegment />]}
           />
         </View>
       </View>
-    </ScrollView>
+      </View>
   );
 }

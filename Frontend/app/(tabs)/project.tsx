@@ -1,7 +1,7 @@
 import ProjectCard from "@/components/Items/Project/ProjectCard";
 import SearchHeader from "@/components/Layouts/SearchHeader";
 import { colors } from "@/constants/Colors";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ScrollView,
   View,
