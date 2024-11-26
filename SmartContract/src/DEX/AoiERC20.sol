@@ -35,16 +35,10 @@ contract AoiERC20 is IAoiERC20 {
     }
 
     function _mint(address to, uint256 value) internal {
-        if (to == address(0)) {
-            revert InvalidReceiver(to);
-        }
         _update(address(0), to, value);
     }
 
     function _burn(address from, uint256 value) internal {
-        if (from == address(0)) {
-            revert InvalidSender(from);
-        }
         _update(from, address(0), value);
     }
 
@@ -54,12 +48,6 @@ contract AoiERC20 is IAoiERC20 {
         uint256 value,
         bool emitEvent
     ) private {
-        if (owner == address(0)) {
-            revert InvalidApprover(owner);
-        }
-        if (spender == address(0)) {
-            revert InvalidSpender(spender);
-        }
         _allowances[owner][spender] = value;
         if (emitEvent) {
             emit Approval(owner, spender, value);

@@ -10,6 +10,8 @@ import {IAoiFactory} from "../interfaces/DEX/IAoiFactory.sol";
 import {IAoiPair} from "../interfaces/DEX/IAoiPair.sol";
 import {IAoiERC20} from "../interfaces/DEX/IAoiERC20.sol";
 
+import {AoiERC20} from "./AoiERC20.sol";
+
 contract AoiRouter is IAoiRouter {
     using SafeERC20 for IERC20;
 

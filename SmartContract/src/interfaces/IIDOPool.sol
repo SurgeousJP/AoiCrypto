@@ -12,8 +12,6 @@ interface IIDOPool {
     struct IDOPoolDetails {
         address tokenAddress;
         uint256 pricePerToken;
-        uint256 startTime;
-        uint256 endTime;
         uint256 raisedAmount;
         uint256 raisedTokenAmount;
         uint256 softCap;
@@ -22,7 +20,13 @@ interface IIDOPool {
         uint256 maxInvest;
         uint256 liquidityWETH9;
         uint256 liquidityToken;
-        bytes32 whitelistedRoot;
+        uint256 privateSaleAmount;
+    }
+
+    struct IDOTime {
+        uint256 startTime;
+        uint256 endTime;
+        uint256 startPublicSale; // only PrivateSale or only PublicSale if being equal 0
     }
 
     struct Investor {
@@ -45,6 +49,7 @@ interface IIDOPool {
     error InvalidTokenForSale();
     error InvalidPoolTimeFrame();
     error InvalidPoolDelayTime();
+    error InvalidPoolStartPublicSale();
 
     error NotEnoughBalance();
     error IDOIsNotStarted();
@@ -62,13 +67,21 @@ interface IIDOPool {
 
     error IDOPoolStillActive();
     error AlreadyListedDex();
+    error NotListedDex();
     error IDOIsAlreadyPublicSale();
 
     error IDOPoolIsPrivate();
     error IDOPoolIsPublic();
+    error IDOPoolIsPrivateForWhitelisted();
     error InvalidLiquidityAmount();
     error InvestorClaimed();
     error IDOPoolInitialized();
+    error IDOPoolNotInitialized();
+    error InvestorAlreadyRegistered();
+    error InvestorNotRegisteredYet();
+    error InvalidPrivateSaleAmount();
+
+    error IDOPoolHasWithdrawn();
 
     // EVENTS
     // event Whitelisted()
@@ -84,7 +97,9 @@ interface IIDOPool {
 
     event IDOPoolInvested(address indexed investor, uint256 amount);
 
-    event IDOPoolWithdrawn(address indexed investor, uint256 amount);
+    event IDOPoolInvestmentCanceled(address indexed investor, uint256 amount);
+
+    event IDOPoolWithdrawn(uint256 tokenAmount, uint256 ethAmount);
 
     event IDOPoolClaimed(address indexed investor, uint256 amount);
 
@@ -98,17 +113,23 @@ interface IIDOPool {
 
     event IDOPoolRefunded(address indexed investor, uint256 amount);
 
-    event IDOPoolChangedToPublic();
+    event RegisteredPrivatePool(address indexed investor);
+
+    event CanceledPrivatePoolRegistration(address indexed investor);
+
+    event IdoPoolInitialized();
 
     // VIEW FUNCTIONS
 
     function getPoolDetails() external view returns (IDOPoolDetails memory);
 
+    function getPoolTime() external view returns (IDOTime memory);
+
     function getPoolRaisedAmount() external view returns (uint256);
 
     function getPoolSoftCap() external view returns (uint256);
 
-    function isWhitelisted(address _address) external view returns (bool);
+    function isRegistered(address _address) external view returns (bool);
 
     function getPoolMinInvest() external view returns (uint256);
 
@@ -123,10 +144,6 @@ interface IIDOPool {
     ) external view returns (uint256);
 
     function getPoolOwner() external view returns (address);
-
-    function getAmountToTopUp() external view returns (uint256);
-
-    function getPoolTokenToppedUpAmount() external view returns (uint256);
 
     function getPoolStartTime() external view returns (uint256);
 
@@ -146,20 +163,26 @@ interface IIDOPool {
 
     function getPoolTokenAmount() external view returns (uint256);
 
+    function getPoolType() external view returns (IDOType);
+
+    function getHasListedDex() external view returns (bool);
+
     // EXECUTING FUNCTIONS
     function initialize(
         IDOPoolDetails memory _poolDetails,
-        address _poolOwner
+        IDOTime memory _poolTime,
+        address _POOL_OWNER,
+        bytes32 _WHITELISTED, // Allows to be default value
+        bool _PRIVATE_SALE
     ) external;
 
-    function listInDex(address to) external returns (address);
+    function listInDex(address to) external returns (address, uint256);
 
-    function investPublicPool() external payable;
+    function investPool(bytes32[] memory proof) external payable;
 
-    function investPrivatePool(
-        bytes32[] memory proof,
-        bytes32 leaf
-    ) external payable;
+    function registerPrivatePool() external;
+
+    function cancelRegisterPrivatePool() external;
 
     function cancelInvestment() external;
 
@@ -168,6 +191,4 @@ interface IIDOPool {
     function refundToken() external;
 
     function withdrawRemainingToken() external payable;
-
-    function changeToPublicSale() external;
 }
