@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import LoginIllustration from "@/assets/images/LoginIllustration.svg";
+import { useAccount } from "wagmi";
+import { router } from "expo-router";
 
 const Login = () => {
   const { open } = useAppKit();
   const handleLogin = (e) => {
     open();
-  }
+  };
+
+  const account = useAccount();
+  useEffect(() => {
+    if (account.status === "connected"){
+      router.push('/(tabs)');
+    }
+  }, [account]);
 
   return (
     <ScrollView className="w-full pt-8 px-4 bg-background">
@@ -20,7 +29,7 @@ const Login = () => {
         </Text>
 
         <View className="mx-auto">
-        <LoginIllustration width={322} height={284} />
+          <LoginIllustration width={322} height={284} />
         </View>
 
         <Pressable

@@ -8,7 +8,6 @@ import { ScrollView, Text, View } from "react-native";
 import Switch from "react-native-switch-toggles";
 
 function Settings() {
-
   const router = useRouter();
 
   const navToNotificationScreen = () => {

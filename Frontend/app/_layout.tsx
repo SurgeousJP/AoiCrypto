@@ -92,16 +92,6 @@ export default function RootLayout() {
     defaultChain: sepolia,
     enableAnalytics: true,
   });
-  const [isLoading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setLoading(false);
-  }, [])
-
-  const { isConnected: isAuthenticated } = useContext(AuthContext);
-  if (!isAuthenticated && !isLoading) {
-    router.push("/login");
-  }
 
   return (
     <WagmiProvider config={wagmiConfig}>
@@ -125,8 +115,7 @@ export default function RootLayout() {
                     animation: "fade",
                     animationDuration: 1000,
                   }}
-                  // initialRouteName="(tabs)"
-                  // initialRouteName={"(tabs)"}
+                  initialRouteName={path.userTab}
                 >
                   <Stack.Screen
                     name={path.userSetting}
@@ -236,5 +225,5 @@ export default function RootLayout() {
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   // initialRouteName: "(tabs)",
-  // initialRouteName: path.userTab,
+  initialRouteName: path.userTab,
 };

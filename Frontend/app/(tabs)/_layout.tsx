@@ -1,14 +1,15 @@
 import { colors, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { NativeWindStyleSheet } from "nativewind";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
 import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 import Home from "@/assets/icons/system-icons-svg/Home.svg";
 import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
 import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
+import { AuthContext } from "@/contexts/AuthProvider";
 
 NativeWindStyleSheet.setOutput({
   default: "native",
@@ -16,6 +17,19 @@ NativeWindStyleSheet.setOutput({
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+
+  const [isRendering, setRendering] = useState(true);
+  useEffect(() => {
+    setRendering(false);
+  }, []);
+
+  const userContext = useContext(AuthContext);
+  useEffect(() => {
+    if (!isRendering && !userContext.isLoading && userContext.status !== 'connected'){
+      router.push('/login');
+    }
+  }, [userContext, isRendering]);
+
   return (
     <Tabs
       screenOptions={{

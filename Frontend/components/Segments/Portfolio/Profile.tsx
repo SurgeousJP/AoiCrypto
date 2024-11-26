@@ -1,13 +1,15 @@
 import LineChartComponent from "@/components/Displays/Chart/LineChart";
 import Container from "@/components/Layouts/Container";
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import SummarySegment from "../Staking/Summary";
-import PieChart from 'react-native-pie-chart'
 
 const ProfileSegment = () => {
   return (
-    <View className="flex flex-col mt-2">
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      className="flex flex-col mt-2"
+    >
       <View className="mb-4">
         <Container>
           <View className="bg-surface rounded-lg p-2">
@@ -62,7 +64,7 @@ const ProfileSegment = () => {
         </Container>
       </View>
       <SummarySegment />
-    </View>
+    </ScrollView>
   );
 };
 
