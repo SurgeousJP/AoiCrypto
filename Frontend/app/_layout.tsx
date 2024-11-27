@@ -18,7 +18,6 @@ import {
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { router, Stack, useRouter } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
 import { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, View, Text } from "react-native";
 import "react-native-reanimated";
@@ -39,6 +38,7 @@ import {
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import { path } from "@/constants/Path";
 import AuthProvider, { AuthContext } from "@/contexts/AuthProvider";
+import * as SplashScreen from "expo-splash-screen";
 // Import
 
 SplashScreen.preventAutoHideAsync();
@@ -115,14 +115,16 @@ export default function RootLayout() {
                     animation: "fade",
                     animationDuration: 1000,
                   }}
-                  initialRouteName={path.userTab}
+                  initialRouteName={path.login}
                 >
                   <Stack.Screen
                     name={path.userSetting}
                     options={{
                       headerShown: true,
                       headerShadowVisible: true,
-                      header: ({ options }) => <TitleHeader title="Settings" />,
+                      header: ({ options }) => {
+                        return (<TitleHeader title={"Settings"} isSettingHidden={true} />)
+                      }
                     }}
                   />
                   <Stack.Screen
@@ -225,5 +227,5 @@ export default function RootLayout() {
 export const unstable_settings = {
   // Ensure any route can link back to `/`
   // initialRouteName: "(tabs)",
-  initialRouteName: path.userTab,
+  initialRouteName: path.login,
 };

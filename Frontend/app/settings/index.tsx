@@ -2,6 +2,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import SettingCard from "@/components/Cards/SettingCard/SettingCard";
 import UserCard from "@/components/Cards/UserCard/UserCard";
 import { Ionicons } from "@expo/vector-icons";
+import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import { useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";
@@ -14,6 +15,11 @@ function Settings() {
     router.navigate("/notification");
   }
 
+  const { open } = useAppKit();
+  const openWalletModal = () => {
+    open();
+  };
+
   return (
     <ScrollView
       className="flex flex-col w-full bg-background"
@@ -22,44 +28,9 @@ function Settings() {
       <View className="pt-8 px-4 pb-4">
         <UserCard />
         <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
-          Privacy
-        </Text>
-        <SettingCard
-          icon={
-            <Ionicons name="person-circle-outline" color={"gray"} size={24} />
-          }
-          title="Profile"
-          pos={"top"}
-        />
-        <SettingCard
-          icon={
-            <Ionicons
-              name="shield-checkmark-outline"
-              color={"gray"}
-              size={24}
-            />
-          }
-          title="Security"
-          pos={"bot"}
-        />
-        <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
-          Finance
-        </Text>
-        <SettingCard
-          icon={
-            <Ionicons name="document-text-outline" color={"gray"} size={24} />
-          }
-          title="History"
-          pos={"top"}
-        />
-        <SettingCard
-          icon={<Ionicons name="pie-chart-outline" color={"gray"} size={24} />}
-          title="Limits"
-          pos={"bot"}
-        />
-        <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
           Account
         </Text>
+        <View className="rounded-xl" style={{elevation: 2}}>
         <SettingCard
           icon={<Ionicons name="image-outline" color={"gray"} size={24} />}
           title="Theme"
@@ -87,32 +58,11 @@ function Settings() {
           pos={"bot"}
           onChevronClick={navToNotificationScreen}
         />
-        <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
-          More
-        </Text>
-        <SettingCard
-          icon={<Ionicons name="gift-outline" color={"gray"} size={24} />}
-          title="My bonus"
-          pos={"top"}
-        />
-        <SettingCard
-          icon={<Ionicons name="person-add-outline" color={"gray"} size={24} />}
-          title="Share with friends"
-          pos={"mid"}
-        />
-        <SettingCard
-          icon={
-            <Ionicons name="help-circle-outline" color={"gray"} size={24} />
-          }
-          title="Support"
-          pos={"bot"}
-        />
+        </View>
         <View className="mt-6">
           <PrimaryButton
-            onPress={function (): void {
-              throw new Error("Function not implemented.");
-            }}
-            content={"Log out"}
+            onPress={openWalletModal}
+            content={"Open wallet modal"}
             outlined
           />
         </View>

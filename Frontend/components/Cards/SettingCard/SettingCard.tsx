@@ -43,7 +43,7 @@ function SettingCard({
     <TouchableOpacity
       className={`flex flex-row ${getCardStyle(
         pos
-      )} items-center w-full h-[56px] justify-between p-4 bg-white`}
+      )} items-center w-full h-[56px] justify-between p-4 bg-white border-border border-[0.5px]`}
     >
       <View className="flex flex-row items-center">
         {icon}

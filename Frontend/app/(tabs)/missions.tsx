@@ -37,7 +37,7 @@ export default function MissionsScreen() {
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-background">
       <View className="bg-surface mb-4">
         <SearchHeader placeholder={"Missions"} />
       </View>

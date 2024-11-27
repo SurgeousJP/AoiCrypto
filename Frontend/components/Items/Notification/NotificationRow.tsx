@@ -15,14 +15,14 @@ const NotificationRow: React.FC<NotificationProps> = (props) => {
       <View className="flex-1 flex flex-col">
         <View className="flex flex-row space-x-2">
           <Metamask width={24} height={24} />
-          <Text className="font-readexSemiBold text-md mb-2 text-[#404040]">
+          <Text className="font-readexSemiBold text-sm mb-2 text-[#404040]">
             {props.title}
           </Text>
         </View>
-        <Text className="font-readexRegular text-md mb-2 text-[#404040]">
+        <Text className="font-readexRegular text-sm mb-2 text-[#404040]">
           {props.description}
         </Text>
-        <Text className="font-readexRegular text-md mb-2 text-[#404040]">
+        <Text className="font-readexRegular text-sm mb-2 text-[#404040]">
           {props.receiveDate}
         </Text>
       </View>

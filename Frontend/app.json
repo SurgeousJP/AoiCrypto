@@ -1,15 +1,15 @@
 {
   "expo": {
-    "name": "mobile-demo",
-    "slug": "mobile-demo",
+    "name": "AoiCrypto",
+    "slug": "AoiCrypto",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/Coinmoney.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
+      "image": "./assets/images/loading.png",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -17,8 +17,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/Coinmoney.png",
+        "backgroundColor": "#2F66F6"
       },
       "package": "com.aoicrypto"
     },

@@ -4,7 +4,7 @@ import { Image, Text, View } from "react-native";
 
 function UserCard() {
   return (
-    <View className="px-3.5 py-2.5 bg-white rounded-2xl shadow flex flex-row justify-between items-center">
+    <View className="px-3.5 py-2.5 bg-white rounded-2xl shadow flex flex-row justify-between items-center border-border border-[0.5px]" style={{elevation: 2}}>
       <View className="flex flex-col justify-between">
         <View className="flex flex-row items-center">
           <Image

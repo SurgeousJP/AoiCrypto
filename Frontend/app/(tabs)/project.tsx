@@ -44,7 +44,7 @@ export default function ProjectScreen() {
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-background">
       <View className="bg-surface mb-4">
         <SearchHeader placeholder={"Projects"} />
       </View>
@@ -72,8 +72,8 @@ export default function ProjectScreen() {
 
           <Pressable className="flex flex-row space-x-1 items-center flex-1">
             <Text className="font-readexRegular text-secondary mx-auto">
-              Token price{" "}
-              <Move width={12} height={12} stroke={colors.secondary} />
+              Token price
+              {/* <Move width={12} height={12} stroke={colors.secondary} /> */}
             </Text>
           </Pressable>
         </View>
