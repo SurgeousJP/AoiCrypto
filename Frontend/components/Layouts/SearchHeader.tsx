@@ -11,7 +11,7 @@ interface SearchHeaderProps {
 
 const SearchHeader: React.FC<SearchHeaderProps> = (props) => {
   return (
-    <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
+    <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3" style={{elevation: 2}}>
       <Searchbar placeholder={props.placeholder ?? "N/A"} />
       <TouchableOpacity onPress={() => {}}>
         <Link href={"/settings"}>

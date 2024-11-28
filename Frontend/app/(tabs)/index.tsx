@@ -10,6 +10,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from "react-native";
+import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 
 export default function HomeScreen() {
   const banner = require("@/assets/logos/Kima.png");
@@ -62,6 +63,10 @@ export default function HomeScreen() {
           </View>
         </View>
         <View className="flex flex-col mt-4 mb-2">
+          <View className="mt-4 mb-4">
+            <NormalButton content={"Test Smart Contract"} onClick={() => {}} />
+          </View>
+
           <View className="flex flex-row justify-between mb-1">
             <Text className="text-textColor text-md font-readexBold">
               Funded Projects

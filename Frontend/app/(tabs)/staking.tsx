@@ -13,7 +13,7 @@ import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 export default function Staking() {
   return (
     <View className="flex-1">
-      <View className="border-b-[0.2px] border-border">
+      <View className="border-b-[0.2px] border-border" style={{elevation: 2}}>
         <ScreenHeader
           LeftComponent={
             <View className="opacity-0">

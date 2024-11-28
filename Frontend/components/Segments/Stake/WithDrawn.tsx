@@ -38,7 +38,7 @@ function WithDrawn() {
       </Text>
       <View>
         <Container>
-          <View className="space-y-2 p-3 rounded-md bg-white shadow">
+          <View className="space-y-2 p-3 rounded-md bg-white border-border border-[0.5px]" style={{elevation: 1}}>
             <View className="flex flex-row items-center justify-between">
               <Text className="text-sm text-slate-900 font-readexRegular">
                 AOIs Power Tier

@@ -80,34 +80,40 @@ const ApplicationSegment = () => {
 
   return (
     <View className="flex flex-col mt-2">
-      <ScrollView
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}
-        className="mb-4 bg-surface border-border border-[1px] space-x-3 overflow-hidden"
-      >
-        <View className="p-4 flex flex-row space-x-3 items-center">
-          <View className="w-[188px] h-8">
-            <Searchbar placeholder={"Application search"} />
+      <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          className="space-x-3 overflow-hidden"
+        >
+          <View className="flex flex-row space-x-3 items-center">
+            <View className="w-[188px] h-8">
+              <Searchbar placeholder={"Application search"} />
+            </View>
+            <View className="h-8 w-24">
+              <CustomDropdown
+                placeholder="Stage"
+                width={null}
+                data={projectState}
+              />
+            </View>
+            <View className="h-8 w-28">
+              <CustomDropdown
+                placeholder="Status"
+                width={null}
+                data={whitelistState}
+              />
+            </View>
           </View>
-          <View className="h-8 w-24">
-            <CustomDropdown
-              placeholder="Stage"
-              width={null}
-              data={projectState}
-            />
-          </View>
-          <View className="h-8 w-28">
-            <CustomDropdown
-              placeholder="Status"
-              width={null}
-              data={whitelistState}
-            />
-          </View>
-        </View>
-      </ScrollView>
-
+        </ScrollView>
+      </View>
       <FlatList
-        style={{ paddingHorizontal: 0, borderColor: colors.border, borderWidth: 0.5, elevation: 1 }}
+        style={{
+          paddingHorizontal: 0,
+          borderColor: colors.border,
+          borderWidth: 0.5,
+          elevation: 1,
+        }}
         contentContainerStyle={{ flexGrow: 1, gap: 0 }}
         data={[headerData, ...rowData]}
         keyExtractor={(item, index) => index.toString()}

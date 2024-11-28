@@ -78,43 +78,45 @@ export default function ProjectScreen() {
           </Pressable>
         </View>
         <DividerLine />
-        <ScrollView
-          horizontal={true}
-          indicatorStyle="white"
-          showsHorizontalScrollIndicator={false}
-          scrollToOverflowEnabled={false}
-        >
-          <View className="mt-2 mx-2 flex flex-row justify-between space-x-2 items-center">
-            <View className="flex-1">
-              <CustomDropdown
-                placeholder="Stage"
-                width={96}
-                data={projectState}
-              />
+        <View className="overflow-hidden px-2">
+          <ScrollView
+            horizontal={true}
+            indicatorStyle="white"
+            showsHorizontalScrollIndicator={false}
+            scrollToOverflowEnabled={false}
+          >
+            <View className="mt-2 mx-2 flex flex-row justify-between space-x-2 items-center">
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Stage"
+                  width={96}
+                  data={projectState}
+                />
+              </View>
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Whitelisted"
+                  width={124}
+                  data={whitelistState}
+                />
+              </View>
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Token"
+                  width={124}
+                  data={whitelistState}
+                />
+              </View>
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Category"
+                  width={124}
+                  data={whitelistState}
+                />
+              </View>
             </View>
-            <View className="flex-1">
-              <CustomDropdown
-                placeholder="Whitelisted"
-                width={124}
-                data={whitelistState}
-              />
-            </View>
-            <View className="flex-1">
-              <CustomDropdown
-                placeholder="Token"
-                width={124}
-                data={whitelistState}
-              />
-            </View>
-            <View className="flex-1">
-              <CustomDropdown
-                placeholder="Category"
-                width={124}
-                data={whitelistState}
-              />
-            </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </View>
       </View>
       <FlatList
         style={{ paddingHorizontal: 16 }}

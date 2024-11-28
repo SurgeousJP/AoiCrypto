@@ -4,12 +4,6 @@ import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
-  ReadexPro_300Light,
-  ReadexPro_400Regular,
-  ReadexPro_600SemiBold,
-  ReadexPro_700Bold,
-} from "@expo-google-fonts/readex-pro";
-import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,

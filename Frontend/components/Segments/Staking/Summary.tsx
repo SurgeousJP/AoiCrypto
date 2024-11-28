@@ -1,4 +1,3 @@
-import Container from "@/components/Layouts/Container";
 import React from "react";
 import { View, Text } from "react-native";
 import Wallet from "@/assets/icons/system-icons-svg/Wallet.svg";
@@ -7,7 +6,6 @@ import Line from "@/assets/icons/system-icons-svg/Line.svg";
 import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 import { SvgProps } from "react-native-svg";
 import { colors } from "@/constants/Colors";
-import { Shadow } from "react-native-shadow-2";
 
 interface SummaryItem {
   icon: React.FC<SvgProps>;
@@ -29,7 +27,7 @@ const SummarySegment = () => {
         const Icon = summary.icon;
         return (
           <View className="mt-2">
-              <View className="flex flex-row justify-between p-4 rounded-xl bg-surface overflow-hidden border-border border-[1px]" style={{elevation: 2}}>
+              <View className="flex flex-row justify-between p-4 rounded-xl bg-surface overflow-hidden border-border border-[0.5px]" style={{elevation: 2}}>
                 <View className="flex flex-row space-x-2">
                   <Icon stroke={colors.secondary} />
                   <Text className="font-readexRegular text-black">
