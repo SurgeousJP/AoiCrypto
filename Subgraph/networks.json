@@ -1,0 +1,8 @@
+{
+  "sepolia": {
+    "AoiFactory": {
+      "address": "0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130",
+      "startBlock": 7154831
+    }
+  }
+}

@@ -1,0 +1,108 @@
+type Count @entity {
+  id: Bytes!
+  idoTotal: BigInt!
+  idoPrivateTotal: BigInt!
+  idoPublicTotal: BigInt!
+  idoSuccessTotal: BigInt! # @note - Reached softCap
+  investedTotal: BigInt!
+}
+
+type AnalysisDaily @entity {
+  id: Bytes!
+  date: BigInt!
+  raises: BigInt!
+  volume: BigInt!
+}
+
+type AnalysisIDODaily @entity {
+  id: Bytes!
+  idoPool: IDOPool @derivedFrom(field: "analysisDaily")
+  date: BigInt!
+  raises: BigInt!
+  volume: BigInt!
+}
+
+type Account @entity {
+  id: Bytes!
+  address: Bytes! #address
+  investors: [Investor!] @derivedFrom(field: "account")
+  poolOwners: [PoolOwner!] @derivedFrom(field: "account")
+  tokens: [Token!] @derivedFrom(field: "creator")
+  investedTotal: BigInt!
+  investedTotalAmount: BigInt!
+  raisedTotal: BigInt!
+  raisedTotalAmount: BigInt!
+}
+
+type Investor @entity {
+  id: Bytes!
+  account: Account!
+  idoPool: IDOPool!
+  investedAmount: BigInt!
+  investedTokenAmount: BigInt!
+  claimed: Boolean!
+}
+
+type PoolOwner @entity {
+  id: Bytes! #address
+  account: Account!
+  idoPool: IDOPool!
+  raised: BigInt!
+}
+
+type Token @entity(immutable: true) {
+  id: Bytes! #address
+  address: Bytes!
+  creator: Account! @derivedFrom(field: "tokens")
+  createdTime: BigInt!
+}
+
+type LiquidityPool @entity {
+  id: Bytes! #address
+  idoPool: IDOPool!
+  token0: Bytes! #address
+  token1: Bytes! #address
+  token0Amount: BigInt!
+  token1Amount: BigInt!
+  liquidityPoolAddress: Bytes #address
+  action: LiquidityPoolAction!
+  lpToAddress: Bytes! #address
+  lockExpired: BigInt
+  createdTime: BigInt!
+}
+
+type IDOPool @entity {
+  id: Bytes!
+  poolId: BigInt!
+  poolOwner: PoolOwner!
+  investors: [Investor!] @derivedFrom(field: "idoPool")
+  poolAddress: Bytes! #address
+  tokenPool: Bytes! #address
+  pricePerToken: BigInt! # the ratio exchanging from token to eth
+  createdTime: BigInt!
+  startTime: BigInt!
+  endTime: BigInt!
+  raisedAmount: BigInt! # ETH
+  raisedTokenAmount: BigInt!
+  softCap: BigInt!
+  hardCap: BigInt!
+  minInvest: BigInt!
+  maxInvest: BigInt!
+  liquidityTokenAmount: BigInt!
+  liquidityWETHAmount: BigInt!
+  whitelistedRoot: Bytes
+  idoType: IDOType!
+  liquidityPool: LiquidityPool!
+  analysisDaily: AnalysisIDODaily! @derivedFrom(field: "idoPool")
+}
+
+enum IDOType {
+  PRIVATE_SALE
+  PUBLIC_SALE
+}
+
+enum LiquidityPoolAction {
+  NOTHING # -> owner address
+  LOCK # -> factory address
+  BURN # -> zero address
+}

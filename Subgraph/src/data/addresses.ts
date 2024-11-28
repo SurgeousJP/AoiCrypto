@@ -1,0 +1,2 @@
+export const IDOFactory = "0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130";
+export const WETH = "0xa948F1ADA2a714F359035307B05Dd2CCbFbEef89";
