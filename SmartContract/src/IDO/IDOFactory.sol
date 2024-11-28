@@ -169,6 +169,10 @@ contract IDOFactory is IDOFactoryState, IIDOFactory, Ownable {
         return idoPoolAddresses[poolId];
     }
 
+    function getLiquidityPool(uint256 poolId) external view returns(LiquidityPool memory) {
+        return liquidityPoolsByPoolId[poolId];
+    }
+
     function getLiquidityPoolAddress(
         uint256 poolId
     ) external view returns (address) {
