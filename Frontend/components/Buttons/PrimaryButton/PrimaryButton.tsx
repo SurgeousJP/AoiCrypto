@@ -20,7 +20,7 @@ function PrimaryButton({
       }`}
     >
       <Text
-        className={`text-center text-sm font-readexMedium ${
+        className={`text-center text-sm font-readexSemiBold ${
           outlined ? "text-blue-600" : "text-white"
         }`}
       >

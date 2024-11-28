@@ -1,7 +1,5 @@
 import React from "react";
 import { View, Text, Image, ImageBackground } from "react-native";
-import { Shadow } from "react-native-shadow-2";
-import { useRouter } from "expo-router";
 import MissionTag from "@/components/Buttons/Tags/MissionTag";
 
 const MissionCard = () => {

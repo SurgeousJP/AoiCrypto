@@ -9,10 +9,13 @@ import { Link } from "expo-router";
 
 interface TitleHeaderProps {
   title: string; // Optional title prop
-  isSettingHidden?: boolean,
+  isSettingHidden?: boolean;
 }
 
-const TitleHeader: React.FC<TitleHeaderProps> = ({ title, isSettingHidden = false }) => {
+const TitleHeader: React.FC<TitleHeaderProps> = ({
+  title,
+  isSettingHidden = false,
+}) => {
   const navigation = useNavigation();
 
   return (
@@ -26,9 +29,15 @@ const TitleHeader: React.FC<TitleHeaderProps> = ({ title, isSettingHidden = fals
         <Text className="text-[20px] font-readexSemiBold">{title}</Text>
       }
       RightComponent={
-        <Link href={"/settings"}>
-          <Setting fill={isSettingHidden ? "#ffffff" : colors.secondary} width={20} height={20} />
-        </Link>
+        <TouchableOpacity>
+          <Link href={"/settings"}>
+            <Setting
+              fill={isSettingHidden ? "#ffffff" : colors.secondary}
+              width={20}
+              height={20}
+            />
+          </Link>
+        </TouchableOpacity>
       }
     ></ScreenHeader>
   );

@@ -50,7 +50,7 @@ export default function HomeScreen() {
             Upcoming Projects
           </Text>
           <Pressable>
-            <Text className="text-md font-readexMedium text-primary">More</Text>
+            <Text className="text-md font-readexSemiBold text-primary">More</Text>
           </Pressable>
         </View>
         <View className="flex flex-row space-x-2">
@@ -67,7 +67,7 @@ export default function HomeScreen() {
               Funded Projects
             </Text>
             <Pressable>
-              <Text className="text-md font-readexMedium text-primary">
+              <Text className="text-md font-readexSemiBold text-primary">
                 More
               </Text>
             </Pressable>

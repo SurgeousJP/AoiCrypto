@@ -4,7 +4,6 @@ import TabHeader from "@/components/Layouts/TabHeader";
 import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
-  ReadexPro_200ExtraLight,
   ReadexPro_300Light,
   ReadexPro_400Regular,
   ReadexPro_500Medium,
@@ -17,9 +16,9 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { router, Stack, useRouter } from "expo-router";
-import { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, View, Text } from "react-native";
+import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { View } from "react-native";
 import "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import React from "react";
@@ -32,13 +31,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import {
   createAppKit,
-  defaultWagmiConfig,
   AppKit,
 } from "@reown/appkit-wagmi-react-native";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import { path } from "@/constants/Path";
-import AuthProvider, { AuthContext } from "@/contexts/AuthProvider";
+import AuthProvider from "@/contexts/AuthProvider";
 import * as SplashScreen from "expo-splash-screen";
+import { PROJECT_ID, wagmiConfig } from "@/configs/wagmi.config";
 // Import
 
 SplashScreen.preventAutoHideAsync();
@@ -48,10 +47,8 @@ export default function RootLayout() {
 
   const colorScheme = useColorScheme();
   let [loaded, error] = useFonts({
-    ReadexPro_200ExtraLight,
     ReadexPro_300Light,
     ReadexPro_400Regular,
-    ReadexPro_500Medium,
     ReadexPro_600SemiBold,
     ReadexPro_700Bold,
   });
@@ -63,31 +60,11 @@ export default function RootLayout() {
   if (!loaded) {
     return null;
   }
-  // Font loading
 
   const queryClient = new QueryClient();
 
-  const projectId = process.env.EXPO_PUBLIC_AOICRYPTO_PROJECT_ID;
-
-  const chains = [sepolia] as const;
-
-  const metadata = {
-    name: "AoiCrypto AppKit WalletConnect",
-    description: "AoiCrypto AppKit WalletConnect",
-    url: "https://reown.com/appkit",
-    icons: [
-      "https://i.pinimg.com/736x/cd/0e/0d/cd0e0dbb19f35e33bb6e68b4f47d0db8.jpg",
-    ],
-    redirect: {
-      native: "myapp://",
-      universal: "https://myapp.com",
-    },
-  };
-
-  const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata });
-
   createAppKit({
-    projectId,
+    projectId: PROJECT_ID,
     wagmiConfig,
     defaultChain: sepolia,
     enableAnalytics: true,
@@ -226,6 +203,5 @@ export default function RootLayout() {
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
-  // initialRouteName: "(tabs)",
   initialRouteName: path.login,
 };

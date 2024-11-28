@@ -39,7 +39,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </View>
           </View>
           <View className="flex flex-col mt-4 px-2 py-2">
-            <Text className="font-readexMedium text-md mb-1">Highstreet</Text>
+            <Text className="font-readexSemiBold text-md mb-1">Highstreet</Text>
 
             <View className="flex flex-row gap-1 mb-2">
               <Text className="font-readexBold">$0.02</Text>
@@ -80,7 +80,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </View>
         </View>
         <View className="flex flex-col justify-between mt-4 px-2 py-2">
-          <Text className="font-readexMedium text-md mb-1">Highstreet</Text>
+          <Text className="font-readexSemiBold text-md mb-1">Highstreet</Text>
 
           <View className="flex flex-row gap-1 mb-2">
             <Text className="font-readexBold">TBA</Text>

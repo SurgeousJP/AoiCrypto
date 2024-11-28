@@ -75,7 +75,7 @@ const MissionDetail = () => {
               <View className="flex flex-row justify-between">
                 <Text className="font-readexSemiBold">Missions</Text>
                 <View className="flex flex-row space-x-2 item-center">
-                  <Text className="font-readexMedium text-sm">0/4</Text>
+                  <Text className="font-readexSemiBold text-sm">0/4</Text>
                   <View className="my-auto">
                     <Progress.Bar
                       color={colors.primary}
