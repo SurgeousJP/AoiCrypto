@@ -6,7 +6,6 @@ import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   ReadexPro_300Light,
   ReadexPro_400Regular,
-  ReadexPro_500Medium,
   ReadexPro_600SemiBold,
   ReadexPro_700Bold,
 } from "@expo-google-fonts/readex-pro";
@@ -46,18 +45,19 @@ export default function RootLayout() {
   const insets = useSafeAreaInsets();
 
   const colorScheme = useColorScheme();
-  let [loaded, error] = useFonts({
-    ReadexPro_300Light,
-    ReadexPro_400Regular,
-    ReadexPro_600SemiBold,
-    ReadexPro_700Bold,
+
+  const [loaded, error] = useFonts({
+    ReadexPro_300Light: require("@/assets/fonts/ReadexPro_300Light.ttf"),
+    ReadexPro_400Regular: require("@/assets/fonts/ReadexPro_400Regular.ttf"),
+    ReadexPro_600SemiBold: require("@/assets/fonts/ReadexPro_600SemiBold.ttf"),
+    ReadexPro_700Bold: require("@/assets/fonts/ReadexPro_700Bold.ttf"),
   });
   useEffect(() => {
-    if (loaded) {
+    if (loaded || error) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
-  if (!loaded) {
+  }, [loaded, error]);
+  if (!loaded && !error) {
     return null;
   }
 
