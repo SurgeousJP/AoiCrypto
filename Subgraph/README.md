@@ -1,0 +1,1 @@
+# Subgraph for AoiCrypto project
