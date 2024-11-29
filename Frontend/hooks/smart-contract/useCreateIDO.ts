@@ -11,6 +11,7 @@ import {
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
 import { CreateIDOInput } from "@/contracts/types/CreateIDOInput";
+import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -42,6 +43,7 @@ export const useCreateIDO = ({
     chainId,
     address: getIDOFactoryAddress(chainId),
     abi: getABI("IDOFactory"),
+    // <---! PARAMS IN ABI !---> //
     args: [
       idoInput.poolDetails,
       idoInput.poolTime,
@@ -50,9 +52,23 @@ export const useCreateIDO = ({
       idoInput.action,
       idoInput.lockExpired,
     ],
-    functionName: "createIDO",
+    // <---! PARAMS IN ABI !---> //
+
+    // <---! FUNCTION IN ABI !---> //
+    functionName: "createPool",
+    // <---! FUNCTION IN ABI !---> //
     query: { enabled: enabled && !!chainId, retry: false },
   });
+
+  useEffect(() => {
+    console.log("<---! SIMULATE CONTRACT DEBUG !--->");
+    console.log("Config: ", config);
+    console.log("Refetch: ", refetch);
+    console.log("Is loading prepare: ", isLoadingPrepare);
+    console.log("Is error prepare: ", isErrorPrepare);
+    console.log("Error prepare: ", errorPrepare);
+    console.log("<---! SIMULATE CONTRACT DEBUG !--->");
+  }, [config, refetch, isLoadingPrepare, isErrorPrepare, errorPrepare]);
 
   const {
     writeContractAsync,
@@ -115,6 +131,8 @@ export const useCreateIDO = ({
   });
 
   const onCreateIDO = async () => {
+    console.log("Config: ", config);
+    console.log("Enabled: ", enabled);
     if (config && enabled) {
       try {
         return await writeContractAsync(config.request);

@@ -6,15 +6,17 @@ export const AuthContext = createContext({
   isConnected: false,
   status: "",
   isLoading: true,
+  chainId: 0 
 });
 
 const AuthProvider = ({ children }) => {
-  const { address, status, isConnected } = useAccount();
+  const { chainId, address, status, isConnected } = useAccount();
 
   const [authInfo, setAuthInfo] = useState({
     address: address,
     status: status,
     isConnected: isConnected,
+    chainId: chainId,
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -29,16 +31,17 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     console.log("Auth provider address: ", address);
     console.log("Auth provider connection status: ", isConnected);
-    setAuthInfo({ address, status, isConnected });
-  }, [address, isConnected, status]);
+    setAuthInfo({ address, status, isConnected, chainId });
+  }, [address, isConnected, status, chainId]);
 
   return (
     <AuthContext.Provider
       value={{
-        address: authInfo.address,
+        address: authInfo.address ?? "Address not available",
         isConnected: authInfo.isConnected,
         status: status,
         isLoading: isLoading,
+        chainId: chainId ?? 0 
       }}
     >
       {children}

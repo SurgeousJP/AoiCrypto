@@ -1,7 +1,7 @@
 import XProject from "@/components/Items/Project/XProject";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
 import { colors } from "@/constants/Colors";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Image,
   View,
@@ -11,6 +11,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
+import { useCreateIDO } from "@/hooks/smart-contract/useCreateIDO";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { sampleCreateIDOInput } from "@/contracts/types/CreateIDOInput";
+import { TransactionReceipt } from "viem";
 
 export default function HomeScreen() {
   const banner = require("@/assets/logos/Kima.png");
@@ -20,10 +24,36 @@ export default function HomeScreen() {
     setLoading((loading) => false);
   }, []);
 
-  
+  const { chainId, address, isConnected } = useContext(AuthContext);
 
-  const onTestClick = () => {
-    console.log("Test clicked");
+  const {
+    error: createIDOError,
+    isLoading: createIDOIsLoading,
+    onCreateIDO,
+  } = useCreateIDO({
+    chainId: chainId,
+    idoInput: sampleCreateIDOInput,
+    enabled: true,
+    onSuccess: (data: TransactionReceipt) => {
+      console.log("Test creating IDO successfully");
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      console.log("Test settled IDO successfully");
+    },
+    onError: (error?: Error) => {
+      console.log("An error occurred: ", error);
+    }
+  });
+
+  const onTestClick = async () => {
+    console.log("Test smart contract started");
+    try {
+      await onCreateIDO(); // Call the function to interact with the smart contract
+      console.log("IDO creation initiated...");
+    } catch (error) {
+      console.error("Error while initiating IDO creation:", error);
+    }
+    console.log("Test smart contract ended");
   }
 
   if (loading) {
@@ -69,9 +99,9 @@ export default function HomeScreen() {
           </View>
         </View>
         <View className="flex flex-col mt-4 mb-2">
-          <View className="mt-4 mb-4">
+          <Pressable className="mt-4 mb-4">
             <NormalButton content={"Test Smart Contract"} onClick={onTestClick} />
-          </View>
+          </Pressable>
 
           <View className="flex flex-row justify-between mb-1">
             <Text className="text-textColor text-md font-readexBold">
