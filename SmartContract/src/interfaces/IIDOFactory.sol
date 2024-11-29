@@ -24,21 +24,6 @@ interface IIDOFactory {
         uint256 lockExpired;
     }
 
-    function createPool(
-        IIDOPool.IDOPoolDetails memory poolDetails,
-        IIDOPool.IDOTime memory poolTime,
-        bool privateSale,
-        bytes32 whitelisted,
-        LiquidityPoolAction action,
-        uint256 lockExpired
-    ) external payable returns (address);
-
-    function depositLiquidityPool(
-        uint256 poolId
-    ) external returns (address, uint256);
-
-    function receiveLpToken(uint256 poolId) external;
-
     // VIEW FUNCTIONS
 
     function getLiquidityPoolAddress(
@@ -53,29 +38,20 @@ interface IIDOFactory {
 
     function checkPoolIsValid(uint256 poolId) external view returns (bool);
 
-    error InvalidPoolId();
+    // EXECUTION FUNCTIONS
 
-    error NotPoolOwner();
+    function createPool(
+        IIDOPool.IDOPoolDetails memory poolDetails,
+        IIDOPool.IDOTime memory poolTime,
+        bool privateSale,
+        bytes32 whitelisted,
+        LiquidityPoolAction action,
+        uint256 lockExpired
+    ) external payable returns (address);
 
-    error ActionIsNotNothing();
-
-    error InvalidAction();
-
-    error LiquidityIsNotLocked();
-
-    error CannotUnlockLiquidityLocked();
-
-    error IdoPoolAlreadyDeposited();
-
-    error InvalidTokenAddress();
-
-    error InvalidPricePerToken();
-
-    error InvalidLockExpired();
-
-    event PoolCreated(
-        address indexed owner,
-        address indexed tokenAddress,
+    function depositLiquidityPool(
         uint256 poolId
-    );
+    ) external returns (address, uint256);
+
+    function receiveLpToken(uint256 poolId) external;
 }

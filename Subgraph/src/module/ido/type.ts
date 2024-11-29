@@ -3,6 +3,11 @@ import { Address, BigInt } from "@graphprotocol/graph-ts";
 export const PRIVATE_SALE = "Private Sale";
 export const PUBLIC_SALE = "Public Sale";
 
+export enum IDOTypeEnum {
+  PUBLIC_SALE,
+  PRIVATE_SALE,
+}
+
 export interface IDOPoolDetail {
   tokenAddress: Address;
   pricePerToken: BigInt;
@@ -17,9 +22,10 @@ export interface IDOPoolDetail {
   privateSaleAmount: BigInt;
 }
 
-export enum IDOTypeEnum {
-  PUBLIC_SALE,
-  PRIVATE_SALE,
+export interface IDOPoolTime {
+  startTime: BigInt;
+  endTime: BigInt;
+  startPublicSale: BigInt;
 }
 
 export const IDOPoolDetailDefault: IDOPoolDetail = {
@@ -34,4 +40,10 @@ export const IDOPoolDetailDefault: IDOPoolDetail = {
   privateSaleAmount: BigInt.fromI32(0),
   raisedAmount: BigInt.fromI32(0),
   raisedTokenAmount: BigInt.fromI32(0),
+};
+
+export const IDOTimeDefault: IDOPoolTime = {
+  startTime: BigInt.fromI32(0),
+  endTime: BigInt.fromI32(0),
+  startPublicSale: BigInt.fromI32(0),
 };

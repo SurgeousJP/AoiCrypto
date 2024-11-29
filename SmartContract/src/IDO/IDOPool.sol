@@ -136,10 +136,19 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
             revert InvalidPoolDelayTime();
         }
         if (
-            IDO_TYPE == IDOType.PRIVATE_SALE &&
-            (_poolTime.startPublicSale >= _poolTime.endTime ||
-                _poolTime.startPublicSale <
-                _poolTime.startTime + MIN_PRIVATE_SALES_ENDING)
+            _PRIVATE_SALE &&
+            (_poolDetail.privateSaleAmount == 0 ||
+                _poolDetail.privateSaleAmount > _poolDetail.hardCap)
+        ) {
+            revert InvalidPrivateSaleAmount();
+        }
+        if (
+            IDO_TYPE == IDOType.PRIVATE_SALE && 
+            (
+                (_poolDetail.privateSaleAmount == _poolDetail.hardCap && _poolTime.startPublicSale != 0) 
+                || 
+            (_poolTime.startPublicSale >= _poolTime.endTime || _poolTime.startPublicSale < _poolTime.startTime + MIN_PRIVATE_SALES_ENDING)
+            )
         ) {
             revert InvalidPoolStartPublicSale();
         }
@@ -161,13 +170,6 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
         }
         if (_poolDetail.softCap <= 0) {
             revert InvalidPoolHardCap();
-        }
-        if (
-            _PRIVATE_SALE &&
-            (_poolDetail.privateSaleAmount == 0 ||
-                _poolDetail.privateSaleAmount > _poolDetail.hardCap)
-        ) {
-            revert InvalidPrivateSaleAmount();
         }
         if (_poolDetail.liquidityWETH9 < MIN_WETH) {
             revert InvalidLiquidityAmount();
@@ -240,18 +242,33 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
         bytes32[] memory proof
     ) external payable override isInIDOTimeFrame isInitialized {
         IDOTime memory _poolTime = poolTime;
+        IDOPoolDetails memory _poolDetail = poolDetail;
         address investorAddress = _msgSender();
-        // Validating private sales
-        if (
-            IDO_TYPE == IDOType.PRIVATE_SALE &&
-            _verifyProof(proof, WHITELISTED, investorAddress) == false &&
-            (_poolTime.startPublicSale == 0 || // Only private sales
-                registers[investorAddress] == false || // Not registered yet
-                _poolTime.startPublicSale > block.timestamp) // Before starting public sales
-        ) {
-            revert IDOPoolIsPrivate();
+        Investor memory investor = investors[investorAddress];
+        uint256 amountInvestment = msg.value;
+        uint256 currentTime = block.timestamp;
+        
+        if (_poolDetail.hardCap < _poolDetail.raisedAmount + amountInvestment) {
+            revert HardCapExceeded();
         }
-
+        if (
+            amountInvestment + investor.depositedAmount < _poolDetail.minInvest
+        ) {
+            revert MinInvestmentNotReached();
+        }
+        if (
+            amountInvestment + investor.depositedAmount > _poolDetail.maxInvest
+        ) {
+            revert MaxInvestmentExceeded();
+        }
+        if (IDO_TYPE == IDOType.PRIVATE_SALE && currentTime < _poolTime.startPublicSale) {
+            if (!_verifyProof(proof, WHITELISTED, investorAddress) || !registers[investorAddress]) {
+                revert IDOPoolIsPrivate();
+            }
+            if (_poolDetail.privateSaleAmount <= _poolDetail.raisedAmount + amountInvestment) {
+                revert PrivateSaleExceeded();
+            }
+        } 
         _invest(investorAddress, msg.value);
     }
 
@@ -418,20 +435,6 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
         uint256 amountInvestment
     ) internal {
         IDOPoolDetails memory _poolDetail = poolDetail;
-        Investor memory investor = investors[investorAddress];
-        if (_poolDetail.hardCap < _poolDetail.raisedAmount + amountInvestment) {
-            revert HardCapExceeded();
-        }
-        if (
-            amountInvestment + investor.depositedAmount < _poolDetail.minInvest
-        ) {
-            revert MinInvestmentNotReached();
-        }
-        if (
-            amountInvestment + investor.depositedAmount > _poolDetail.maxInvest
-        ) {
-            revert MaxInvestmentExceeded();
-        }
         uint256 amountToken = poolDetail.pricePerToken.mulWad(amountInvestment);
         require(amountToken > 0);
 

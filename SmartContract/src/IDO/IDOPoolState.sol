@@ -1,7 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+import {IIDOPoolState} from "../interfaces/IIDOPoolState.sol";
 
-contract IDOPoolState {
+contract IDOPoolState is IIDOPoolState{
     uint8 public constant RATE_DECIMALS = uint8(4);
 
     uint112 public constant MIN_DELAY_STARTING = uint112(10 * 60 * 60); // 10 minutes
