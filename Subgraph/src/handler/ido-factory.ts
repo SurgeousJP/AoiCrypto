@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { PoolCreated as PoolCreatedEvent } from "../../generated/AoiFactory/AoiFactory";
 import { IDOPool, LiquidityPool } from "../../generated/schema";
 import { IDOPool as IDOPoolTemplate } from "../../generated/templates";
@@ -6,6 +6,7 @@ import {
   getIDOPoolAddress,
   getIDOPoolDetail,
   getIDOPoolId,
+  getIDOTime,
   getIDOType,
   getWhitelistedRoot,
 } from "../module/ido";
@@ -30,6 +31,11 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
 
   const liquidityPoolDetail = getLiquidityPool(poolId);
   if (liquidityPoolDetail.idoPoolAddress.equals(Address.zero())) {
+    return;
+  }
+
+  const idoTimeDetail = getIDOTime(idoPoolAddress);
+  if (idoTimeDetail.startTime.equals(BigInt.fromI32(0))) {
     return;
   }
 
@@ -63,6 +69,7 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   idoPool.createdTime = event.block.timestamp;
 
   // TODO: Implement the idoTime to apply in idoPool
-  // let idoTime
-  // idoPool.startTime = idoPoolDetail.sta;
+  idoPool.startTime = idoTimeDetail.startTime;
+  idoPool.endTime = idoTimeDetail.endTime;
+  idoPool.star;
 }

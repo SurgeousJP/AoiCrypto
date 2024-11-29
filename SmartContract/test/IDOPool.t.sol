@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import {console, console2} from "@forge-std/Test.sol";
 
 import "./utils/BaseTest.sol";
-import {IDOPool} from "../src/IDO/IDOPool.sol";
+import {IDOPool} from "../src/IDO/IDOPool.sol";import {IIDOPoolState} from "../src/interfaces/IIDOPoolState.sol";
 import {IIDOPool} from "../src/interfaces/IIDOPool.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
 
