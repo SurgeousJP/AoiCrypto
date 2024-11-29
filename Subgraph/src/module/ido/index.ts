@@ -78,3 +78,17 @@ export function getIDOType(idoPoolAddress: Address): string {
 
   return idoType;
 }
+
+export function getIDOTime(idoPoolAddress: Address): idoTypes.IDOPoolTime {
+  const idoPoolContract = utils.contracts.getIDOPoolContract(idoPoolAddress);
+  const idoPoolTimeCallResult = idoPoolContract.try_getPoolTime();
+  let idoPoolTime: idoTypes.IDOPoolTime = idoTypes.IDOTimeDefault;
+  if (idoPoolTimeCallResult.reverted) {
+    log.warning("getPoolTime call reverted for idoPoolAddress: {}", [
+      idoPoolAddress.toHexString(),
+    ]);
+  } else {
+    idoPoolTime = idoPoolTimeCallResult.value;
+  }
+  return idoPoolTime;
+}

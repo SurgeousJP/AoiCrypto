@@ -4,6 +4,8 @@ pragma solidity ^0.8.0;
 import "./utils/BaseTest.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
 
+import {IIDOPoolState} from "../src/interfaces/IIDOPoolState.sol";
+import {IIDOFactoryState} from "../src/interfaces/IIDOFactoryState.sol";
 import {IDOPool} from "../src/IDO/IDOPool.sol";
 import {IIDOPool} from "../src/interfaces/IIDOPool.sol";
 import {IIDOFactory} from "../src/interfaces/IIDOFactory.sol";
@@ -148,7 +150,7 @@ contract IDOFactoryTest is BaseTest {
         mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
         vm.startPrank(addr1);
         mockERC20.approve(address(idoFactory), type(uint256).max);
-        vm.expectRevert(IIDOPool.InvalidPoolDelayTime.selector);
+        vm.expectRevert(IIDOPoolState.InvalidPoolDelayTime.selector);
         idoFactory.createPool{value: poolDetail.liquidityWETH9}(
             poolDetail,
             poolTime,
@@ -192,7 +194,7 @@ contract IDOFactoryTest is BaseTest {
         mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
         vm.startPrank(addr1);
         mockERC20.approve(address(idoFactory), type(uint256).max);
-        vm.expectRevert(IIDOPool.InvalidPoolTimeFrame.selector);
+        vm.expectRevert(IIDOPoolState.InvalidPoolTimeFrame.selector);
         idoFactory.createPool{value: poolDetail.liquidityWETH9}(
             poolDetail,
             poolTime,
@@ -241,7 +243,7 @@ contract IDOFactoryTest is BaseTest {
         mockERC20.mint(addr1, tokenAmountInHardCap + poolDetail.liquidityToken);
         vm.startPrank(addr1);
         mockERC20.approve(address(idoFactory), type(uint256).max);
-        vm.expectRevert(IIDOPool.InvalidPoolMaxInvestment.selector);
+        vm.expectRevert(IIDOPoolState.InvalidPoolMaxInvestment.selector);
         idoFactory.createPool{value: poolDetail.liquidityWETH9}(
             poolDetail,
             poolTime,
@@ -549,7 +551,7 @@ contract IDOFactoryTest is BaseTest {
 
         // Unlock lp token - Should be reverted
         vm.startPrank(addr1);
-        vm.expectRevert(IIDOFactory.LiquidityIsNotLocked.selector);
+        vm.expectRevert(IIDOFactoryState.LiquidityIsNotLocked.selector);
         idoFactory.receiveLpToken(1);
         vm.stopPrank();
     }
@@ -733,7 +735,7 @@ contract IDOFactoryTest is BaseTest {
 
         // Listing DEX
         vm.prank(addr1);
-        vm.expectRevert(IIDOPool.IDOIsNotEnded.selector);
+        vm.expectRevert(IIDOPoolState.IDOIsNotEnded.selector);
         (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
             .depositLiquidityPool(1);
     }
@@ -822,7 +824,7 @@ contract IDOFactoryTest is BaseTest {
 
         // Listing DEX
         vm.prank(addr1);
-        vm.expectRevert(IIDOPool.SoftCapNotReached.selector);
+        vm.expectRevert(IIDOPoolState.SoftCapNotReached.selector);
         (address liquidityPoolAddress, uint256 lpAmount) = idoFactory
             .depositLiquidityPool(1);
     }
