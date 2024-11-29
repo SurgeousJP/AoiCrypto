@@ -155,7 +155,7 @@ const HistorySegment = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={(item) => {
           return (
-            <View>
+            <View key={item.index}>
               <Row key={item.index} contents={item.item} />
             </View>
           );

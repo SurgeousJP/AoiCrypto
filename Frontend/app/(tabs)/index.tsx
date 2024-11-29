@@ -20,6 +20,12 @@ export default function HomeScreen() {
     setLoading((loading) => false);
   }, []);
 
+  
+
+  const onTestClick = () => {
+    console.log("Test clicked");
+  }
+
   if (loading) {
     return (
       <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
@@ -64,7 +70,7 @@ export default function HomeScreen() {
         </View>
         <View className="flex flex-col mt-4 mb-2">
           <View className="mt-4 mb-4">
-            <NormalButton content={"Test Smart Contract"} onClick={() => {}} />
+            <NormalButton content={"Test Smart Contract"} onClick={onTestClick} />
           </View>
 
           <View className="flex flex-row justify-between mb-1">
