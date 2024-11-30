@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { Account, Investor } from "../../../generated/schema";
+import { Investor } from "../../../generated/schema";
+import { createOrLoadAccount } from "../account";
 
 export function getInvestorId(
   investorAddress: Address,
@@ -19,7 +20,8 @@ export function createOrLoadInvestor(
 
   if (investor == null) {
     investor = new Investor(investorId);
-    investor.account = changetype<Bytes>(investorAddress);
+    let account = createOrLoadAccount(changetype<Bytes>(investorAddress));
+    investor.account = account.id;
     investor.idoPool = changetype<Bytes>(idoPoolAddress);
     investor.investedAmount = new BigInt(0);
     investor.investedTokenAmount = new BigInt(0);

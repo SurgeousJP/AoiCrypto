@@ -1,4 +1,5 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
+import { IDOPool, LiquidityPool } from "../../../generated/schema";
 import * as utils from "../util/index";
 import * as liquidityPoolTypes from "./type";
 
@@ -46,4 +47,14 @@ export function getLiquidityPoolAction(poolId: BigInt): string {
   }
 
   return action;
+}
+
+export function buildLiquidityPoolFromIDOPool(idoPool: IDOPool): LiquidityPool {
+  let liquidityPool = LiquidityPool.load(idoPool.id);
+  if (liquidityPool == null) {
+    liquidityPool = new LiquidityPool(idoPool.id);
+    liquidityPool.idoPool = idoPool.id;
+  }
+
+  return liquidityPool;
 }

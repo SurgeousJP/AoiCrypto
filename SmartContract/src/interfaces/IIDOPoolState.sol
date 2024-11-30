@@ -4,55 +4,88 @@ pragma solidity ^0.8.0;
 interface IIDOPoolState {
     // ERRORS
     error NotPoolOwner();
+
     error NotPoolOwnerOrFactory();
+
     error ZeroAddress();
+
     error InvalidPoolId();
 
     error InvalidPoolSoftCap();
+
     error InvalidPoolHardCap();
+
     error InvalidPoolMinInvestment();
+
     error InvalidPoolMaxInvestment();
+
     error InvalidTokenPrice();
+
     error InvalidTokenForSale();
+
     error InvalidPoolTimeFrame();
+
     error InvalidPoolDelayTime();
+
     error InvalidPoolStartPublicSale();
 
     error NotEnoughBalance();
+
     error IDOIsNotStarted();
+
     error IDOIsAlreadyStarted();
+
     error IDOIsEnded();
+
     error IDOIsNotEnded();
+
     error HardCapExceeded();
+
     error SoftCapNotReached();
+
     error SoftCapReached();
 
     error MinInvestmentNotReached();
+
     error MaxInvestmentExceeded();
+
     error NotWhilelisted();
+
     error AlreadyWhitelisted();
 
     error IDOPoolStillActive();
+
     error AlreadyListedDex();
+
     error NotListedDex();
+
     error IDOIsAlreadyPublicSale();
 
     error IDOPoolIsPrivate();
+
     error IDOPoolIsPublic();
+
     error IDOPoolIsPrivateForWhitelisted();
+
     error InvalidLiquidityAmount();
+
     error InvestorClaimed();
+
     error IDOPoolInitialized();
+
     error IDOPoolNotInitialized();
+
     error InvestorAlreadyRegistered();
+
     error InvestorNotRegisteredYet();
+
     error InvalidPrivateSaleAmount();
 
     error IDOPoolHasWithdrawn();
+
     error PrivateSaleExceeded();
 
     // EVENTS
-    // event Whitelisted()
 
     event IDOPoolCreated(
         address indexed poolOwner,

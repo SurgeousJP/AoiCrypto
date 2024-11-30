@@ -1,5 +1,6 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { PoolOwner } from "../../../generated/schema";
+import { createOrLoadAccount } from "../account";
 
 export function getPoolOwnerId(
   poolOwnerAddress: Address,
@@ -18,7 +19,8 @@ export function createOrLoadPoolOwner(
   let poolOwner = PoolOwner.load(poolOwnerId);
   if (poolOwner == null) {
     poolOwner = new PoolOwner(poolOwnerId);
-    poolOwner.account = changetype<Bytes>(poolOwnerAddress);
+    const account = createOrLoadAccount(changetype<Bytes>(poolOwnerAddress));
+    poolOwner.account = account.id;
     poolOwner.idoPool = changetype<Bytes>(idoPoolAddress);
     poolOwner.raised = new BigInt(0);
     poolOwner.save();
