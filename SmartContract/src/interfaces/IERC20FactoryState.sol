@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 interface IERC20FactoryState {
     struct Token {
         address owner;
+        address tokenAddress;
         string name;
         string symbol;
         uint256 maxSupply;
