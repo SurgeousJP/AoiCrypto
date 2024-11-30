@@ -11,10 +11,11 @@ import {
   ActivityIndicator,
 } from "react-native";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
-import { useCreateIDO } from "@/hooks/smart-contract/useCreateIDO";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { sampleCreateIDOInput } from "@/contracts/types/CreateIDOInput";
 import { TransactionReceipt } from "viem";
+import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
+import { sampleCreateNewERC20Input } from "@/contracts/types/ERC20/CreateNewERC20Input";
+import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
 
 export default function HomeScreen() {
   const banner = require("@/assets/logos/Kima.png");
@@ -27,39 +28,39 @@ export default function HomeScreen() {
   const { chainId, address, isConnected } = useContext(AuthContext);
 
   const {
-    error: createIDOError,
-    isLoading: createIDOIsLoading,
-    onCreateIDO,
-  } = useCreateIDO({
+    error: error,
+    isLoading: isLoading,
+    onDepositLiquidityPool: onExecute,
+  } = useDepositLiquidityPool({
     chainId: chainId,
-    idoInput: sampleCreateIDOInput,
+    poolId: 1700200000000n,
     enabled: true,
     onSuccess: (data: TransactionReceipt) => {
-      console.log("Test creating IDO successfully");
+      console.log("Test executing smart contract successfully");
     },
     onSettled: (data?: TransactionReceipt) => {
-      console.log("Test settled IDO successfully");
+      console.log("Test settled smart contract successfully");
     },
     onError: (error?: Error) => {
       console.log("An error occurred: ", error);
-    }
+    },
   });
 
   useEffect(() => {
-    console.log("Create IDO hook loading status: ", createIDOIsLoading);
-    console.log("Create IDO hook error: ", createIDOError);
-  }, [createIDOIsLoading, createIDOError]);
+    console.log("Hook loading status: ", isLoading);
+    console.log("Hook error: ", error);
+  }, [isLoading, error]);
 
   const onTestClick = async () => {
     console.log("Test smart contract started");
     try {
-      await onCreateIDO(); 
-      console.log("IDO creation initiated...");
+      await onExecute();
+      console.log("Smart contract initiated...");
     } catch (error) {
-      console.error("Error while initiating IDO creation:", error);
+      console.error("Error while executing smart contract :", error);
     }
     console.log("Test smart contract ended");
-  }
+  };
 
   if (loading) {
     return (
@@ -92,7 +93,9 @@ export default function HomeScreen() {
             Upcoming Projects
           </Text>
           <Pressable>
-            <Text className="text-md font-readexSemiBold text-primary">More</Text>
+            <Text className="text-md font-readexSemiBold text-primary">
+              More
+            </Text>
           </Pressable>
         </View>
         <View className="flex flex-row space-x-2">
@@ -105,7 +108,14 @@ export default function HomeScreen() {
         </View>
         <View className="flex flex-col mt-4 mb-2">
           <Pressable className="mt-4 mb-4">
-            <NormalButton content={createIDOIsLoading ? "Loading create IDO hook..." :  "Test Smart Contract"} onClick={onTestClick} />
+            <NormalButton
+              content={
+                isLoading
+                  ? "Loading hook..."
+                  : "Execute hook"
+              }
+              onClick={onTestClick}
+            />
           </Pressable>
 
           <View className="flex flex-row justify-between mb-1">

@@ -7,3 +7,7 @@ export const getContractAddress = (contractName: any, networkId: any): `0x${stri
 export const getIDOFactoryAddress = (networkId: any) : `0x${string}` => {
   return getContractAddress(SMART_CONTRACT_ADDRESS.IDOFactory, networkId);
 }
+
+export const getERC20FactoryAddress = (networkId: any) : `0x${string}` => {
+  return getContractAddress(SMART_CONTRACT_ADDRESS.ERC20Factory, networkId);
+}
