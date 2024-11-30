@@ -1,10 +1,10 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 import { Count, IDOPool } from "../../../generated/schema";
-import { DEFAULT_ID } from "../util";
+import * as utils from "../util";
 import * as idoTypes from "../ido/type";
 
 export function buildCount(): Count {
-  const id = changetype<Bytes>(DEFAULT_ID);
+  const id = changetype<Bytes>(utils.constants.DEFAULT_ID);
   let count = Count.load(id);
   if (count == null) {
     count = new Count(id);

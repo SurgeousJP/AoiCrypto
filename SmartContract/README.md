@@ -2,15 +2,39 @@
 
 ## Deployment demo
 
-The deployed address demo consists of:
+- The deployed address demo consists of:
 
-- WETH: `0xa948F1ADA2a714F359035307B05Dd2CCbFbEef89`
+  - WETH: `0xa948F1ADA2a714F359035307B05Dd2CCbFbEef89`
 
-- AoiFactory: `0xd75E353e4541DDeFE159eD59488953e8f0AfE928`
+  - AoiFactory: `0xd75E353e4541DDeFE159eD59488953e8f0AfE928`
 
-- AoiRouter: `0x1808061a4b4d7ceF8712b55D756D8Dd147aecFf0`
+  - AoiRouter: `0x1808061a4b4d7ceF8712b55D756D8Dd147aecFf0`
 
-- IDOFactory: `0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130`
+  - IDOFactory: `0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130` (This address which is version 1 is used to demo. Version 2 is updating...)
+
+  - ERC20Factory: `` (Updating...)
+
+- The ABI of those contracts include:
+
+  - [WETH](/abis/WETH.json)
+
+  - [IDOFactory](/abis/IDOFactory.json)
+
+  - [IDOPool](/abis/IDOPool.json)
+
+  - [ERC20Factory](/abis/ERC20Factory.json)
+
+## Contract Detail
+
+- IDOFactory: This contract is used to create new `IDOPool` contract and list to DEX after raising successfully.
+
+  - createPool(): Must approve ERC20 token which will be sell for this contract before call this function.
+
+  - depositLiquidityPool(): Only called after ido succeed.
+
+- IDOPool: IDOPool created from IDOFactory is used to be invested and claimed by users.
+
+  - Updating ...
 
 ## Foundry
 

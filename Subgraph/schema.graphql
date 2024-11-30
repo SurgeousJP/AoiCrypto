@@ -81,6 +81,7 @@ type IDOPool @entity {
   pricePerToken: BigInt! # the ratio exchanging from token to eth
   createdTime: BigInt!
   startTime: BigInt!
+  startPublicSale: BigInt!
   endTime: BigInt!
   raisedAmount: BigInt! # ETH
   raisedTokenAmount: BigInt!
