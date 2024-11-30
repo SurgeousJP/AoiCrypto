@@ -10,39 +10,21 @@ import {AoiERC20} from "./CustomAoiERC20.sol";
 
 contract ERC20Factory is IERC20Factory, Ownable, ERC20FactoryState {
 
-    constructor(bytes memory _initCodeHash) Ownable(msg.sender) ERC20FactoryState() {}
+    constructor() Ownable(msg.sender) ERC20FactoryState() {}
 
     function createNewERC20(
-        address tokenOwner,
         string memory name,
         string memory symbol,
         uint256 maxTotalSupply,
         uint256 initialSupply
     ) external override returns(address tokenAddress) {
-        bytes memory bytecode = abi.encodePacked(
-            type(AoiERC20).creationCode,
-            abi.encode(tokenOwner),
-            abi.encode(name),
-            abi.encode(symbol),
-            abi.encode(maxTotalSupply),
-            abi.encode(initialSupply)
-        );
+        address tokenOwner = msg.sender;
         uint256 currentTime = block.timestamp;
         bytes32 salt = keccak256(abi.encodePacked(tokenOwner, currentTime));
-        assembly {
-            tokenAddress := create2(
-                0,
-                add(bytecode, 0x20),
-                mload(bytecode),
-                salt
-            )
-            if iszero(extcodesize(tokenAddress)) {
-                revert(0, 0)
-            }
-        }
-
+        tokenAddress = address(new AoiERC20{salt: salt}(tokenOwner, name, symbol, maxTotalSupply, initialSupply));
         Token memory token = Token({
             owner: tokenOwner,
+            tokenAddress: tokenAddress,
             name: name,
             symbol: symbol,
             maxSupply: maxTotalSupply,
@@ -54,5 +36,17 @@ contract ERC20Factory is IERC20Factory, Ownable, ERC20FactoryState {
         totalTokens++;
 
         emit TokenCreated(tokenId, tokenAddress, tokenOwner);
+    }
+
+    function getTokenDetail(uint256 tokenId) external view override returns(Token memory) {
+        return tokens[tokenId];
+    }
+
+    function getTokenOwner(uint256 tokenId) external view override returns(address) {
+        return tokens[tokenId].owner;
+    }
+
+    function getTokenAddress(uint256 tokenId) external view override returns(address) {
+        return tokens[tokenId].tokenAddress;
     }
 }

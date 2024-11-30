@@ -10,9 +10,13 @@
 
   - AoiRouter: `0x1808061a4b4d7ceF8712b55D756D8Dd147aecFf0`
 
-  - IDOFactory: `0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130` (This address which is version 1 is used to demo. Version 2 is updating...)
+  - IDOFactory:
 
-  - ERC20Factory: `` (Updating...)
+    - V1: `0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130` (deprecated)
+
+    - V2: `0x30B5aCF87E1E4b8a23F64270B86Aee7B416E2130` (latest)
+
+  - ERC20Factory: `0xBB64692b13dE29e0f5370FBF476E471E6084d080`
 
 - The ABI of those contracts include:
 
@@ -24,6 +28,8 @@
 
   - [ERC20Factory](/abis/ERC20Factory.json)
 
+  - [AoiERC20](/abis/AoiERC20.json)
+
 ## Contract Detail
 
 - IDOFactory: This contract is used to create new `IDOPool` contract and list to DEX after raising successfully.
@@ -34,7 +40,23 @@
 
 - IDOPool: IDOPool created from IDOFactory is used to be invested and claimed by users.
 
-  - Updating ...
+  - investPool(): Investors can invest to the desired IDO by calling this. Note: The value of transaction is the amount of money would like to invest.
+
+  - cancelInvestment(): Cancel the investment
+
+  - registerPrivatePool(): Register to the Private pool only.
+
+  - cancelRegisterPrivatePool(): Cancel the registry
+
+  - claimToken(): Claim the ido token after raising ido successfully. (raisedAmount >= softCap)
+
+  - refundToken(): Refund money to investors after raising failed. (raisedAmount < softCap)
+
+  - withdrawRemainingToken(): Only IDO's owner, withdrawing the remaining token in pool after listing in DEX.
+
+- ERC20Factory: Enables users to create ERC20 token by themselves.
+
+  - createNewERC20(): Create ERC20 token
 
 ## Foundry
 
