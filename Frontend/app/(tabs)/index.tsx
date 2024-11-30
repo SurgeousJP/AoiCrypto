@@ -45,10 +45,15 @@ export default function HomeScreen() {
     }
   });
 
+  useEffect(() => {
+    console.log("Create IDO hook loading status: ", createIDOIsLoading);
+    console.log("Create IDO hook error: ", createIDOError);
+  }, [createIDOIsLoading, createIDOError]);
+
   const onTestClick = async () => {
     console.log("Test smart contract started");
     try {
-      await onCreateIDO(); // Call the function to interact with the smart contract
+      await onCreateIDO(); 
       console.log("IDO creation initiated...");
     } catch (error) {
       console.error("Error while initiating IDO creation:", error);
@@ -100,7 +105,7 @@ export default function HomeScreen() {
         </View>
         <View className="flex flex-col mt-4 mb-2">
           <Pressable className="mt-4 mb-4">
-            <NormalButton content={"Test Smart Contract"} onClick={onTestClick} />
+            <NormalButton content={createIDOIsLoading ? "Loading create IDO hook..." :  "Test Smart Contract"} onClick={onTestClick} />
           </Pressable>
 
           <View className="flex flex-row justify-between mb-1">

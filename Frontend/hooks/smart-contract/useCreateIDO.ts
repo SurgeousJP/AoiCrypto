@@ -60,16 +60,6 @@ export const useCreateIDO = ({
     query: { enabled: enabled && !!chainId, retry: false },
   });
 
-  useEffect(() => {
-    console.log("<---! SIMULATE CONTRACT DEBUG !--->");
-    console.log("Config: ", config);
-    console.log("Refetch: ", refetch);
-    console.log("Is loading prepare: ", isLoadingPrepare);
-    console.log("Is error prepare: ", isErrorPrepare);
-    console.log("Error prepare: ", errorPrepare);
-    console.log("<---! SIMULATE CONTRACT DEBUG !--->");
-  }, [config, refetch, isLoadingPrepare, isErrorPrepare, errorPrepare]);
-
   const {
     writeContractAsync,
     data: transactionHash,
@@ -160,7 +150,7 @@ export const useCreateIDO = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
-
+    
   return {
     error,
     isLoading,

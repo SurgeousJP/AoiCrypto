@@ -46,7 +46,7 @@ export enum LiquidityPoolAction {
 
 export const sampleCreateIDOInput: CreateIDOInput = {
   poolDetails: {
-    tokenAddress: "0x1234567890abcdef1234567890abcdef12345678",
+    tokenAddress: "0x82a9d5f57483163de82ef5d40d045be974d9d215",
     pricePerToken: 1000000000000000000n, // 1 token per ETH (example in wei)
     raisedAmount: 5000000000000000000n, // 5 ETH raised
     raisedTokenAmount: 5000n, // 5000 tokens raised
@@ -65,6 +65,6 @@ export const sampleCreateIDOInput: CreateIDOInput = {
   },
   privateSale: true,
   whitelisted: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", // Example whitelist address
-  action: LiquidityPoolAction.LOCK, // Lock liquidity
+  action: LiquidityPoolAction.NOTHING, // Lock liquidity
   lockExpired: 1700200000000n, // Example timestamp for lock expiration
 };
