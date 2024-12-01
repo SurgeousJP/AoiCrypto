@@ -1,8 +1,7 @@
-// create IDO, invest IDO, cancel IDO investment, claim token IDO, withdraw raised amount IDO (IDO owner), redeem IDO investment
 // <---! IMPORT !---> //
 import getABI from "@/contracts/utils/getAbi.util";
 import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
-import { Address, TransactionReceipt } from "viem";
+import { TransactionReceipt } from "viem";
 import {
   useSimulateContract,
   useTransactionConfirmations,
@@ -10,8 +9,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
-import { CreateIDOInput } from "@/contracts/types/CreateIDOInput";
-import { useEffect } from "react";
+import { CreateIDOInput } from "@/contracts/types/IDO/CreateIDOInput";
 // <---! IMPORT !---> //
 
 type Props = {

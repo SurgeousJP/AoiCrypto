@@ -3,8 +3,7 @@ import ProjectCard from "@/components/Items/Project/ProjectCard";
 import XProject from "@/components/Items/Project/XProject";
 import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { sampleCreateIDOInput } from "@/contracts/types/CreateIDOInput";
-import { useCreateIDO } from "@/hooks/smart-contract/useCreateIDO";
+import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
 import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -27,18 +26,18 @@ export default function HomeScreen() {
   const { chainId, address, isConnected } = useContext(AuthContext);
 
   const {
-    error: createIDOError,
-    isLoading: createIDOIsLoading,
-    onCreateIDO,
-  } = useCreateIDO({
+    error: error,
+    isLoading: isLoading,
+    onDepositLiquidityPool: onExecute,
+  } = useDepositLiquidityPool({
     chainId: chainId,
-    idoInput: sampleCreateIDOInput,
+    poolId: 1700200000000n,
     enabled: true,
     onSuccess: (data: TransactionReceipt) => {
-      console.log("Test creating IDO successfully");
+      console.log("Test executing smart contract successfully");
     },
     onSettled: (data?: TransactionReceipt) => {
-      console.log("Test settled IDO successfully");
+      console.log("Test settled smart contract successfully");
     },
     onError: (error?: Error) => {
       console.log("An error occurred: ", error);
@@ -46,9 +45,9 @@ export default function HomeScreen() {
   });
 
   useEffect(() => {
-    console.log("Create IDO hook loading status: ", createIDOIsLoading);
-    console.log("Create IDO hook error: ", createIDOError);
-  }, [createIDOIsLoading, createIDOError]);
+    console.log("Hook loading status: ", isLoading);
+    console.log("Hook error: ", error);
+  }, [isLoading, error]);
 
   const onTestClick = async () => {
     console.log("Test smart contract started");
@@ -56,7 +55,7 @@ export default function HomeScreen() {
       await onCreateIDO();
       console.log("IDO creation initiated...");
     } catch (error) {
-      console.error("Error while initiating IDO creation:", error);
+      console.error("Error while executing smart contract :", error);
     }
     console.log("Test smart contract ended");
   };
@@ -92,6 +91,9 @@ export default function HomeScreen() {
             Upcoming Projects
           </Text>
           <Pressable>
+            <Text className="text-md font-readexSemiBold text-primary">
+              More
+            </Text>
             <Text className="text-md font-readexSemiBold text-primary">
               More
             </Text>
