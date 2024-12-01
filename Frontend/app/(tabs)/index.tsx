@@ -110,11 +110,7 @@ export default function HomeScreen() {
         <View className="flex flex-col mt-4 mb-2">
           <Pressable className="mt-4 mb-4">
             <NormalButton
-              content={
-                createIDOIsLoading
-                  ? "Loading create IDO hook..."
-                  : "Test Smart Contract"
-              }
+              content={isLoading ? "Loading hook..." : "Execute hook"}
               onClick={onTestClick}
             />
           </Pressable>
