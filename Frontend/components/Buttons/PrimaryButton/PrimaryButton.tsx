@@ -15,7 +15,7 @@ function PrimaryButton({
   return (
     <Pressable
       onPress={onPress}
-      className={`px-4 py-2.5 rounded-xl justify-start items-center inline-flex ${
+      className={`py-2.5 px-10 rounded-xl justify-start items-center inline-flex ${
         outlined ? "border-2 border-blue-600 bg-transparent" : "bg-blue-600"
       }`}
     >

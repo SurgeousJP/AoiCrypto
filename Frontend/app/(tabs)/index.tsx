@@ -1,19 +1,19 @@
-import XProject from "@/components/Items/Project/XProject";
-import ProjectCard from "@/components/Items/Project/ProjectCard";
-import { colors } from "@/constants/Colors";
-import React, { useContext, useEffect, useState } from "react";
-import {
-  Image,
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-} from "react-native";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
-import { useCreateIDO } from "@/hooks/smart-contract/useCreateIDO";
+import ProjectCard from "@/components/Items/Project/ProjectCard";
+import XProject from "@/components/Items/Project/XProject";
+import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { sampleCreateIDOInput } from "@/contracts/types/CreateIDOInput";
+import { useCreateIDO } from "@/hooks/smart-contract/useCreateIDO";
+import React, { useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { TransactionReceipt } from "viem";
 
 export default function HomeScreen() {
@@ -42,7 +42,7 @@ export default function HomeScreen() {
     },
     onError: (error?: Error) => {
       console.log("An error occurred: ", error);
-    }
+    },
   });
 
   useEffect(() => {
@@ -53,13 +53,13 @@ export default function HomeScreen() {
   const onTestClick = async () => {
     console.log("Test smart contract started");
     try {
-      await onCreateIDO(); 
+      await onCreateIDO();
       console.log("IDO creation initiated...");
     } catch (error) {
       console.error("Error while initiating IDO creation:", error);
     }
     console.log("Test smart contract ended");
-  }
+  };
 
   if (loading) {
     return (
@@ -92,7 +92,9 @@ export default function HomeScreen() {
             Upcoming Projects
           </Text>
           <Pressable>
-            <Text className="text-md font-readexSemiBold text-primary">More</Text>
+            <Text className="text-md font-readexSemiBold text-primary">
+              More
+            </Text>
           </Pressable>
         </View>
         <View className="flex flex-row space-x-2">
@@ -105,9 +107,15 @@ export default function HomeScreen() {
         </View>
         <View className="flex flex-col mt-4 mb-2">
           <Pressable className="mt-4 mb-4">
-            <NormalButton content={createIDOIsLoading ? "Loading create IDO hook..." :  "Test Smart Contract"} onClick={onTestClick} />
+            <NormalButton
+              content={
+                createIDOIsLoading
+                  ? "Loading create IDO hook..."
+                  : "Test Smart Contract"
+              }
+              onClick={onTestClick}
+            />
           </Pressable>
-
           <View className="flex flex-row justify-between mb-1">
             <Text className="text-textColor text-md font-readexBold">
               Funded Projects

@@ -16,7 +16,7 @@ function ExchangeCard({
   toCurrencyName,
 }: ExchangeCardProps) {
   return (
-    <View className="flex flex-row rounded-lg items-center shadow-sm w-[343px] h-[68px]  p-4 bg-white justify-between">
+    <View className="flex flex-row rounded-lg items-center shadow-sm w-full h-[68px]  p-4 bg-white justify-between">
       <View className="flex flex-row items-center">
         <Ionicons name="swap-vertical" size={24} />
         <View className=" ml-2">

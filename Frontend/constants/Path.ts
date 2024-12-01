@@ -9,4 +9,5 @@ export const path = {
   sellerTab: "seller",
   createProjectOverview: "project/createOverview",
   createProjectStepOne: "project/createStepOne",
-}
+  transaction: "transaction/index",
+};

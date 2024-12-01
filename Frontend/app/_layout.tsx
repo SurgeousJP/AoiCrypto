@@ -1,6 +1,6 @@
 // Import
-import TitleHeader from "@/components/Layouts/TitleHeader";
 import TabHeader from "@/components/Layouts/TabHeader";
+import TitleHeader from "@/components/Layouts/TitleHeader";
 import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
@@ -8,29 +8,26 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { sepolia } from "@wagmi/core/chains";
+import "@walletconnect/react-native-compat";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import React from "react";
-import "react-native-reanimated";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import "@walletconnect/react-native-compat";
-import { WagmiProvider } from "wagmi";
-import { sepolia } from "@wagmi/core/chains";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
 import {
-  createAppKit,
-  AppKit,
-} from "@reown/appkit-wagmi-react-native";
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { WagmiProvider } from "wagmi";
+
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import { PROJECT_ID, wagmiConfig } from "@/configs/wagmi.config";
 import { path } from "@/constants/Path";
 import AuthProvider from "@/contexts/AuthProvider";
+import { AppKit, createAppKit } from "@reown/appkit-wagmi-react-native";
 import * as SplashScreen from "expo-splash-screen";
-import { PROJECT_ID, wagmiConfig } from "@/configs/wagmi.config";
 // Import
 
 SplashScreen.preventAutoHideAsync();
@@ -94,8 +91,13 @@ export default function RootLayout() {
                       headerShown: true,
                       headerShadowVisible: true,
                       header: ({ options }) => {
-                        return (<TitleHeader title={"Settings"} isSettingHidden={true} />)
-                      }
+                        return (
+                          <TitleHeader
+                            title={"Settings"}
+                            isSettingHidden={true}
+                          />
+                        );
+                      },
                     }}
                   />
                   <Stack.Screen
@@ -123,6 +125,16 @@ export default function RootLayout() {
                       headerShadowVisible: true,
                       header: ({ options }) => (
                         <TitleHeader title={"Join the Allowlist"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
+                    name={path.transaction}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: false,
+                      header: ({ options }) => (
+                        <TitleHeader title="Buy Crypto" />
                       ),
                     }}
                   />

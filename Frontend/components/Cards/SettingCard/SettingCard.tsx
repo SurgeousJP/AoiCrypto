@@ -61,7 +61,11 @@ function SettingCard({
             <Text className="text-sm text-white mx-auto my-auto">5</Text>
           </View>
           <Pressable className="opacity-80" onPress={handleChevronClick}>
-            <Ionicons name="chevron-forward-outline" size={24} color={colors.secondary} />
+            <Ionicons
+              name="chevron-forward-outline"
+              size={24}
+              color={colors.secondary}
+            />
           </Pressable>
         </View>
       )}

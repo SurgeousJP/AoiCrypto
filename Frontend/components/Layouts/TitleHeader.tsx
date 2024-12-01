@@ -1,11 +1,11 @@
-import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import { colors } from "@/constants/Colors";
-import ScreenHeader from "./ScreenHeader";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import { colors } from "@/constants/Colors";
+import { useNavigation } from "@react-navigation/native";
 import { Link } from "expo-router";
+import React from "react";
+import { Text, TouchableOpacity } from "react-native";
+import ScreenHeader from "./ScreenHeader";
 
 interface TitleHeaderProps {
   title: string; // Optional title prop
@@ -30,7 +30,7 @@ const TitleHeader: React.FC<TitleHeaderProps> = ({
       }
       RightComponent={
         <TouchableOpacity>
-          <Link href={"/settings"}>
+          <Link href={"/transaction"}>
             <Setting
               fill={isSettingHidden ? "#ffffff" : colors.secondary}
               width={20}

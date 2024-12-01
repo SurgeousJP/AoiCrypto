@@ -18,4 +18,8 @@ const metadata = {
   },
 };
 
-export const wagmiConfig = defaultWagmiConfig({ chains, projectId: PROJECT_ID, metadata });
+export const wagmiConfig = defaultWagmiConfig({
+  chains,
+  projectId: PROJECT_ID,
+  metadata,
+});
