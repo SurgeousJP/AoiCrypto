@@ -10,15 +10,15 @@ type Count @entity {
 type AnalysisDaily @entity {
   id: Bytes!
   date: BigInt!
-  raises: BigInt!
+  raised: BigInt!
   volume: BigInt!
 }
 
 type AnalysisIDODaily @entity {
   id: Bytes!
-  idoPool: IDOPool @derivedFrom(field: "analysisDaily")
+  idoPool: IDOPool!
   date: BigInt!
-  raises: BigInt!
+  raised: BigInt!
   volume: BigInt!
 }
 
@@ -38,9 +38,20 @@ type Investor @entity {
   id: Bytes!
   account: Account!
   idoPool: IDOPool!
-  investedAmount: BigInt!
-  investedTokenAmount: BigInt!
-  claimed: Boolean!
+  activities: [InvestorActivity!] @derivedFrom(field: "investor")
+
+  registered: Boolean!
+  claimed: Boolean! # Track if investor claimed
+}
+
+type InvestorActivity @entity(immutable: true) {
+  id: Bytes!
+  investor: Investor!
+  idoPool: IDOPool!
+  type: ActivityType!
+  value: BigInt!
+  transactionHash: Bytes!
+  timestamp: BigInt!
 }
 
 type PoolOwner @entity {
@@ -48,12 +59,16 @@ type PoolOwner @entity {
   account: Account!
   idoPool: IDOPool!
   raised: BigInt!
+  listingTransactionHash: Bytes
 }
 
 type Token @entity(immutable: true) {
   id: Bytes! #address
   address: Bytes!
-  creator: Account! @derivedFrom(field: "tokens")
+  tokenId: BigInt!
+  creator: Account!
+  initialSupply: BigInt!
+  maxTotalSupply: BigInt!
   createdTime: BigInt!
 }
 
@@ -64,10 +79,10 @@ type LiquidityPool @entity {
   token1: Bytes! #address
   token0Amount: BigInt!
   token1Amount: BigInt!
-  liquidityPoolAddress: Bytes #address
+  liquidityPoolAddress: Bytes! #address
   action: LiquidityPoolAction!
   lpToAddress: Bytes! #address
-  lockExpired: BigInt
+  lockExpired: BigInt!
   createdTime: BigInt!
 }
 
@@ -94,7 +109,8 @@ type IDOPool @entity {
   whitelistedRoot: Bytes
   idoType: IDOType!
   liquidityPool: LiquidityPool!
-  analysisDaily: AnalysisIDODaily! @derivedFrom(field: "idoPool")
+  analysisDaily: [AnalysisIDODaily!] @derivedFrom(field: "idoPool")
+  investorActivities: [InvestorActivity!] @derivedFrom(field: "idoPool")
 }
 
 enum IDOType {
@@ -106,4 +122,11 @@ enum LiquidityPoolAction {
   NOTHING # -> owner address
   LOCK # -> factory address
   BURN # -> zero address
+}
+
+enum ActivityType {
+  INVEST
+  CANCEL_INVESTMENT
+  REFUND
+  CLAIM
 }

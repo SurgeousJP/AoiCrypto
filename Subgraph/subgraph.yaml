@@ -14,7 +14,9 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
+        - IDOPool
         - LiquidityPool
+        - Account
       abis:
         - name: IDOFactory
           file: ./abis/IDOFactory.json
@@ -22,6 +24,27 @@ dataSources:
         - event: PoolCreated(indexed address,indexed address,uint256)
           handler: handlePoolCreated
       file: ./src/handler/ido-factory.ts
+  - kind: ethereum/contract
+    name: ERC20Factory
+    network: sepolia
+    source:
+      address: "0xBB64692b13dE29e0f5370FBF476E471E6084d080"
+      abi: ERC20Factory
+      startBlock: 7181943
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Token
+        - Account
+      abis:
+        - name: ERC20Factory
+          file: ./abis/ERC20Factory.json
+      eventHandlers:
+        - event: TokenCreated(indexed uint256,indexed address,address)
+          handler: handleTokenCreated
+      file: ./src/handler/erc20-factory.ts
 templates:
   - name: IDOPool
     kind: ethereum/contract
@@ -35,6 +58,10 @@ templates:
       file: ./src/handler/ido-pool.ts
       entities:
         - IDOPool
+        - LiquidityPool
+        - Account
+        - Investor
+        - PoolOwner
       abis: 
         - name: IDOPool
           file: ./abis/IDOPool.json

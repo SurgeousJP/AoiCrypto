@@ -8,7 +8,7 @@ export enum IDOTypeEnum {
   PRIVATE_SALE,
 }
 
-export interface IDOPoolDetail {
+export class IDOPoolDetail {
   tokenAddress: Address;
   pricePerToken: BigInt;
   raisedAmount: BigInt;
@@ -22,7 +22,7 @@ export interface IDOPoolDetail {
   privateSaleAmount: BigInt;
 }
 
-export interface IDOPoolTime {
+export class IDOPoolTime {
   startTime: BigInt;
   endTime: BigInt;
   startPublicSale: BigInt;

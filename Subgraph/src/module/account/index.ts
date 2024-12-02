@@ -2,7 +2,7 @@ import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { Account } from "../../../generated/schema";
 
 export function getAccountId(accountAddress: Address): Bytes {
-  return changetype<Bytes>(accountAddress);
+  return Bytes.fromHexString(accountAddress.toHexString());
 }
 
 export function createOrLoadAccount(accountAddress: Address): Account {

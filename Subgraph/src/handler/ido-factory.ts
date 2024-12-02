@@ -1,5 +1,5 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
-import { PoolCreated as PoolCreatedEvent } from "../../generated/AoiFactory/AoiFactory";
+import { PoolCreated } from "../../generated/IDOFactory/IDOFactory";
 import { IDOPool, LiquidityPool } from "../../generated/schema";
 import { IDOPool as IDOPoolTemplate } from "../../generated/templates";
 import {
@@ -16,14 +16,15 @@ import {
   getLiquidityPoolAction,
 } from "../module/liquidityPool";
 import * as utils from "../module/util/index";
-import { buildCountWhenCreating } from "../module/count";
-import { createOrLoadAccount } from "../module/account";
+import { buildCountFromIdoPool } from "../module/count";
 import { createOrLoadPoolOwner } from "../module/poolOwner";
 
-export function handlePoolCreated(event: PoolCreatedEvent): void {
-  const { poolId, owner, tokenAddress } = event.params;
+export function handlePoolCreated(event: PoolCreated): void {
+  const poolId = event.params.poolId;
+  const owner = event.params.owner;
+  const tokenAddress = event.params.tokenAddress;
   const idoPoolAddress = getIDOPoolAddress(poolId);
-  const idoPoolId = getIDOPoolId(idoPoolAddress, poolId); // id for both IDOPool and LiquidityPool
+  const idoPoolId = getIDOPoolId(idoPoolAddress); // id for both IDOPool and LiquidityPool
 
   // Create the IDOPool instances
   IDOPoolTemplate.create(idoPoolAddress);
@@ -32,17 +33,14 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   if (idoPoolDetail.tokenAddress.equals(Address.zero())) {
     return;
   }
-
   const liquidityPoolDetail = getLiquidityPool(poolId);
   if (liquidityPoolDetail.idoPoolAddress.equals(Address.zero())) {
     return;
   }
-
   const idoTimeDetail = getIDOTime(idoPoolAddress);
   if (idoTimeDetail.startTime.equals(BigInt.fromI32(0))) {
     return;
   }
-
   let idoPool = new IDOPool(idoPoolId);
   idoPool.poolId = poolId;
   idoPool.poolOwner = owner;
@@ -63,7 +61,6 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   idoPool.startTime = idoTimeDetail.startTime;
   idoPool.endTime = idoTimeDetail.endTime;
   idoPool.startPublicSale = idoTimeDetail.startPublicSale;
-
   let liquidityPool = buildLiquidityPoolFromIDOPool(idoPool);
   liquidityPool.token0 = tokenAddress;
   liquidityPool.token1 = utils.addresses.wethAddress;
@@ -72,14 +69,14 @@ export function handlePoolCreated(event: PoolCreatedEvent): void {
   liquidityPool.action = getLiquidityPoolAction(poolId);
   liquidityPool.lpToAddress = liquidityPoolDetail.to;
   liquidityPool.lockExpired = liquidityPoolDetail.lockExpired;
-  liquidityPool.createdTime = event.block.timestamp;
   liquidityPool.save();
 
-  let metric = buildCountWhenCreating(idoPool);
+  let metric = buildCountFromIdoPool(idoPool);
   metric.save();
 
   createOrLoadPoolOwner(owner, idoPoolAddress);
   idoPool.save();
+
   log.info("Creating IDO Pool: {}", [
     idoPool.id.toHexString(),
     idoPool.poolId.toHexString(),
