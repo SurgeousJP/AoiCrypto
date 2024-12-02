@@ -28,6 +28,8 @@ import { path } from "@/constants/Path";
 import AuthProvider from "@/contexts/AuthProvider";
 import { AppKit, createAppKit } from "@reown/appkit-wagmi-react-native";
 import * as SplashScreen from "expo-splash-screen";
+import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
+
 // Import
 
 SplashScreen.preventAutoHideAsync();
@@ -60,6 +62,78 @@ export default function RootLayout() {
     defaultChain: sepolia,
     enableAnalytics: true,
   });
+
+  const toastConfig = {
+    success: (props) => (
+      <BaseToast
+        {...props}
+        style={{
+          width: "92%",
+          backgroundColor: colors.background,
+          borderLeftColor: colors.success,
+          paddingHorizontal: 0,
+          marginHorizontal: 0,
+        }}
+        contentContainerStyle={{}}
+        text1Style={{
+          fontFamily: "ReadexPro_400Regular",
+          fontSize: 16,
+          fontWeight: "400",
+        }}
+        text2Style={{
+          fontFamily: "ReadexPro_400Regular",
+          fontSize: 14,
+          fontWeight: "400",
+        }}
+      />
+    ),
+    info: (props) => (
+      <BaseToast
+        {...props}
+        style={{
+          width: "92%",
+          backgroundColor: colors.background,
+          borderLeftColor: colors.secondary,
+          paddingHorizontal: 0,
+          marginHorizontal: 0,
+        }}
+        contentContainerStyle={{}}
+        text1Style={{
+          fontFamily: "ReadexPro_400Regular",
+          fontSize: 16,
+          fontWeight: "400",
+        }}
+        text2Style={{
+          fontFamily: "ReadexPro_400Regular",
+          fontSize: 14,
+          fontWeight: "400",
+        }}
+      />
+    ),
+    error: (props) => (
+      <BaseToast
+        {...props}
+        style={{
+          width: "92%",
+          backgroundColor: colors.background,
+          borderLeftColor: colors.error,
+          paddingHorizontal: 0,
+          marginHorizontal: 0,
+        }}
+        contentContainerStyle={{}}
+        text1Style={{
+          fontFamily: "ReadexPro_400Regular",
+          fontSize: 16,
+          fontWeight: "400",
+        }}
+        text2Style={{
+          fontFamily: "ReadexPro_400Regular",
+          fontSize: 14,
+          fontWeight: "400",
+        }}
+      />
+    ),
+  };
 
   return (
     <WagmiProvider config={wagmiConfig}>
@@ -198,6 +272,7 @@ export default function RootLayout() {
                   />
                 </Stack>
               </ThemeProvider>
+              <Toast config={toastConfig} />
             </View>
           </SafeAreaProvider>
           <AppKit />

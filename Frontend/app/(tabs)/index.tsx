@@ -1,9 +1,14 @@
+// Import
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
+import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
 import XProject from "@/components/Items/Project/XProject";
 import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { sampleCreateNewERC20Input } from "@/contracts/types/ERC20/CreateNewERC20Input";
+import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
 import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
+import { showToast } from "@/utils/toast";
 import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,8 +17,11 @@ import {
   ScrollView,
   Text,
   View,
+  ToastAndroid
 } from "react-native";
 import { TransactionReceipt } from "viem";
+// Import
+
 
 export default function HomeScreen() {
   const banner = require("@/assets/logos/Kima.png");
@@ -25,40 +33,59 @@ export default function HomeScreen() {
 
   const { chainId, address, isConnected } = useContext(AuthContext);
 
+  const [isLoadingModalVisible, setLoadingModalVisible] = useState(false);
+
   const {
-    error: error,
-    isLoading: isLoading,
-    onDepositLiquidityPool: onExecute,
-  } = useDepositLiquidityPool({
+    error,
+    isLoading,
+    isSuccess,
+    isError,
+    onCreateNewERC20: onExecute,
+  } = useCreateNewERC20({
     chainId: chainId,
-    poolId: 1700200000000n,
+    newERC20: sampleCreateNewERC20Input,
     enabled: true,
     onSuccess: (data: TransactionReceipt) => {
-      console.log("Test executing smart contract successfully");
+      console.log("Test creating IDO successfully");
     },
     onSettled: (data?: TransactionReceipt) => {
-      console.log("Test settled smart contract successfully");
+      console.log("Test settled IDO successfully");
     },
     onError: (error?: Error) => {
       console.log("An error occurred: ", error);
     },
   });
 
-  useEffect(() => {
-    console.log("Hook loading status: ", isLoading);
-    console.log("Hook error: ", error);
-  }, [isLoading, error]);
-
   const onTestClick = async () => {
-    console.log("Test smart contract started");
-    try {
-      await onCreateIDO();
-      console.log("IDO creation initiated...");
-    } catch (error) {
-      console.error("Error while executing smart contract :", error);
-    }
-    console.log("Test smart contract ended");
+    setLoadingModalVisible(true);
   };
+
+  useEffect(() => {
+    if (isLoadingModalVisible){
+      onSmartContractExecute();
+    }
+  }, [isLoadingModalVisible]);
+
+  const onSmartContractExecute = async () => {
+    try {
+      await onExecute();
+      // showToast("success", "Transaction success", "Smart contract executed successfully");
+    } catch (error: any) {
+      // showToast("error", "Transaction failed", error);
+    }
+    setLoadingModalVisible(false);
+  }
+
+  useEffect(() => {
+    if (!isLoading && !isLoadingModalVisible){
+      if (error){
+        showToast("error", "Transaction failed", error.message);
+      }
+      if (isSuccess){
+        showToast("success", "Transaction success", "Smart contract executed successfully");
+      }
+    }
+  }, [isLoading, isLoadingModalVisible]);
 
   if (loading) {
     return (
@@ -71,6 +98,7 @@ export default function HomeScreen() {
 
   return (
     <ScrollView className="flex flex-col px-4 bg-background">
+      <LoadingModal isVisible={isLoadingModalVisible} task={"Test loading modal"}/>
       <View className="rounded-2xl mt-4">
         <View className="w-full rounded-2xl h-fit">
           <Image
@@ -94,9 +122,6 @@ export default function HomeScreen() {
             <Text className="text-md font-readexSemiBold text-primary">
               More
             </Text>
-            <Text className="text-md font-readexSemiBold text-primary">
-              More
-            </Text>
           </Pressable>
         </View>
         <View className="flex flex-row space-x-2">
@@ -112,6 +137,12 @@ export default function HomeScreen() {
             <NormalButton
               content={isLoading ? "Loading hook..." : "Execute hook"}
               onClick={onTestClick}
+            />
+          </Pressable>
+          <Pressable className="mb-4">
+            <NormalButton
+              content={"Display toast"}
+              onClick={() => showToast("error", "Transaction completed", "The transaction has completed successfully.")}
             />
           </Pressable>
           <View className="flex flex-row justify-between mb-1">
