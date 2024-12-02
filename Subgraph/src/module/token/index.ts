@@ -23,16 +23,25 @@ export function loadOrCreateToken(tokenAddress: Address): Token {
 }
 
 export function getTokenDetail(tokenId: BigInt): TokenDetail {
-  // const tokenDetailCallResult = erc20FactoryContract.try_getTokenDetail(
-  //   tokenId
-  // );
+  const tokenDetailCallResult = erc20FactoryContract.try_getTokenDetail(
+    tokenId
+  );
   let tokenDetail: TokenDetail = tokenDetailDefault;
-  // if (tokenDetailCallResult.reverted) {
-  //   log.warning("getTokenDetail call reverted by tokenId {}", [
-  //     tokenId.toHexString(),
-  //   ]);
-  // } else {
-  //   tokenDetail = tokenDetailCallResult.value;
-  // }
+  if (tokenDetailCallResult.reverted) {
+    log.warning("getTokenDetail call reverted by tokenId {}", [
+      tokenId.toHexString(),
+    ]);
+  } else {
+    const value = tokenDetailCallResult.value;
+    tokenDetail = {
+      owner: value.owner,
+      tokenAddress: value.tokenAddress,
+      name: value.name,
+      symbol: value.symbol,
+      maxSupply: value.maxSupply,
+      initialSupply: value.initialSupply,
+      createdTime: value.createdTime,
+    };
+  }
   return tokenDetail;
 }
