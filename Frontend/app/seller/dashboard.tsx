@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, ScrollView } from "react-native";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import Funded from "@/assets/icons/system-icons-svg/Funded.svg";
@@ -6,8 +6,12 @@ import Participants from "@/assets/icons/system-icons-svg/Participants.svg";
 import Capital from "@/assets/icons/system-icons-svg/Capital.svg";
 import PieChartComponent from "@/components/Displays/Chart/PieChart";
 import XProject from "@/components/Items/Project/XProject";
+import { AuthContext } from "@/contexts/AuthProvider";
 
 const AdminDashboard = () => {
+
+   const { chainId, address, isConnected } = useContext(AuthContext);
+
   return (
     <ScrollView className="bg-background flex-1">
       <View
@@ -16,7 +20,6 @@ const AdminDashboard = () => {
       >
         <AoiCryptoLogo />
       </View>
-
       <View className="p-4">
         <Text className="font-readexSemiBold text-md mb-2">Overview</Text>
         <View className="">

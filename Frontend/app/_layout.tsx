@@ -157,7 +157,7 @@ export default function RootLayout() {
                     animation: "fade",
                     animationDuration: 1000,
                   }}
-                  initialRouteName={path.login}
+                  initialRouteName={path.sellerTab}
                 >
                   <Stack.Screen
                     name={path.userSetting}
@@ -256,6 +256,16 @@ export default function RootLayout() {
                     }}
                   />
                   <Stack.Screen
+                    name={path.token}
+                    options={{
+                      headerShown: true,
+                      headerShadowVisible: false,
+                      header: ({ options }) => (
+                        <TitleHeader title={"Create token"} />
+                      ),
+                    }}
+                  />
+                  <Stack.Screen
                     name={path.login}
                     options={{
                       headerShown: true,
@@ -284,5 +294,5 @@ export default function RootLayout() {
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
-  initialRouteName: path.login,
+  initialRouteName: path.sellerTab,
 };

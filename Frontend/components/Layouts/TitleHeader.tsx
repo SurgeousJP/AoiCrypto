@@ -33,8 +33,8 @@ const TitleHeader: React.FC<TitleHeaderProps> = ({
           <Link href={"/transaction"}>
             <Setting
               fill={isSettingHidden ? "#ffffff" : colors.secondary}
-              width={20}
-              height={20}
+              width={24}
+              height={24}
             />
           </Link>
         </TouchableOpacity>

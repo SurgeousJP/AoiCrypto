@@ -17,11 +17,10 @@ import {
   ScrollView,
   Text,
   View,
-  ToastAndroid
+  ToastAndroid,
 } from "react-native";
 import { TransactionReceipt } from "viem";
 // Import
-
 
 export default function HomeScreen() {
   const banner = require("@/assets/logos/Kima.png");
@@ -61,7 +60,7 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
-    if (isLoadingModalVisible){
+    if (isLoadingModalVisible) {
       onSmartContractExecute();
     }
   }, [isLoadingModalVisible]);
@@ -69,20 +68,23 @@ export default function HomeScreen() {
   const onSmartContractExecute = async () => {
     try {
       await onExecute();
-      // showToast("success", "Transaction success", "Smart contract executed successfully");
     } catch (error: any) {
-      // showToast("error", "Transaction failed", error);
+      // DO NOTHING
     }
     setLoadingModalVisible(false);
-  }
+  };
 
   useEffect(() => {
-    if (!isLoading && !isLoadingModalVisible){
-      if (error){
+    if (!isLoading && !isLoadingModalVisible) {
+      if (error) {
         showToast("error", "Transaction failed", error.message);
       }
-      if (isSuccess){
-        showToast("success", "Transaction success", "Smart contract executed successfully");
+      if (isSuccess) {
+        showToast(
+          "success",
+          "Transaction success",
+          "Smart contract executed successfully"
+        );
       }
     }
   }, [isLoading, isLoadingModalVisible]);
@@ -98,7 +100,10 @@ export default function HomeScreen() {
 
   return (
     <ScrollView className="flex flex-col px-4 bg-background">
-      <LoadingModal isVisible={isLoadingModalVisible} task={"Test loading modal"}/>
+      <LoadingModal
+        isVisible={isLoadingModalVisible}
+        task={"Test loading modal"}
+      />
       <View className="rounded-2xl mt-4">
         <View className="w-full rounded-2xl h-fit">
           <Image
@@ -142,7 +147,13 @@ export default function HomeScreen() {
           <Pressable className="mb-4">
             <NormalButton
               content={"Display toast"}
-              onClick={() => showToast("error", "Transaction completed", "The transaction has completed successfully.")}
+              onClick={() =>
+                showToast(
+                  "error",
+                  "Transaction completed",
+                  "The transaction has completed successfully."
+                )
+              }
             />
           </Pressable>
           <View className="flex flex-row justify-between mb-1">

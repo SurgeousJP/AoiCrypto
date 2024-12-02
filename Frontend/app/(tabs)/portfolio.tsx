@@ -33,7 +33,7 @@ export default function PortfolioScreen() {
         <ScreenHeader
           LeftComponent={
             <View className="opacity-0">
-              <Back stroke={colors.secondary} width={24} height={24} />
+              <Back stroke={colors.secondary} width={20} height={20} />
             </View>
           }
           CenterComponent={

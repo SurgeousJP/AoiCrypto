@@ -7,8 +7,10 @@ import React, { useContext, useEffect, useState } from "react";
 import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
 import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import Token from "@/assets/icons/system-icons-svg/token.svg";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { View, ActivityIndicator, Text } from "react-native";
+import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 
 NativeWindStyleSheet.setOutput({
   default: "native",
@@ -67,6 +69,15 @@ export default function TabLayout() {
           title: "Dashboard",
           tabBarIcon: ({ color, focused }) => (
             <Pipe stroke={focused ? colors.primary : colors.secondary} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="token"
+        options={{
+          title: "Token",
+          tabBarIcon: ({ color, focused }) => (
+            <Dollar stroke={focused ? colors.primary : colors.secondary} />
           ),
         }}
       />

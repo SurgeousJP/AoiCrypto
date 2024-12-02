@@ -10,4 +10,5 @@ export const path = {
   createProjectOverview: "project/createOverview",
   createProjectStepOne: "project/createStepOne",
   transaction: "transaction/index",
+  token: "token/index"
 };
