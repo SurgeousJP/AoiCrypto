@@ -1,13 +1,14 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { Investor } from "../../../generated/schema";
-import { createOrLoadAccount } from "../account";
+import { createOrLoadAccount, getAccountId } from "../account";
+import { getIDOPoolId } from "../ido";
 
 export function getInvestorId(
   investorAddress: Address,
   idoPoolAddress: Address
 ): Bytes {
-  return changetype<Bytes>(
-    idoPoolAddress.toHexString() + investorAddress.toHexString()
+  return Bytes.fromHexString(investorAddress.toHexString()).concat(
+    Bytes.fromHexString(idoPoolAddress.toHexString())
   );
 }
 
@@ -20,19 +21,16 @@ export function createOrLoadInvestor(
 
   if (investor == null) {
     investor = new Investor(investorId);
-    let account = createOrLoadAccount(changetype<Bytes>(investorAddress));
+    let account = createOrLoadAccount(investorAddress);
     investor.account = account.id;
-    investor.idoPool = changetype<Bytes>(idoPoolAddress);
-    investor.investedAmount = new BigInt(0);
-    investor.investedTokenAmount = new BigInt(0);
+    investor.idoPool = getIDOPoolId(idoPoolAddress);
+    investor.registered = false;
     investor.claimed = false;
     investor.save();
   }
 
   log.info("Loading investor: {}", [
     investorAddress.toHexString(),
-    investor.investedAmount.toHexString(),
-    investor.investedTokenAmount.toHexString(),
     investor.claimed.toString(),
   ]);
   return investor;

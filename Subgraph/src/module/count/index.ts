@@ -1,10 +1,11 @@
 import { BigInt, Bytes } from "@graphprotocol/graph-ts";
-import { Count, IDOPool } from "../../../generated/schema";
+import { Count, IDOPool, InvestorActivity } from "../../../generated/schema";
 import * as utils from "../util";
 import * as idoTypes from "../ido/type";
+import * as activityTypes from "../activity/type";
 
 export function buildCount(): Count {
-  const id = changetype<Bytes>(utils.constants.DEFAULT_ID);
+  const id = utils.utils.defaultId;
   let count = Count.load(id);
   if (count == null) {
     count = new Count(id);
@@ -18,7 +19,7 @@ export function buildCount(): Count {
   return count;
 }
 
-export function buildCountWhenCreating(idoPool: IDOPool): Count {
+export function buildCountFromIdoPool(idoPool: IDOPool): Count {
   const idoType = idoPool.idoType;
   let count = buildCount();
   if (idoType == idoTypes.PRIVATE_SALE) {
@@ -28,30 +29,24 @@ export function buildCountWhenCreating(idoPool: IDOPool): Count {
   }
   count.idoTotal = count.idoTotal.plus(BigInt.fromI32(1));
 
-  return count as Count;
+  return count;
 }
 
-export function buildCountWhenListing(idoPool: IDOPool): Count {
+export function buildCountFromActivity(activity: InvestorActivity): Count {
+  let count = buildCount();
+  if (activity.type == activityTypes.INVEST) {
+    count.investedTotal = count.investedTotal.plus(activity.value);
+  } else if (activity.type == activityTypes.CANCEL_INVESTMENT) {
+    count.investedTotal = count.investedTotal.minus(activity.value);
+  }
+  return count;
+}
+
+export function buildCountFromListing(idoPool: IDOPool): Count {
   let count = buildCount();
   if (idoPool.raisedAmount.ge(idoPool.softCap)) {
     count.idoSuccessTotal = count.idoSuccessTotal.plus(BigInt.fromI32(1));
   }
-
-  return count;
-}
-
-export function buildCountWhenInvesting(investedAmount: BigInt): Count {
-  let count = buildCount();
-  count.investedTotal = count.investedTotal.plus(investedAmount);
-
-  return count;
-}
-
-export function buildCountWhenCancelingInvestment(
-  investedAmount: BigInt
-): Count {
-  let count = buildCount();
-  count.investedTotal = count.investedTotal.minus(investedAmount);
 
   return count;
 }

@@ -4,7 +4,7 @@ export const NOTHING = "Nothing";
 export const LOCK = "Lock";
 export const BURN = "Burn";
 
-export type LiquidityPoolDetail = {
+export class LiquidityPoolDetail {
   idoPoolId: BigInt;
   idoOwner: Address;
   idoPoolAddress: Address;
@@ -16,7 +16,7 @@ export type LiquidityPoolDetail = {
   action: LiquidityPoolActionEnum;
   to: Address;
   lockExpired: BigInt;
-};
+}
 
 export enum LiquidityPoolActionEnum {
   NOTHING,

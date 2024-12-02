@@ -2,15 +2,15 @@ import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import * as idoTypes from "./type";
 import * as utils from "../util/index";
 
-export function getIDOPoolId(idoPoolAddress: Address, poolId: BigInt): Bytes {
-  return changetype<Bytes>(idoPoolAddress + "-" + poolId.toHexString());
+export function getIDOPoolId(idoPoolAddress: Address): Bytes {
+  return Bytes.fromHexString(idoPoolAddress.toHexString());
 }
 
-export function getIDOPoolAddress(poolId: BigInt): Bytes {
+export function getIDOPoolAddress(poolId: BigInt): Address {
   const idoPoolAddressCallResult = utils.contracts.idoFactoryContract.try_getIdoPoolAddress(
     poolId
   );
-  let idoPoolAddress: Bytes = new Bytes(0);
+  let idoPoolAddress: Address = Address.zero();
   if (idoPoolAddressCallResult.reverted) {
     log.warning("getIdoPoolAddress call reverted for poolId: {}", [
       poolId.toString(),
@@ -33,7 +33,20 @@ export function getIDOPoolDetail(
       idoPoolAddress.toHexString(),
     ]);
   } else {
-    idoPoolDetail = idoPoolDetailCallResult.value;
+    const value = idoPoolDetailCallResult.value;
+    idoPoolDetail = {
+      tokenAddress: value.tokenAddress,
+      softCap: value.softCap,
+      hardCap: value.hardCap,
+      liquidityToken: value.liquidityToken,
+      liquidityWETH9: value.liquidityWETH9,
+      maxInvest: value.maxInvest,
+      minInvest: value.minInvest,
+      pricePerToken: value.pricePerToken,
+      privateSaleAmount: value.privateSaleAmount,
+      raisedAmount: value.raisedAmount,
+      raisedTokenAmount: value.raisedTokenAmount,
+    };
   }
 
   return idoPoolDetail;
@@ -88,7 +101,12 @@ export function getIDOTime(idoPoolAddress: Address): idoTypes.IDOPoolTime {
       idoPoolAddress.toHexString(),
     ]);
   } else {
-    idoPoolTime = idoPoolTimeCallResult.value;
+    const value = idoPoolTimeCallResult.value;
+    idoPoolTime = {
+      startTime: value.startTime,
+      endTime: value.endTime,
+      startPublicSale: value.startPublicSale,
+    };
   }
   return idoPoolTime;
 }
