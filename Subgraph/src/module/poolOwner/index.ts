@@ -1,13 +1,14 @@
 import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { PoolOwner } from "../../../generated/schema";
 import { createOrLoadAccount } from "../account";
+import { getIDOPoolId } from "../ido";
 
 export function getPoolOwnerId(
   poolOwnerAddress: Address,
   idoPoolAddress: Address
 ): Bytes {
-  return changetype<Bytes>(
-    idoPoolAddress.toHexString() + poolOwnerAddress.toHexString()
+  return Bytes.fromHexString(poolOwnerAddress.toHexString()).concat(
+    Bytes.fromHexString(idoPoolAddress.toHexString())
   );
 }
 
@@ -19,9 +20,9 @@ export function createOrLoadPoolOwner(
   let poolOwner = PoolOwner.load(poolOwnerId);
   if (poolOwner == null) {
     poolOwner = new PoolOwner(poolOwnerId);
-    const account = createOrLoadAccount(changetype<Bytes>(poolOwnerAddress));
+    const account = createOrLoadAccount(poolOwnerAddress);
     poolOwner.account = account.id;
-    poolOwner.idoPool = changetype<Bytes>(idoPoolAddress);
+    poolOwner.idoPool = getIDOPoolId(idoPoolAddress);
     poolOwner.raised = new BigInt(0);
     poolOwner.save();
   }

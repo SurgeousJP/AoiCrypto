@@ -1,4 +1,4 @@
-import { BigInt, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
 import { IDOPool, LiquidityPool } from "../../../generated/schema";
 import * as utils from "../util/index";
 import * as liquidityPoolTypes from "./type";
@@ -16,7 +16,20 @@ export function getLiquidityPool(
       poolId.toHexString(),
     ]);
   } else {
-    liquidityPoolDetail = liquidityPoolDetailCallResult.value;
+    const value = liquidityPoolDetailCallResult.value;
+    liquidityPoolDetail = {
+      idoPoolId: value.idoPoolId,
+      idoOwner: value.idoOwner,
+      idoPoolAddress: value.idoPoolAddress,
+      tokenAddress: value.tokenAddress,
+      tokenAmount: value.tokenAmount,
+      wethAmount: value.wethAmount,
+      lpAmount: value.lpAmount,
+      liquidityPoolAddress: value.liquidityPoolAddress,
+      action: value.action,
+      to: value.to,
+      lockExpired: value.lockExpired,
+    };
   }
 
   return liquidityPoolDetail;
@@ -52,8 +65,25 @@ export function getLiquidityPoolAction(poolId: BigInt): string {
 export function buildLiquidityPoolFromIDOPool(idoPool: IDOPool): LiquidityPool {
   let liquidityPool = LiquidityPool.load(idoPool.id);
   if (liquidityPool == null) {
+    const liquidityPoolDetail = getLiquidityPool(idoPool.poolId);
     liquidityPool = new LiquidityPool(idoPool.id);
     liquidityPool.idoPool = idoPool.id;
+    liquidityPool.token0 = liquidityPoolDetail.tokenAddress;
+    liquidityPool.token1 = utils.addresses.wethAddress;
+    liquidityPool.token0Amount = liquidityPoolDetail.tokenAmount;
+    liquidityPool.token1Amount = liquidityPoolDetail.wethAmount;
+    liquidityPool.liquidityPoolAddress = Address.zero();
+    liquidityPool.action =
+      liquidityPoolDetail.action ==
+      liquidityPoolTypes.LiquidityPoolActionEnum.BURN
+        ? liquidityPoolTypes.BURN
+        : liquidityPoolDetail.action ==
+          liquidityPoolTypes.LiquidityPoolActionEnum.LOCK
+        ? liquidityPoolTypes.LOCK
+        : liquidityPoolTypes.NOTHING;
+    liquidityPool.lpToAddress = liquidityPoolDetail.to;
+    liquidityPool.lockExpired = liquidityPoolDetail.lockExpired;
+    liquidityPool.createdTime = BigInt.zero();
   }
 
   return liquidityPool;

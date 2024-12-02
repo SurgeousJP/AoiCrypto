@@ -780,6 +780,7 @@
       { "name": "account", "type": "address", "internalType": "address" }
     ]
   },
+  { "type": "error", "name": "PrivateSaleExceeded", "inputs": [] },
   { "type": "error", "name": "ReentrancyGuardReentrantCall", "inputs": [] },
   {
     "type": "error",
