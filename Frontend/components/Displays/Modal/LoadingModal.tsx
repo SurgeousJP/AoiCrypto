@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React, { useEffect, useState } from "react";
 import {
   Modal,

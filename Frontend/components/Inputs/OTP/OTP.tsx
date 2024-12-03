@@ -1,5 +1,5 @@
-import { colors } from "@/constants/Colors";
-import { globalStyles } from "@/constants/GlobalStyle";
+import { colors } from "@/constants/colors";
+import { globalStyles } from "@/constants/globalStyle";
 import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
 import { TextInput, View } from "react-native";

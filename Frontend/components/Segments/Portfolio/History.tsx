@@ -1,7 +1,7 @@
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React from "react";
 import { FlatList, ScrollView, View, Text } from "react-native";
 
@@ -120,8 +120,6 @@ const HistorySegment = () => {
     ],
   ];
 
-  const data = [1, 2, 3, 4, 5, 6];
-
   return (
     <View className="flex flex-col mt-2">
       <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
@@ -144,13 +142,12 @@ const HistorySegment = () => {
         </ScrollView>
       </View>
       <FlatList
-        style={{
-          paddingHorizontal: 0,
+        contentContainerStyle={{
+          borderRadius: 8,
+          overflow: "hidden",
           borderColor: colors.border,
-          borderWidth: 0.5,
-          elevation: 1,
+          borderWidth: 1,
         }}
-        contentContainerStyle={{ flexGrow: 1, gap: 0 }}
         data={[...rowData]}
         keyExtractor={(item, index) => index.toString()}
         renderItem={(item) => {

@@ -5,7 +5,7 @@ import Container from "@/components/Layouts/Container";
 import Description from "@/components/Segments/ProjectDetail/Description";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import Input from "@/components/Inputs/Input/Input";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Link, useRouter } from "expo-router";
 
 const PrivateSaleSegment = () => {

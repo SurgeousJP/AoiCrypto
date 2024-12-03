@@ -1,4 +1,4 @@
-import { Images } from "@/constants/Images";
+import { Images } from "@/constants/images";
 import React, { useEffect, useState } from "react";
 import { Text, Pressable, Image, View } from "react-native";
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import SegmentedControl, { FontStyle } from '@react-native-segmented-control/segmented-control';
-import { colors } from '@/constants/Colors';
+import { colors } from '@/constants/colors';
 
 interface SegmentedControlProp {
   screens: string[];

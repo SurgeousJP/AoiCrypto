@@ -1,6 +1,6 @@
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { useNavigation } from "@react-navigation/native";
 import { Link } from "expo-router";
 import React from "react";

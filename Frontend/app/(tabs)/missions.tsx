@@ -2,7 +2,7 @@ import DividerLine from "@/components/Displays/Divider/DividerLine";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import MissionCard from "@/components/Items/Mission/MissionCard";
 import SearchHeader from "@/components/Layouts/SearchHeader";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {

@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useContext } from "react";

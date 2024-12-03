@@ -3,7 +3,7 @@ import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
 import XProject from "@/components/Items/Project/XProject";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { sampleCreateNewERC20Input } from "@/contracts/types/ERC20/CreateNewERC20Input";
 import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";

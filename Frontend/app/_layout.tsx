@@ -1,7 +1,7 @@
 // Import
 import TabHeader from "@/components/Layouts/TabHeader";
 import TitleHeader from "@/components/Layouts/TitleHeader";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   DarkTheme,
@@ -24,7 +24,7 @@ import { WagmiProvider } from "wagmi";
 
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import { PROJECT_ID, wagmiConfig } from "@/configs/wagmi.config";
-import { path } from "@/constants/Path";
+import { path } from "@/constants/path";
 import AuthProvider from "@/contexts/AuthProvider";
 import { AppKit, createAppKit } from "@reown/appkit-wagmi-react-native";
 import * as SplashScreen from "expo-splash-screen";

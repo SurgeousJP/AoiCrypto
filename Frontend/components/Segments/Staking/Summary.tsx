@@ -5,7 +5,7 @@ import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
 import Line from "@/assets/icons/system-icons-svg/Line.svg";
 import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 import { SvgProps } from "react-native-svg";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 
 interface SummaryItem {
   icon: React.FC<SvgProps>;
@@ -23,19 +23,23 @@ const SummarySegment = () => {
 
   return (
     <View className="bg-background pb-1 flex flex-col">
-      {summaryItems.map((summary) => {
+      <Text className="font-readexSemiBold text-[20px] mt-2 mb-[-4px]"> Metrics</Text>
+      {summaryItems.map((summary, index) => {
         const Icon = summary.icon;
         return (
-          <View className="mt-2">
-              <View className="flex flex-row justify-between p-4 rounded-xl bg-surface overflow-hidden border-border border-[0.5px]" style={{elevation: 2}}>
-                <View className="flex flex-row space-x-2">
-                  <Icon stroke={colors.secondary} />
-                  <Text className="font-readexRegular text-black">
-                    {summary.label}
-                  </Text>
-                </View>
-                <Text className="font-readexRegular">{summary.value}</Text>
+          <View id={index.toString()} className="mt-3">
+            <View
+              className="flex flex-row justify-between p-4 rounded-xl bg-surface overflow-hidden border-border border-[0.5px]"
+              style={{ elevation: 2 }}
+            >
+              <View className="flex flex-row space-x-2">
+                <Icon stroke={colors.secondary} />
+                <Text className="font-readexRegular text-black">
+                  {summary.label}
+                </Text>
               </View>
+              <Text className="font-readexRegular">{summary.value}</Text>
+            </View>
           </View>
         );
       })}

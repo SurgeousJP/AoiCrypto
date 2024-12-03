@@ -1,4 +1,4 @@
-import { globalStyles } from "@/constants/GlobalStyle";
+import { globalStyles } from "@/constants/globalStyle";
 import React, { useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 

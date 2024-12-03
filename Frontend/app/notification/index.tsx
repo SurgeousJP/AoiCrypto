@@ -1,6 +1,6 @@
 import NotificationRow from "@/components/Items/Notification/NotificationRow";
 import Row from "@/components/Items/Project/Row";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";

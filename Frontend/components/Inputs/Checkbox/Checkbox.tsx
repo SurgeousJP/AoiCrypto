@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React, { useState } from "react";
 import { View } from "react-native";
 import BouncyCheckbox from "react-native-bouncy-checkbox";

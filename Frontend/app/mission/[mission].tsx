@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { View, Text, Image, ScrollView, ActivityIndicator } from "react-native";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import * as Progress from "react-native-progress";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import MissionTask from "@/components/Items/Mission/MissionTask";
 import X from "@/assets/logos/X.svg";
 import Telegram from "@/assets/logos/Telegram.svg";

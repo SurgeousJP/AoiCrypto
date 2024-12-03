@@ -12,7 +12,7 @@ import {
   View,
 } from "react-native";
 import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 function Settings() {
   const router = useRouter();
 

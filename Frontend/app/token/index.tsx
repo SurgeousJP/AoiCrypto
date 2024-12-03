@@ -3,7 +3,7 @@ import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Input from "@/components/Inputs/Input/Input";
 import LabelInput from "@/components/Inputs/Input/LabelInput";
 import Container from "@/components/Layouts/Container";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/Conversion";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
 import { showToast } from "@/utils/toast";

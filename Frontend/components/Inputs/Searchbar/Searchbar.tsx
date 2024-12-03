@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React, { useState } from "react";
 import { View, TextInput, TouchableOpacity } from "react-native";
 import Search from "@/assets/icons/system-icons-svg/Search.svg";

@@ -1,5 +1,5 @@
 import ProjectCard from "@/components/Items/Project/ProjectCard";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React, { useEffect, useState } from "react";
 import {
   ScrollView,

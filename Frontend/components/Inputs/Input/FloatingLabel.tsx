@@ -31,7 +31,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { styles } from "./styles";
 import { getValueWithCurrencyMask, getValueWithNonCurrencyMask } from "./utils";
-import { Images } from "@/constants/Images";
+import { Images } from "@/constants/images";
 
 const makeVisibleWhite = {uri: Images.makeVisibleWhite}
 const makeInvisibleWhite = {uri: Images.makeInvisibleWhite}

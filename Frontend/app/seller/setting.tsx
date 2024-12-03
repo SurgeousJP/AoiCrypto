@@ -1,7 +1,7 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import SettingCard from "@/components/Cards/SettingCard/SettingCard";
 import UserCard from "@/components/Cards/UserCard/UserCard";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import { Link, useRouter } from "expo-router";
@@ -41,7 +41,7 @@ const AdminSetting = () => {
         <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
           Role & Notifications
         </Text>
-        <View className="rounded-xl" style={{ elevation: 2 }}>
+        <View className="rounded-xl" style={{ elevation: 1 }}>
           <SettingCard
             icon={<Profile width={24} height={24} stroke={colors.secondary} />}
             title="Seller"

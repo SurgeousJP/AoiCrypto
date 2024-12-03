@@ -1,5 +1,5 @@
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Link, useNavigation } from "expo-router";
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";

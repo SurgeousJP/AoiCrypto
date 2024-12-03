@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { useRouter } from "expo-router";
 import React from "react";
 import { View, Text, Image, ImageBackground, Pressable } from "react-native";

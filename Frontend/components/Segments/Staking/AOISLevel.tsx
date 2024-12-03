@@ -1,5 +1,5 @@
 import CurrencyLabel from "@/components/Displays/CurrencyLabel/CurrencyLabel";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React from "react";
 import { View, Text } from "react-native";
 import { Shadow } from "react-native-shadow-2";

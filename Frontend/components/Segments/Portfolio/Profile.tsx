@@ -10,22 +10,7 @@ const ProfileSegment = () => {
       showsVerticalScrollIndicator={false}
       className="flex flex-col mt-2"
     >
-      <View className="mb-4">
-        <Container>
-          <View className="bg-surface rounded-lg p-2">
-            <Text className="font-readexRegular">
-              Connected as{" "}
-              <Text className="font-readexBold">
-                0x9F1691585e3751b7886B1063f5BAA5500E9478e2
-              </Text>
-            </Text>
-            <Text className="font-readexRegular text-black">
-              0 <Text className="font-readexRegular text-secondary">ETH</Text>
-            </Text>
-          </View>
-        </Container>
-      </View>
-
+      <Text className="font-readexSemiBold text-[20px] mt-2 mb-2">Analytics</Text>
       <View className="mb-4">
         <Container>
           <View className="bg-surface rounded-lg p-2 flex flex-col items-center">
@@ -38,7 +23,6 @@ const ProfileSegment = () => {
           </View>
         </Container>
       </View>
-
       <View className="mb-2">
         <Container>
           <View className="bg-surface rounded-lg p-2 flex flex-col">

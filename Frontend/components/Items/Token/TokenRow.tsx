@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { showToast } from "@/utils/toast";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 
 interface TokenProps {

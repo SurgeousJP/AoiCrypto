@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 import Searchbar from "../Inputs/Searchbar/Searchbar";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import { Link, useRouter } from "expo-router";
 

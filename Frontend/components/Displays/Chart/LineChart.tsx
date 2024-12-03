@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { ReadexPro_400Regular, ReadexPro_700Bold } from "@expo-google-fonts/readex-pro";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
