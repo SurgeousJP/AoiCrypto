@@ -1,11 +1,11 @@
-import React from "react";
-import { View, Text } from "react-native";
-import Wallet from "@/assets/icons/system-icons-svg/Wallet.svg";
+import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
 import Line from "@/assets/icons/system-icons-svg/Line.svg";
-import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
+import Wallet from "@/assets/icons/system-icons-svg/Wallet.svg";
+import { colors } from "@/constants/Colors";
+import React from "react";
+import { Text, View } from "react-native";
 import { SvgProps } from "react-native-svg";
-import { colors } from "@/constants/colors";
 
 interface SummaryItem {
   icon: React.FC<SvgProps>;
@@ -23,7 +23,10 @@ const SummarySegment = () => {
 
   return (
     <View className="bg-background pb-1 flex flex-col">
-      <Text className="font-readexSemiBold text-[20px] mt-2 mb-[-4px]"> Metrics</Text>
+      <Text className="font-readexSemiBold text-[20px] mt-2 mb-[-4px]">
+        {" "}
+        Metrics
+      </Text>
       {summaryItems.map((summary, index) => {
         const Icon = summary.icon;
         return (

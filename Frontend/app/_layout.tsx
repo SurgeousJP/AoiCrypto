@@ -1,7 +1,7 @@
 // Import
 import TabHeader from "@/components/Layouts/TabHeader";
 import TitleHeader from "@/components/Layouts/TitleHeader";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   DarkTheme,
@@ -23,14 +23,14 @@ import {
 import { WagmiProvider } from "wagmi";
 
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import { SUBGRAPH_ENDPOINT } from "@/configs/subgraph.config";
 import { PROJECT_ID, wagmiConfig } from "@/configs/wagmi.config";
-import { path } from "@/constants/path";
+import { path } from "@/constants/Path";
 import AuthProvider from "@/contexts/AuthProvider";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { AppKit, createAppKit } from "@reown/appkit-wagmi-react-native";
 import * as SplashScreen from "expo-splash-screen";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
-import { SUBGRAPH_ENDPOINT } from "@/configs/subgraph.config";
+import Toast, { BaseToast } from "react-native-toast-message";
 // Import
 
 SplashScreen.preventAutoHideAsync();

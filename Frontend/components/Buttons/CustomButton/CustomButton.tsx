@@ -1,6 +1,6 @@
-import { Images } from "@/constants/images";
+import { Images } from "@/constants/Images";
 import React, { useEffect, useState } from "react";
-import { Text, Pressable, Image, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 interface CustomButtonProps {
   backgroundColor: string;

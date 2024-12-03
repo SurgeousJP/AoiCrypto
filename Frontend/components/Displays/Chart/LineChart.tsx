@@ -1,5 +1,8 @@
-import { colors } from "@/constants/colors";
-import { ReadexPro_400Regular, ReadexPro_700Bold } from "@expo-google-fonts/readex-pro";
+import { colors } from "@/constants/Colors";
+import {
+  ReadexPro_400Regular,
+  ReadexPro_700Bold,
+} from "@expo-google-fonts/readex-pro";
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
@@ -34,7 +37,6 @@ const LineChartComponent = () => {
         data: [20, 45, 28, 80, 99, 43],
         color: (opacity = 1) => `rgba(47, 102, 246, ${opacity})`, // optional
         strokeWidth: 2, // optional
-        
       },
     ],
     legend: ["Rainy Days"], // optional
@@ -48,30 +50,30 @@ const LineChartComponent = () => {
     fillShadowGradientFrom: colors.primary,
     fillShadowGradientFromOpacity: 0.3,
     fillShadowGradientTo: colors.primary,
-    fillShadowGradientToOpacity: 0,			
+    fillShadowGradientToOpacity: 0,
     color: (opacity = 1) => `rgba(105, 111, 140, ${opacity})`,
     strokeWidth: 2, // optional, default 3
     barPercentage: 0.5,
     useShadowColorFromDataset: false, // optional
     propsForLabels: {
       fill: colors.textColor,
-      fontWeight: 'bold',
-      fontFamily: 'ReadexPro_400Regular'
+      fontWeight: "bold",
+      fontFamily: "ReadexPro_400Regular",
     },
     propsForVerticalLabels: {
       fill: colors.secondary,
-      fontFamily: 'ReadexPro_400Regular'
+      fontFamily: "ReadexPro_400Regular",
     },
     propsForHorizontalLabels: {
       fill: colors.secondary,
-      fontFamily: 'ReadexPro_400Regular'
+      fontFamily: "ReadexPro_400Regular",
     },
-    propsForDots:{
-      fill: colors.primary
+    propsForDots: {
+      fill: colors.primary,
     },
     propsForBackgroundLines: {
       stroke: colors.secondary,
-      opacity: 0.3
+      opacity: 0.3,
     },
   };
 

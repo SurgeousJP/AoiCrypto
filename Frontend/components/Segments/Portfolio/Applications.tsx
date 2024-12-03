@@ -1,9 +1,9 @@
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import React from "react";
-import { FlatList, ScrollView, View, Text } from "react-native";
+import { FlatList, ScrollView, View } from "react-native";
 
 const ApplicationSegment = () => {
   const projectState = [

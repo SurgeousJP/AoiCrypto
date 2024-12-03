@@ -1,42 +1,42 @@
+import { Images } from "@/constants/Images";
 import React, {
-  useState,
-  useRef,
-  useEffect,
   forwardRef,
+  useEffect,
   useImperativeHandle,
+  useRef,
+  useState,
 } from "react";
 import {
-  View,
-  TextInput,
   Image,
-  Text,
-  TouchableOpacity,
-  TextProps,
-  TextInputProps,
-  TextStyle,
-  ViewStyle,
+  ImageSourcePropType,
   ImageStyle,
-  TouchableWithoutFeedback,
   LayoutChangeEvent,
   StyleSheet,
-  ImageSourcePropType,
+  Text,
+  TextInput,
+  TextInputProps,
+  TextProps,
+  TextStyle,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
 } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  withTiming,
   Easing,
-  useDerivedValue,
   interpolateColor,
+  useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 import { styles } from "./styles";
 import { getValueWithCurrencyMask, getValueWithNonCurrencyMask } from "./utils";
-import { Images } from "@/constants/images";
 
-const makeVisibleWhite = {uri: Images.makeVisibleWhite}
-const makeInvisibleWhite = {uri: Images.makeInvisibleWhite}
-const makeVisibleBlack = {uri: Images.makeVisibleBlack}
-const makeInvisibleBlack = {uri: Images.makeInvisibleBlack}
+const makeVisibleWhite = { uri: Images.makeVisibleWhite };
+const makeInvisibleWhite = { uri: Images.makeInvisibleWhite };
+const makeVisibleBlack = { uri: Images.makeVisibleBlack };
+const makeInvisibleBlack = { uri: Images.makeInvisibleBlack };
 
 export interface Props extends Omit<TextInputProps, "secureTextEntry"> {
   /** Style to the container of whole component */
@@ -636,7 +636,11 @@ const FloatingLabelInput: React.ForwardRefRenderFunction<InputRef, Props> = (
                   { opacity: 0 },
                   positionAnimations,
                   colorAnimation,
-                  { color: "#696F8C", fontFamily: "ReadexPro_400Regular", fontSize: 16 },
+                  {
+                    color: "#696F8C",
+                    fontFamily: "ReadexPro_400Regular",
+                    fontSize: 16,
+                  },
                 ]}
                 className="focus:ring-0"
               >

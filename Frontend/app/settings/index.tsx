@@ -1,18 +1,13 @@
+import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import SettingCard from "@/components/Cards/SettingCard/SettingCard";
 import UserCard from "@/components/Cards/UserCard/UserCard";
+import { colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
-import { colors } from "@/constants/colors";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 function Settings() {
   const router = useRouter();
 
@@ -22,7 +17,7 @@ function Settings() {
 
   const navToSellerUI = () => {
     router.navigate("/seller");
-  }
+  };
 
   const { open } = useAppKit();
   const openWalletModal = () => {
@@ -58,7 +53,7 @@ function Settings() {
             }
             title="Notifications"
             pos={"bot"}
-            action = {
+            action={
               <TouchableOpacity onPress={navToNotificationScreen}>
                 <Text className="text-primary text-sm font-readexRegular">
                   See

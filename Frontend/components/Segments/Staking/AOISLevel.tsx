@@ -1,9 +1,6 @@
-import CurrencyLabel from "@/components/Displays/CurrencyLabel/CurrencyLabel";
-import { colors } from "@/constants/colors";
 import React from "react";
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 import { Shadow } from "react-native-shadow-2";
-import { SvgProps, Line } from "react-native-svg";
 
 interface AOISLevel {
   label: string;
@@ -58,7 +55,8 @@ const AOISLevelSegment = () => {
                     {lvl.label}
                     {"\n"}
                     <Text className="font-readexRegular text-secondary">
-                      {lvl.value}+ {idx === aoiLevels.length - 1 ? "(NO COOLDOWN)" : ""} 
+                      {lvl.value}+{" "}
+                      {idx === aoiLevels.length - 1 ? "(NO COOLDOWN)" : ""}
                     </Text>
                   </Text>
                 </View>

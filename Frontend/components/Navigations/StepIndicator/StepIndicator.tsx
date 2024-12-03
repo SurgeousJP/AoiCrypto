@@ -1,19 +1,19 @@
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import React from "react";
+import { Text, View } from "react-native";
 import StepIndicator from "react-native-step-indicator";
-import {Text, View} from "react-native"
 interface StepIndicatorProps {
-  labels: string[],
-  currentPosition: number,
-  mode: string
+  labels: string[];
+  currentPosition: number;
+  mode: string;
 }
 
-const StepIndicatorComponent:React.FC<StepIndicatorProps> = ({labels, currentPosition, mode}) => {
-  const placeHolderLabels = [
-    "Cart",
-    "Delivery Address",
-    "Order Summary",
-  ];
+const StepIndicatorComponent: React.FC<StepIndicatorProps> = ({
+  labels,
+  currentPosition,
+  mode,
+}) => {
+  const placeHolderLabels = ["Cart", "Delivery Address", "Order Summary"];
   const customStyles = {
     stepIndicatorSize: 30,
     currentStepIndicatorSize: 30,
@@ -47,10 +47,27 @@ const StepIndicatorComponent:React.FC<StepIndicatorProps> = ({labels, currentPos
       currentPosition={currentPosition ?? 1}
       labels={labels.length > 0 ? labels : placeHolderLabels}
       renderStepIndicator={(obj) => {
-        return <Text className={`font-readexBold ${obj.position + 1 == currentPosition ? "text-white" : "Text-black"}`}>{obj.position + 1}</Text>
+        return (
+          <Text
+            className={`font-readexBold ${
+              obj.position + 1 == currentPosition ? "text-white" : "Text-black"
+            }`}
+          >
+            {obj.position + 1}
+          </Text>
+        );
       }}
       renderLabel={(obj) => {
-        return <View className="flex text-left"><Text className="font-readexRegular text-left" style={{writingDirection: 'ltr'}}>{obj.label}</Text></View>
+        return (
+          <View className="flex text-left">
+            <Text
+              className="font-readexRegular text-left"
+              style={{ writingDirection: "ltr" }}
+            >
+              {obj.label}
+            </Text>
+          </View>
+        );
       }}
     />
   );

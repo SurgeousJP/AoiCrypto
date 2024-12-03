@@ -1,7 +1,7 @@
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import React from "react";
-import { View, Text, Image, ImageBackground, Pressable } from "react-native";
+import { Image, ImageBackground, Pressable, Text, View } from "react-native";
 import * as Progress from "react-native-progress";
 
 interface ProjectCardProps {

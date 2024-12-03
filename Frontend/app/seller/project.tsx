@@ -1,21 +1,21 @@
-import ProjectCard from "@/components/Items/Project/ProjectCard";
-import { colors } from "@/constants/colors";
-import React, { useEffect, useState } from "react";
-import {
-  ScrollView,
-  View,
-  Text,
-  Pressable,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import Add from "@/assets/icons/system-icons-svg/Add.svg";
 import Move from "@/assets/icons/system-icons-svg/Move.svg";
-import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import DividerLine from "@/components/Displays/Divider/DividerLine";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
+import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
+import ProjectCard from "@/components/Items/Project/ProjectCard";
+import { colors } from "@/constants/Colors";
 import { Link } from "expo-router";
-import Add from "@/assets/icons/system-icons-svg/Add.svg";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 export default function AdminProjectScreen() {
   const projectState = [
@@ -51,7 +51,7 @@ export default function AdminProjectScreen() {
         <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
           <Searchbar placeholder={"Search project"} />
           <Link href={"/project/createOverview"}>
-            <Add width={24} height={24} stroke={colors.secondary}/>
+            <Add width={24} height={24} stroke={colors.secondary} />
           </Link>
         </View>
       </View>

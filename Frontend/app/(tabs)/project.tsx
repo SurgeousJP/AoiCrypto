@@ -1,19 +1,18 @@
-import ProjectCard from "@/components/Items/Project/ProjectCard";
-import SearchHeader from "@/components/Layouts/SearchHeader";
-import { colors } from "@/constants/colors";
-import React, { useContext, useEffect, useState } from "react";
-import {
-  ScrollView,
-  View,
-  Text,
-  Pressable,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
-import Move from "@/assets/icons/system-icons-svg/Move.svg";
-import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import DividerLine from "@/components/Displays/Divider/DividerLine";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
+import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
+import ProjectCard from "@/components/Items/Project/ProjectCard";
+import SearchHeader from "@/components/Layouts/SearchHeader";
+import { colors } from "@/constants/Colors";
+import React, { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 export default function ProjectScreen() {
   const projectState = [

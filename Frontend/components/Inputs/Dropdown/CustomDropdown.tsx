@@ -1,7 +1,7 @@
+import { colors } from "@/constants/Colors";
 import React, { useState } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
-import { colors } from "@/constants/colors";
 
 interface CustomDropdownProps {
   placeholder?: string;

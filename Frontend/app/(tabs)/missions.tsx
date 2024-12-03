@@ -2,16 +2,15 @@ import DividerLine from "@/components/Displays/Divider/DividerLine";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import MissionCard from "@/components/Items/Mission/MissionCard";
 import SearchHeader from "@/components/Layouts/SearchHeader";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Pressable,
-  ScrollView,
-  View,
-  Text,
   FlatList,
+  Pressable,
+  Text,
+  View,
 } from "react-native";
 
 export default function MissionsScreen() {

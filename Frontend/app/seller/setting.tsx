@@ -1,13 +1,13 @@
+import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import SettingCard from "@/components/Cards/SettingCard/SettingCard";
 import UserCard from "@/components/Cards/UserCard/UserCard";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const AdminSetting = () => {
   const router = useRouter();
@@ -30,9 +30,11 @@ const AdminSetting = () => {
       className="flex flex-col w-full bg-background"
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      <View className="border-b-[0.2px] border-border" style={{elevation: 2}}>
+      <View className="border-b-[0.2px] border-border" style={{ elevation: 2 }}>
         <View className="flex flex-row justify-between items-center bg-surface py-2 px-4">
-          <Text className="text-[20px] font-readexSemiBold text-center mx-auto">Setting</Text>
+          <Text className="text-[20px] font-readexSemiBold text-center mx-auto">
+            Setting
+          </Text>
         </View>
       </View>
 

@@ -1,13 +1,13 @@
-import ScreenHeader from "@/components/Layouts/ScreenHeader";
-import { colors } from "@/constants/colors";
-import { Link, useNavigation } from "expo-router";
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
-import Container from "@/components/Layouts/Container";
-import Input from "@/components/Inputs/Input/Input";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
+import Input from "@/components/Inputs/Input/Input";
+import Container from "@/components/Layouts/Container";
+import ScreenHeader from "@/components/Layouts/ScreenHeader";
+import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
+import { colors } from "@/constants/Colors";
+import { useNavigation } from "expo-router";
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const CreateStepOne = () => {
   const navigation = useNavigation();

@@ -1,18 +1,15 @@
-import React from "react";
-import { View, Text, ImageBackground, Image } from "react-native";
-import * as Progress from "react-native-progress";
+import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import Container from "@/components/Layouts/Container";
 import Description from "@/components/Segments/ProjectDetail/Description";
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
-import Input from "@/components/Inputs/Input/Input";
-import { colors } from "@/constants/colors";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import React from "react";
+import { Image, ImageBackground, Text, View } from "react-native";
 
 const PrivateSaleSegment = () => {
   const router = useRouter();
   const navigateToWhitelistApplication = () => {
     router.navigate("/project/whitelistForm");
-  }
+  };
 
   const projectIllust = require("@/assets/images/ProjectIllust.png");
   const projectLogo = require("@/assets/images/ProjectLogo.png");
@@ -53,7 +50,10 @@ const PrivateSaleSegment = () => {
                 for it below
               </Text>
               <View className="mt-4">
-                <NormalButton content={"Apply now"} onClick={navigateToWhitelistApplication}/>
+                <NormalButton
+                  content={"Apply now"}
+                  onClick={navigateToWhitelistApplication}
+                />
               </View>
             </View>
           </Container>

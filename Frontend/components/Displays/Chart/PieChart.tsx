@@ -1,4 +1,4 @@
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import React from "react";
 import { PieChart } from "react-native-chart-kit";
 
@@ -74,7 +74,7 @@ const PieChartComponent = () => {
       stroke: colors.secondary,
       opacity: 0.3,
     },
-    accessor: 'population'
+    accessor: "population",
   };
 
   return (

@@ -1,10 +1,10 @@
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { showToast } from "@/utils/toast";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
 import React, { useContext } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import * as Clipboard from 'expo-clipboard';
-import { showToast } from "@/utils/toast";
 
 function UserCard() {
   const { address } = useContext(AuthContext);
@@ -12,7 +12,7 @@ function UserCard() {
   const handleCopyToClipboard = async () => {
     await Clipboard.setStringAsync(address);
     const clipboard = await Clipboard.getStringAsync();
-    showToast('info', 'Copied address to clipboard', clipboard);
+    showToast("info", "Copied address to clipboard", clipboard);
   };
 
   return (

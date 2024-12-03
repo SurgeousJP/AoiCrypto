@@ -3,11 +3,10 @@ import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
 import XProject from "@/components/Items/Project/XProject";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { sampleCreateNewERC20Input } from "@/contracts/types/ERC20/CreateNewERC20Input";
 import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
-import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
 import { showToast } from "@/utils/toast";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -17,7 +16,6 @@ import {
   ScrollView,
   Text,
   View,
-  ToastAndroid,
 } from "react-native";
 import { TransactionReceipt } from "viem";
 // Import
