@@ -1,9 +1,9 @@
-import React from "react";
-import { View, Text, ScrollView, ImageBackground } from "react-native";
 import Illustration from "@/assets/images/illustration.svg";
-import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
-import { Link, useRouter } from "expo-router";
+import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
+import { useRouter } from "expo-router";
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
 
 const CreateProjectOverview = () => {
   const labels = [
@@ -14,8 +14,8 @@ const CreateProjectOverview = () => {
 
   const router = useRouter();
   const navigateToStepOne = () => {
-    router.navigate("/project/createStepOne")
-  }
+    router.navigate("/project/createStepOne");
+  };
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -28,10 +28,14 @@ const CreateProjectOverview = () => {
         </View>
 
         <View className="h-[200px]">
-          <StepIndicatorComponent mode={'horizontal'} labels={labels} currentPosition={-1} />
+          <StepIndicatorComponent
+            mode={"horizontal"}
+            labels={labels}
+            currentPosition={-1}
+          />
         </View>
 
-        <View href='/project/createStepOne' className="h-[48px]">
+        <View href="/project/createStepOne" className="h-[48px]">
           <NormalButton onClick={navigateToStepOne} content="Continue" />
         </View>
       </View>

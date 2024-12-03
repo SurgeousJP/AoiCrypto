@@ -5,12 +5,13 @@ import Container from "@/components/Layouts/Container";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { colors } from "@/constants/Colors";
-import { useNavigation } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const CreateStepOne = () => {
   const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -43,13 +44,13 @@ const CreateStepOne = () => {
                 Basic Information
               </Text>
               <View className="mb-3">
-                <Input label={"Token address"} />
+                <Input label={"Token address"} type="text" />
               </View>
               <View className="mb-3">
-                <Input label={"Price per token"} />
+                <Input label={"Price per token"} type="numeric" />
               </View>
               <View className="mb-3">
-                <Input label={"Raised amount"} />
+                <Input label={"Raised amount"} type="numeric" />
               </View>
             </View>
           </Container>
@@ -66,19 +67,19 @@ const CreateStepOne = () => {
               </Text>
               <View className="flex flex-row justify-between mb-3">
                 <View className="basis-[48%]">
-                  <Input label={"Soft cap"} />
+                  <Input label={"Soft cap"} type="numeric" />
                 </View>
                 <View className="basis-[48%]">
-                  <Input label={"Hard cap"} />
+                  <Input label={"Hard cap"} type="numeric" />
                 </View>
               </View>
 
               <View className="flex flex-row justify-between mb-3">
                 <View className="basis-[48%]">
-                  <Input label={"Min invest"} />
+                  <Input label={"Min invest"} type="numeric" />
                 </View>
                 <View className="basis-[48%]">
-                  <Input label={"Max invest"} />
+                  <Input label={"Max invest"} type="numeric" />
                 </View>
               </View>
             </View>
@@ -95,13 +96,13 @@ const CreateStepOne = () => {
                 Liquidity for DEX Listing
               </Text>
               <View className="mb-3">
-                <Input label={"Liquidity ETH to List DEX"} />
+                <Input label={"Liquidity ETH to List DEX"} type="numeric" />
               </View>
               <View className="mb-3">
-                <Input label={"Liquidity Token to List DEX"} />
+                <Input label={"Liquidity Token to List DEX"} type="numeric" />
               </View>
               <View className="mb-3">
-                <Input label={"Lock Expired"} />
+                <Input label={"Lock Expired"} type="numeric" />
               </View>
             </View>
           </Container>
@@ -110,9 +111,7 @@ const CreateStepOne = () => {
         <View className="mt-4">
           <NormalButton
             content={"Go to next step"}
-            onClick={function (): void {
-              throw new Error("Function not implemented.");
-            }}
+            onClick={() => router.push("/project/createStepTwo")}
           />
         </View>
       </View>

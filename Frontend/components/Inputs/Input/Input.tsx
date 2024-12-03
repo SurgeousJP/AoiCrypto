@@ -1,13 +1,11 @@
-import React from "react";
-import {
-  View,
-} from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
+import { View } from "react-native";
 
-import FloatingLabel from "./FloatingLabel";
+import LabelInput, { InputType } from "./LabelInput";
 interface InputProps {
   label: string;
-  isPassword?: true | false;
+  type: InputType;
+  placeholder?: string;
 }
 
 const Input: React.FC<InputProps> = (props) => {
@@ -17,11 +15,13 @@ const Input: React.FC<InputProps> = (props) => {
     <View className="flex flex-row items-center justify-between">
       <View className="flex flex-row space-x-2 items-center">
         <View className="w-full">
-          <FloatingLabel
-            label={props.label}
-            isPassword={props.isPassword}
+          <LabelInput
+            title={props.label}
+            type={props.type}
             value={value}
-            onChangeText={(value) => setValue(value)}
+            onChange={(value) => setValue(value)}
+            name={""}
+            placeholder={props.placeholder ?? ""}
           />
         </View>
       </View>
