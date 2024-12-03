@@ -40,7 +40,7 @@ function SettingCard({
   };
 
   return (
-    <TouchableOpacity
+    <View
       className={`flex flex-row ${getCardStyle(
         pos
       )} items-center w-full h-[56px] justify-between p-4 bg-white border-border border-[0.5px]`}
@@ -73,7 +73,7 @@ function SettingCard({
       {label && (
         <Text className="text-black readexRegular font-semibold ">{label}</Text>
       )}
-    </TouchableOpacity>
+    </View>
   );
 }
 

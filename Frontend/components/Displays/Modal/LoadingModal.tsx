@@ -30,7 +30,7 @@ const LoadingModal: React.FC<LoadingModalProps> = (props) => {
           <View className="flex flex-row items-center space-x-4">
             <ActivityIndicator size={"large"} color={colors.primary} />
               <Text className="font-readexRegular text-md  text-center">
-                Transaction pending ...
+                {props.task ?? "Transaction pending ..."}
               </Text>
           </View>
         </View>

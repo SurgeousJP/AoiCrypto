@@ -1,4 +1,3 @@
-import ProjectCard from "@/components/Items/Project/ProjectCard";
 import { colors } from "@/constants/Colors";
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -12,6 +11,8 @@ import { Link } from "expo-router";
 import Add from "@/assets/icons/system-icons-svg/Add.svg";
 import TokenRow from "@/components/Items/Token/TokenRow";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from '@apollo/client';
+import { GET_TOKENS } from "@/queries/token";
 
 export default function TokenScreen() {
 
@@ -21,9 +22,22 @@ export default function TokenScreen() {
   }, []);
 
   const data = [1, 2, 3, 4, 5, 6];
-  const {address} = useContext(AuthContext);
+  const { address } = useContext(AuthContext);
 
-  if (loading) {
+  const { loading: isTokenLoading, error, data: tokenQueryData } = useQuery(GET_TOKENS, {
+    variables: { address: address },
+    skip: !address, // Skip the query if address is not set
+  });
+
+  const tokens = tokenQueryData?.tokens;
+
+  useEffect(() => {
+    console.log("Tokens: ", tokens);
+    console.log("Query status: ", isTokenLoading);
+    console.log("Error: ", error?.message);
+  }, [loading, isTokenLoading, error, tokens])
+
+  if (loading || isTokenLoading) {
     return (
       <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background ">
         <ActivityIndicator size="large" color={colors.primary} />
@@ -46,13 +60,10 @@ export default function TokenScreen() {
       <FlatList
         style={{ paddingHorizontal: 16}}
         contentContainerStyle={{borderRadius: 8, overflow: 'hidden', borderColor: colors.border, borderWidth: 1}}
-        data={data}
+        data={tokens}
         keyExtractor={(item, index) => index.toString()}
         renderItem={(item) => {
-          if (item.index !== 0){
-            return <TokenRow name={"Gold"} symbol={"GOLD"} totalSupply={"1000000"} address={address} />
-          }
-          return <TokenRow name={"Name"} symbol={"Symbol"} totalSupply={"Total supply"} address={"Address"} />
+            return <TokenRow name={"N/A"} symbol={"N/A"} totalSupply={item.item.maxTotalSupply} address={item.item.address} initialSupply={item.item.initialSupply} />
         }}
       />
     </View>

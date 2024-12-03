@@ -29,7 +29,8 @@ import AuthProvider from "@/contexts/AuthProvider";
 import { AppKit, createAppKit } from "@reown/appkit-wagmi-react-native";
 import * as SplashScreen from "expo-splash-screen";
 import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
-
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
+import { SUBGRAPH_ENDPOINT } from "@/configs/subgraph.config";
 // Import
 
 SplashScreen.preventAutoHideAsync();
@@ -69,6 +70,7 @@ export default function RootLayout() {
         {...props}
         style={{
           width: "92%",
+          height: "auto",
           backgroundColor: colors.background,
           borderLeftColor: colors.success,
           paddingHorizontal: 0,
@@ -135,158 +137,165 @@ export default function RootLayout() {
     ),
   };
 
+  const subgraphClient = new ApolloClient({
+    uri: SUBGRAPH_ENDPOINT, // GraphQL Subgraph endpoint
+    cache: new InMemoryCache(),
+  });
+
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <SafeAreaProvider>
-            <View
-              style={{
-                flex: 1,
-                paddingTop: insets.top + 8,
-                paddingBottom: insets.bottom,
-                backgroundColor: colors.surface,
-              }}
-            >
-              <ThemeProvider
-                value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+        <ApolloProvider client={subgraphClient}>
+          <AuthProvider>
+            <SafeAreaProvider>
+              <View
+                style={{
+                  flex: 1,
+                  paddingTop: insets.top + 8,
+                  paddingBottom: insets.bottom,
+                  backgroundColor: colors.surface,
+                }}
               >
-                <Stack
-                  screenOptions={{
-                    headerShown: false,
-                    animation: "fade",
-                    animationDuration: 1000,
-                  }}
-                  initialRouteName={path.sellerTab}
+                <ThemeProvider
+                  value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
                 >
-                  <Stack.Screen
-                    name={path.userSetting}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: true,
-                      header: ({ options }) => {
-                        return (
-                          <TitleHeader
-                            title={"Settings"}
-                            isSettingHidden={true}
-                          />
-                        );
-                      },
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.userTab}
-                    options={{
+                  <Stack
+                    screenOptions={{
                       headerShown: false,
-                      headerShadowVisible: false,
-                      header: ({ options }) => <TabHeader />,
+                      animation: "fade",
+                      animationDuration: 1000,
                     }}
-                  />
-                  <Stack.Screen
-                    name={path.userProjectDetail}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: true,
-                      header: ({ options }) => (
-                        <TitleHeader title={"Project Detail"} />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.userWhitelistForm}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: true,
-                      header: ({ options }) => (
-                        <TitleHeader title={"Join the Allowlist"} />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.transaction}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: false,
-                      header: ({ options }) => (
-                        <TitleHeader title="Buy Crypto" />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.userMission}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: true,
-                      header: ({ options }) => (
-                        <TitleHeader title={"Mission Detail"} />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.userNotification}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: true,
-                      header: ({ options }) => (
-                        <TitleHeader title={"Notifications"} />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.sellerTab}
-                    options={{
-                      headerShown: false,
-                      headerShadowVisible: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.createProjectOverview}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: false,
-                      header: ({ options }) => (
-                        <TitleHeader title={"Add project"} />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.createProjectStepOne}
-                    options={{
-                      headerShown: false,
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.token}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: false,
-                      header: ({ options }) => (
-                        <TitleHeader title={"Create token"} />
-                      ),
-                    }}
-                  />
-                  <Stack.Screen
-                    name={path.login}
-                    options={{
-                      headerShown: true,
-                      headerShadowVisible: true,
-                      header: ({ options }) => (
-                        <View
-                          className="flex flex-row justify-center items-center bg-surface py-2 px-4 "
-                          style={{ elevation: 2 }}
-                        >
-                          <AoiCryptoLogo />
-                        </View>
-                      ),
-                    }}
-                  />
-                </Stack>
-              </ThemeProvider>
-              <Toast config={toastConfig} />
-            </View>
-          </SafeAreaProvider>
-          <AppKit />
-        </AuthProvider>
+                    initialRouteName={path.sellerTab}
+                  >
+                    <Stack.Screen
+                      name={path.userSetting}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: true,
+                        header: ({ options }) => {
+                          return (
+                            <TitleHeader
+                              title={"Settings"}
+                              isSettingHidden={true}
+                            />
+                          );
+                        },
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.userTab}
+                      options={{
+                        headerShown: false,
+                        headerShadowVisible: false,
+                        header: ({ options }) => <TabHeader />,
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.userProjectDetail}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: true,
+                        header: ({ options }) => (
+                          <TitleHeader title={"Project Detail"} />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.userWhitelistForm}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: true,
+                        header: ({ options }) => (
+                          <TitleHeader title={"Join the Allowlist"} />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.transaction}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: false,
+                        header: ({ options }) => (
+                          <TitleHeader title="Buy Crypto" />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.userMission}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: true,
+                        header: ({ options }) => (
+                          <TitleHeader title={"Mission Detail"} />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.userNotification}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: true,
+                        header: ({ options }) => (
+                          <TitleHeader title={"Notifications"} />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.sellerTab}
+                      options={{
+                        headerShown: false,
+                        headerShadowVisible: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.createProjectOverview}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: false,
+                        header: ({ options }) => (
+                          <TitleHeader title={"Add project"} />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.createProjectStepOne}
+                      options={{
+                        headerShown: false,
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.token}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: false,
+                        header: ({ options }) => (
+                          <TitleHeader title={"Create token"} />
+                        ),
+                      }}
+                    />
+                    <Stack.Screen
+                      name={path.login}
+                      options={{
+                        headerShown: true,
+                        headerShadowVisible: true,
+                        header: ({ options }) => (
+                          <View
+                            className="flex flex-row justify-center items-center bg-surface py-2 px-4 "
+                            style={{ elevation: 2 }}
+                          >
+                            <AoiCryptoLogo />
+                          </View>
+                        ),
+                      }}
+                    />
+                  </Stack>
+                </ThemeProvider>
+                <Toast config={toastConfig} />
+              </View>
+            </SafeAreaProvider>
+            <AppKit />
+          </AuthProvider>
+        </ApolloProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );

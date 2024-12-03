@@ -15,6 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 interface TokenProps {
   name: string;
   symbol: string;
+  initialSupply: string;
   totalSupply: string;
   address: string;
 }
@@ -29,34 +30,42 @@ const TokenRow: React.FC<TokenProps> = (props) => {
   };
 
   return (
-    <View className="flex flex-row space-x-2 p-4 bg-surface border-border border-[0.5px] items-center">
-      <Text className="font-readexRegular text-sm  text-[#404040] w-12">
-        {props.name}
-      </Text>
-      <Text className="font-readexRegular text-sm text-[#404040] w-16">
-        {props.symbol}
-      </Text>
-      <Text className="font-readexRegular text-sm text-[#404040] flex-1">
-        {isNumber(props.totalSupply)
-          ? Intl.NumberFormat("en-US").format(
-              Number(props.totalSupply)
-            )
-          : props.totalSupply}
-      </Text>
-      <Pressable className="flex flex-row flex-1 items-center h-fit">
-        <Text className="font-readexRegular text-sm text-[#404040]">
-          {isNumber(props.totalSupply) ? props.address.slice(0,6) + ".. " : props.address}
-          {isNumber(props.totalSupply) && (
-            <TouchableOpacity onPress={handleCopyToClipboard}>
-              <Ionicons
-                name="copy-outline"
-                size={14}
-                color={colors.secondary}
-              />
-            </TouchableOpacity>
-          )}
+    <View className="flex flex-col p-2 bg-surface border-border border-[0.5px] items-center">
+      <View className="flex flex-row justify-between w-full">
+        <View className="flex flex-row space-x-1">
+          <Text className="font-readexBold text-sm  text-black">
+            {props.name}
+          </Text>
+          <Text className="font-readexRegular text-sm text-secondary">
+            (${props.symbol})
+          </Text>
+        </View>
+
+        <Pressable className="flex flex-rowitems-center h-fit">
+          <Text className="font-readexSemiBold text-sm" >
+            {isNumber(props.totalSupply)
+              ? props.address.slice(0, 6) + ".. "
+              : props.address}
+            {isNumber(props.totalSupply) && (
+              <TouchableOpacity onPress={handleCopyToClipboard}>
+                <Ionicons
+                  name="copy-outline"
+                  size={14}
+                  color={colors.secondary}
+                />
+              </TouchableOpacity>
+            )}
+          </Text>
+        </Pressable>
+      </View>
+      <View className="flex flex-row justify-between w-full">
+        <Text className="font-readexRegular text-sm">
+            {Intl.NumberFormat("en-US").format(Number(props.initialSupply))} <Text className="text-secondary">Initially</Text>
         </Text>
-      </Pressable>
+        <Text className="font-readexRegular text-sm">
+            {Intl.NumberFormat("en-US").format(Number(props.totalSupply))} <Text className="text-secondary">Max</Text>
+        </Text>
+      </View>
     </View>
   );
 };
