@@ -19,11 +19,6 @@ const TokenForm = () => {
   const [initialSupply, setInitialSupply] = useState(0);
   const [maxSupply, setMaxSupply] = useState(0);
 
-  const [isRendering, setRendering] = useState(true);
-  useEffect(() => {
-    setRendering((loading) => false);
-  }, []);
-
   const { chainId, address, isConnected } = useContext(AuthContext);
 
   const [isLoadingModalVisible, setLoadingModalVisible] = useState(false);
@@ -69,8 +64,9 @@ const TokenForm = () => {
       );
     },
     onSettled: (data?: TransactionReceipt) => {
-      router.back();
+      client.resetStore();
       resetTokenFormState();
+      router.back();
     },
   });
 
