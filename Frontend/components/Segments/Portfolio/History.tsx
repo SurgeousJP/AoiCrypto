@@ -121,7 +121,7 @@ const HistorySegment = () => {
   ];
 
   return (
-    <View className="flex flex-col mt-2">
+    <View className="flex flex-col flex-1 mt-2">
       <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
         <ScrollView
           horizontal={true}

@@ -2,7 +2,7 @@ import LineChartComponent from "@/components/Displays/Chart/LineChart";
 import Container from "@/components/Layouts/Container";
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import SummarySegment from "../Staking/Summary";
+import SummarySegment from "@/components/Segments/Staking/Summary";
 
 const ProfileSegment = () => {
   return (
