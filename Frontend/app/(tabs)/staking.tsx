@@ -1,19 +1,19 @@
+import Back from "@/assets/icons/system-icons-svg/Back.svg";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import AOISPower from "@/components/Segments/Stake/AOISPower";
 import StakeSegment from "@/components/Segments/Stake/Stake";
 import WithDrawn from "@/components/Segments/Stake/WithDrawn";
-import { colors } from "@/constants/colors";
-import { Link, useNavigation } from "expo-router";
+import { colors } from "@/constants/Colors";
+import { Link } from "expo-router";
 import React from "react";
-import { ScrollView, View, Text } from "react-native";
-import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import { ScrollView, Text, View } from "react-native";
 
 export default function Staking() {
   return (
     <View className="flex-1">
-      <View className="border-b-[0.2px] border-border" style={{elevation: 2}}>
+      <View className="border-b-[0.2px] border-border" style={{ elevation: 2 }}>
         <ScreenHeader
           LeftComponent={
             <View className="opacity-0">

@@ -1,16 +1,9 @@
-import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  ImageBackground,
-  Pressable,
-  TouchableOpacity,
-} from "react-native";
-import * as Clipboard from "expo-clipboard";
+import { colors } from "@/constants/Colors";
 import { showToast } from "@/utils/toast";
-import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from "expo-clipboard";
+import React from "react";
+import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface TokenProps {
   name: string;
@@ -42,7 +35,7 @@ const TokenRow: React.FC<TokenProps> = (props) => {
         </View>
 
         <Pressable className="flex flex-rowitems-center h-fit">
-          <Text className="font-readexSemiBold text-sm" >
+          <Text className="font-readexSemiBold text-sm">
             {isNumber(props.totalSupply)
               ? props.address.slice(0, 6) + ".. "
               : props.address}
@@ -60,10 +53,12 @@ const TokenRow: React.FC<TokenProps> = (props) => {
       </View>
       <View className="flex flex-row justify-between w-full">
         <Text className="font-readexRegular text-sm">
-            {Intl.NumberFormat("en-US").format(Number(props.initialSupply))} <Text className="text-secondary">Initially</Text>
+          {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}{" "}
+          <Text className="text-secondary">Initially</Text>
         </Text>
         <Text className="font-readexRegular text-sm">
-            {Intl.NumberFormat("en-US").format(Number(props.totalSupply))} <Text className="text-secondary">Max</Text>
+          {Intl.NumberFormat("en-US").format(Number(props.totalSupply))}{" "}
+          <Text className="text-secondary">Max</Text>
         </Text>
       </View>
     </View>

@@ -1,16 +1,15 @@
-import { colors, Colors } from "@/constants/colors";
+import { colors, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, Tabs } from "expo-router";
 import { NativeWindStyleSheet } from "nativewind";
 import React, { useContext, useEffect, useState } from "react";
 
 import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
+import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
-import Token from "@/assets/icons/system-icons-svg/token.svg";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { View, ActivityIndicator, Text } from "react-native";
-import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
+import { ActivityIndicator, Text, View } from "react-native";
 
 NativeWindStyleSheet.setOutput({
   default: "native",

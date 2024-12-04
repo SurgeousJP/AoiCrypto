@@ -1,13 +1,11 @@
 import NotificationRow from "@/components/Items/Notification/NotificationRow";
-import Row from "@/components/Items/Project/Row";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, View, Text, FlatList, ActivityIndicator } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 const NotificationScreen = () => {
-
   const [isRendering, setRendering] = useState(true);
   useEffect(() => {
     setRendering(false);
@@ -15,8 +13,12 @@ const NotificationScreen = () => {
 
   const userContext = useContext(AuthContext);
   useEffect(() => {
-    if (!isRendering && !userContext.isLoading && userContext.status !== 'connected'){
-      router.push('/login');
+    if (
+      !isRendering &&
+      !userContext.isLoading &&
+      userContext.status !== "connected"
+    ) {
+      router.push("/login");
     }
   }, [userContext, isRendering]);
 
@@ -64,7 +66,11 @@ const NotificationScreen = () => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={(item) => {
           return (
-            <NotificationRow title={item.item.title} description={item.item.description} receiveDate={item.item.receiveDate} />
+            <NotificationRow
+              title={item.item.title}
+              description={item.item.description}
+              receiveDate={item.item.receiveDate}
+            />
           );
         }}
       />

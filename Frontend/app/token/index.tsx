@@ -1,14 +1,13 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
-import Input from "@/components/Inputs/Input/Input";
 import LabelInput from "@/components/Inputs/Input/LabelInput";
 import Container from "@/components/Layouts/Container";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/Conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
 import { showToast } from "@/utils/toast";
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
 
 const TokenForm = () => {
@@ -51,29 +50,40 @@ const TokenForm = () => {
     onError: (error?: Error) => {
       showToast("error", "Transaction failed", error.message);
     },
-    onSettled: (data?: TransactionReceipt) => {
-    },
+    onSettled: (data?: TransactionReceipt) => {},
   });
 
   const onTriggerCreateNewToken = () => {
-    if (name === ""){
+    if (name === "") {
       showToast("error", "Form invalid", "The token name field is empty");
       return;
     }
-    if (symbol === ""){
+    if (symbol === "") {
       showToast("error", "Form invalid", "The token symbol field is empty");
       return;
     }
-    if (initialSupply <= 0){
-      showToast("error", "Form invalid", "The initialSupply value is less than zero or empty");
+    if (initialSupply <= 0) {
+      showToast(
+        "error",
+        "Form invalid",
+        "The initialSupply value is less than zero or empty"
+      );
       return;
     }
-    if (maxSupply <= 0){
-      showToast("error", "Form invalid", "The maxSupply value is less than zero or empty");
+    if (maxSupply <= 0) {
+      showToast(
+        "error",
+        "Form invalid",
+        "The maxSupply value is less than zero or empty"
+      );
       return;
     }
-    if (initialSupply > maxSupply){
-      showToast("error", "Form invalid", "The initialSupply value must be smaller than maxSupply value");
+    if (initialSupply > maxSupply) {
+      showToast(
+        "error",
+        "Form invalid",
+        "The initialSupply value must be smaller than maxSupply value"
+      );
       return;
     }
     setLoadingModalVisible(true);
@@ -87,7 +97,7 @@ const TokenForm = () => {
 
   const onSmartContractExecute = async () => {
     try {
-      console.log('Executing smart contract');
+      console.log("Executing smart contract");
       await onExecute();
     } catch (error: any) {
       // DO NOTHING

@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Image, Text, Pressable } from "react-native";
-import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
-import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
-import { colors } from "@/constants/colors";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import { colors } from "@/constants/Colors";
 import { Link } from "expo-router";
+import React from "react";
+import { View } from "react-native";
 
 const TabHeader = () => {
   return (

@@ -1,4 +1,4 @@
-import { colors, Colors } from "@/constants/colors";
+import { colors, Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, Tabs } from "expo-router";
 import { NativeWindStyleSheet } from "nativewind";
@@ -25,8 +25,12 @@ export default function TabLayout() {
 
   const userContext = useContext(AuthContext);
   useEffect(() => {
-    if (!isRendering && !userContext.isLoading && userContext.status !== 'connected'){
-      router.push('/login');
+    if (
+      !isRendering &&
+      !userContext.isLoading &&
+      userContext.status !== "connected"
+    ) {
+      router.push("/login");
     }
   }, [userContext, isRendering]);
 

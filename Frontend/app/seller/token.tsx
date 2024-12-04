@@ -1,14 +1,14 @@
-import { colors } from "@/constants/colors";
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, ActivityIndicator, FlatList } from "react-native";
-import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
-import { Link } from "expo-router";
 import Add from "@/assets/icons/system-icons-svg/Add.svg";
-import TokenRow from "@/components/Items/Token/TokenRow";
-import { AuthContext } from "@/contexts/AuthProvider";
-import { useQuery } from "@apollo/client";
-import { GET_TOKENS } from "@/queries/token";
 import NotFound from "@/components/Displays/SearchResult/NotFound";
+import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
+import TokenRow from "@/components/Items/Token/TokenRow";
+import { colors } from "@/constants/Colors";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { GET_TOKENS } from "@/queries/token";
+import { useQuery } from "@apollo/client";
+import { Link } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 
 export default function TokenScreen() {
   const [loading, setLoading] = useState(true);
@@ -79,7 +79,12 @@ export default function TokenScreen() {
           }}
         />
       ) : (
-        <NotFound heading={"No tokens found"} detail={"If this is your first time, please try creating a new token, otherwise please readjusting the query."} />
+        <NotFound
+          heading={"No tokens found"}
+          detail={
+            "If this is your first time, please try creating a new token, otherwise please readjusting the query."
+          }
+        />
       )}
     </View>
   );

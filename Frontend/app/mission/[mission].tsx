@@ -1,15 +1,15 @@
-import Container from "@/components/Layouts/Container";
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, ScrollView, ActivityIndicator } from "react-native";
-import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
-import * as Progress from "react-native-progress";
-import { colors } from "@/constants/colors";
-import MissionTask from "@/components/Items/Mission/MissionTask";
-import X from "@/assets/logos/X.svg";
-import Telegram from "@/assets/logos/Telegram.svg";
 import AoiCoin from "@/assets/logos/AoiCoin.svg";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import Telegram from "@/assets/logos/Telegram.svg";
+import X from "@/assets/logos/X.svg";
+import MissionTask from "@/components/Items/Mission/MissionTask";
+import Container from "@/components/Layouts/Container";
+import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { router } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import * as Progress from "react-native-progress";
 
 const MissionDetail = () => {
   const [isRendering, setRendering] = useState(true);

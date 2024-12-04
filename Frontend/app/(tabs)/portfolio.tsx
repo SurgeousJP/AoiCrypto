@@ -1,23 +1,21 @@
+import Back from "@/assets/icons/system-icons-svg/Back.svg";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import ApplicationSegment from "@/components/Segments/Portfolio/Applications";
 import HistorySegment from "@/components/Segments/Portfolio/History";
 import ProfileSegment from "@/components/Segments/Portfolio/Profile";
-import { colors } from "@/constants/colors";
+import { colors } from "@/constants/Colors";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  View, Text
-} from "react-native";
-import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import { ActivityIndicator, Text, View } from "react-native";
 
 export default function PortfolioScreen() {
   const [loading, setLoading] = useState(true);
-  useEffect(() => { setLoading(loading => false) },[])
-  
+  useEffect(() => {
+    setLoading((loading) => false);
+  }, []);
+
   if (loading) {
     return (
       <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
@@ -50,10 +48,14 @@ export default function PortfolioScreen() {
         <View className="pt-4 flex-1">
           <CustomSegmentedControl
             screens={["History", "Profile", "Applications"]}
-            components={[<HistorySegment />, <ProfileSegment />, <ApplicationSegment />]}
+            components={[
+              <HistorySegment />,
+              <ProfileSegment />,
+              <ApplicationSegment />,
+            ]}
           />
         </View>
       </View>
-      </View>
+    </View>
   );
 }
