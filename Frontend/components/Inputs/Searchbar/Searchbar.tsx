@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
 
 interface SearchbarProps {
+  value: any;
   placeholder?: string;
+  onChange: (e: any) => void;
+  onPerformSearch: () => void;
 }
 
 const Searchbar: React.FC<SearchbarProps> = (props) => {
-  const [isFocused, setIsFocused] = useState(false);
-  const [text, setText] = useState("");
   return (
     <View
       className="flex flex-row bg-background flex-1 items-center px-4 rounded-md py-1 border-border border-[1px]"
@@ -20,18 +21,12 @@ const Searchbar: React.FC<SearchbarProps> = (props) => {
           className="font-readexRegular"
           placeholder={props.placeholder ?? "AoiCrypto search"}
           placeholderTextColor={colors.secondary}
-          value={text}
-          onChangeText={(text) => setText(text)}
-          onFocus={() => {
-            setIsFocused(true);
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-          }}
+          value={props.value}
+          onChangeText={props.onChange}
         />
       </View>
       <View className="w-5 h-5">
-        <TouchableOpacity>
+        <TouchableOpacity onPress={props.onPerformSearch}>
           <Search stroke={colors.secondary} width={20} height={20} />
         </TouchableOpacity>
       </View>

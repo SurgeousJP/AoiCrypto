@@ -1,6 +1,4 @@
 import Add from "@/assets/icons/system-icons-svg/Add.svg";
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
-import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import NotFound from "@/components/Displays/SearchResult/NotFound";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import TokenRow from "@/components/Items/Token/TokenRow";
@@ -8,8 +6,7 @@ import { colors } from "@/constants/Colors";
 import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { GET_TOKENS } from "@/queries/token";
-import { clearCache } from "@/queries/util";
-import { useApolloClient, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Link } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
@@ -17,7 +14,7 @@ import { ActivityIndicator, FlatList, Text, View } from "react-native";
 export default function TokenScreen() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    setLoading((loading) => false);
+    setLoading(false);
   }, []);
 
   const { address } = useContext(AuthContext);
@@ -31,14 +28,20 @@ export default function TokenScreen() {
     skip: !address,
   });
 
+  const [searchText, setSearchText] = useState("");
   const tokens = tokenQueryData?.tokens;
-  console.log("Tokens: ", tokens);
+  const searchTokens = tokens?.filter(token => token.address.includes(searchText));
+  const displayTokens = searchText.length > 0 ? searchTokens : tokens;
 
   useEffect(() => {
     console.log("Tokens: ", tokens);
+    console.log("Search tokens: ", searchTokens);
+    console.log("Display tokens: ", displayTokens);
     console.log("Query status: ", isTokenLoading);
     console.log("Error: ", error?.message);
-  }, [loading, isTokenLoading, error, tokens]);
+  }, [loading, isTokenLoading, error, tokens, searchText]);
+
+  
 
   if (loading || isTokenLoading) {
     return (
@@ -53,14 +56,14 @@ export default function TokenScreen() {
     <View className="flex-1 pb-2 bg-background">
       <View className="bg-surface mb-4">
         <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
-          <Searchbar placeholder={"Search token"} />
+          <Searchbar placeholder={"Search token"} value={searchText} onChange={setSearchText} onPerformSearch={() => {}}/>
           <Link href={"/token"}>
             <Add width={24} height={24} stroke={colors.secondary} />
           </Link>
         </View>
       </View>
 
-      {tokens !== undefined && tokens.length > 0 ? (
+      {displayTokens !== undefined && displayTokens.length > 0 ? (
         <FlatList
           style={{ paddingHorizontal: 16 }}
           contentContainerStyle={{
@@ -69,7 +72,7 @@ export default function TokenScreen() {
             borderColor: colors.border,
             borderWidth: 1,
           }}
-          data={tokens}
+          data={displayTokens}
           keyExtractor={(item, index) => index.toString()}
           renderItem={(item) => {
             return (
@@ -77,11 +80,11 @@ export default function TokenScreen() {
                 name={"N/A"}
                 symbol={"N/A"}
                 totalSupply={
-                  item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR
+                  (item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR).toString()
                 }
                 address={item.item.address}
                 initialSupply={
-                  item.item.initialSupply / BIGINT_CONVERSION_FACTOR
+                  (item.item.initialSupply / BIGINT_CONVERSION_FACTOR).toString()
                 }
               />
             );
