@@ -148,6 +148,7 @@ export const useDepositLiquidityPool = ({
     
   return {
     error,
+    errorWrite,
     isLoading,
     isSuccess,
     isSuccessConfirmation,

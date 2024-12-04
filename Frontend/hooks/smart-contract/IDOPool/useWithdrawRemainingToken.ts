@@ -1,6 +1,5 @@
 // <---! IMPORT !---> //
 import getABI from "@/contracts/utils/getAbi.util";
-import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
 import { TransactionReceipt } from "viem";
 import {
   useSimulateContract,
@@ -9,13 +8,12 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
-import { CreateIDOInput } from "@/contracts/types/IDO/CreateIDOInput";
 // <---! IMPORT !---> //
 
 type Props = {
   chainId?: number;
   // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
-  idoInput: CreateIDOInput;
+  poolAddress: `0x${string}`;
   // <---! CONTRACT PROPS IN ABI ENDS HERE !---> //
   enabled?: boolean;
   onSuccess?: (data: TransactionReceipt) => void;
@@ -23,14 +21,20 @@ type Props = {
   onError?: (error?: Error) => void;
 };
 
-export const useCreateIDO = ({
+export const useWithdrawRemainingToken = ({
   chainId,
-  idoInput,
+  // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
+  poolAddress,
+  // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
   enabled,
   onSuccess,
   onSettled,
   onError,
 }: Props) => {
+
+  const CONTRACT_LABEL = "Withdraw Remaining Token";
+  const FUNCTION_EXECUTION_NAME = "onWithdrawRemainingToken";
+
   const {
     data: config,
     refetch,
@@ -39,21 +43,13 @@ export const useCreateIDO = ({
     error: errorPrepare,
   } = useSimulateContract({
     chainId,
-    address: getIDOFactoryAddress(chainId),
-    abi: getABI("IDOFactory"),
+    address: poolAddress,
+    abi: getABI("IDOPool"),
     // <---! PARAMS IN ABI !---> //
-    args: [
-      idoInput.poolDetails,
-      idoInput.poolTime,
-      idoInput.privateSale,
-      idoInput.whitelisted,
-      idoInput.action,
-      idoInput.lockExpired,
-    ],
+    args: [ ],
     // <---! PARAMS IN ABI !---> //
-
     // <---! FUNCTION IN ABI !---> //
-    functionName: "createPool",
+    functionName: "withdrawRemainingToken",
     // <---! FUNCTION IN ABI !---> //
     query: { enabled: enabled && !!chainId, retry: false },
   });
@@ -102,15 +98,15 @@ export const useCreateIDO = ({
     isSuccessConfirmation,
     onSuccess: (data: TransactionReceipt, isConfirmed: boolean) => {
       if (isConfirmed) {
-        console.log("Create IDO confirmed");
+        console.log(`${CONTRACT_LABEL} confirmed`);
         onSuccess?.(data);
       } else {
-        console.log("IDO creation transaction received, awaiting confirmation");
+        console.log(`${CONTRACT_LABEL} transaction received, awaiting confirmation`);
       }
     },
     onSettled: (data?: TransactionReceipt, isConfirmed?: boolean) => {
       if (isConfirmed) {
-        console.log("IDO creation process completed");
+        console.log(`${CONTRACT_LABEL} process completed`);
         onSettled?.(data);
       }
     },
@@ -118,7 +114,7 @@ export const useCreateIDO = ({
     error: errorWrite,
   });
 
-  const onCreateIDO = async () => {
+  const onWithdrawRemainingToken = async () => {
     console.log("Config: ", config);
     console.log("Enabled: ", enabled);
     if (config && enabled) {
@@ -128,7 +124,7 @@ export const useCreateIDO = ({
         onError?.(
           errorWrite instanceof Error
             ? errorWrite
-            : new Error("Something went wrong in onCreateIDO async function")
+            : new Error(`Something went wrong in ${FUNCTION_EXECUTION_NAME} async function`)
         );
       }
     }
@@ -156,7 +152,7 @@ export const useCreateIDO = ({
     isSuccess,
     isSuccessConfirmation,
     isError,
-    onCreateIDO,
+    onWithdrawRemainingToken,
     refetch,
   };
 };
