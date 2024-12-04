@@ -2,17 +2,20 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import LabelInput from "@/components/Inputs/Input/LabelInput";
 import Container from "@/components/Layouts/Container";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/Conversion";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
+import { clearCache } from "@/queries/util";
 import { showToast } from "@/utils/toast";
+import { useApolloClient } from "@apollo/client";
+import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
 
 const TokenForm = () => {
-  const [name, setName] = useState("ELYSIA");
-  const [symbol, setSymbol] = useState("$ELY");
+  const [name, setName] = useState("");
+  const [symbol, setSymbol] = useState("");
   const [initialSupply, setInitialSupply] = useState(0);
   const [maxSupply, setMaxSupply] = useState(0);
 
@@ -24,9 +27,11 @@ const TokenForm = () => {
   const { chainId, address, isConnected } = useContext(AuthContext);
 
   const [isLoadingModalVisible, setLoadingModalVisible] = useState(false);
+  const client = useApolloClient();
 
   const {
     error,
+    errorWrite,
     isLoading,
     isSuccess,
     isError,
@@ -41,19 +46,35 @@ const TokenForm = () => {
     },
     enabled: true,
     onSuccess: (data: TransactionReceipt) => {
+      if (isLoadingModalVisible) {
+        setLoadingModalVisible(false);
+      }
+
       showToast(
         "success",
         "Transaction success",
         "Create new token successfully"
       );
+
+      clearCache(client, "GetTokens");
     },
     onError: (error?: Error) => {
-      showToast("error", "Transaction failed", error.message);
+      if (isLoadingModalVisible) {
+        setLoadingModalVisible(false);
+      }
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
     },
-    onSettled: (data?: TransactionReceipt) => {},
+    onSettled: (data?: TransactionReceipt) => {
+      router.back();
+      resetTokenFormState();
+    },
   });
 
-  const onTriggerCreateNewToken = () => {
+  const onTriggerCreateNewToken = async () => {
     if (name === "") {
       showToast("error", "Form invalid", "The token name field is empty");
       return;
@@ -87,27 +108,22 @@ const TokenForm = () => {
       return;
     }
     setLoadingModalVisible(true);
+    await onExecute();
   };
 
-  useEffect(() => {
-    if (isLoadingModalVisible) {
-      onSmartContractExecute();
-    }
-  }, [isLoadingModalVisible]);
-
-  const onSmartContractExecute = async () => {
-    try {
-      console.log("Executing smart contract");
-      await onExecute();
-    } catch (error: any) {
-      // DO NOTHING
-    }
-    setLoadingModalVisible(false);
+  const resetTokenFormState = () => {
     setName("");
     setSymbol("");
     setInitialSupply(0);
     setMaxSupply(0);
   };
+
+  useEffect(() => {
+    if (isLoadingModalVisible && errorWrite) {
+      setLoadingModalVisible(false);
+      showToast("error", "Error writing transaction", error?.message ?? "N/A");
+    }
+  }, [errorWrite]);
 
   return (
     <View className="flex-1 bg-background">
@@ -131,7 +147,7 @@ const TokenForm = () => {
                   title={"Token name"}
                   name={"name"}
                   value={name}
-                  placeholder={"Token name"}
+                  placeholder={""}
                   onChange={setName}
                 />
               </View>
@@ -170,6 +186,7 @@ const TokenForm = () => {
                 <PrimaryButton
                   onPress={onTriggerCreateNewToken}
                   content={"Create token"}
+                  disabled={isLoading}
                 />
               </View>
             </View>

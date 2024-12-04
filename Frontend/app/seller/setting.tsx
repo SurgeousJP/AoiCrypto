@@ -24,7 +24,7 @@ const AdminSetting = () => {
   const openWalletModal = () => {
     open();
   };
-
+  
   return (
     <ScrollView
       className="flex flex-col w-full bg-background"

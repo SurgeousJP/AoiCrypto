@@ -30,6 +30,14 @@ export const useWriteContractCallbacks = ({
   // useRef => persists state across renders, without triggering re-renders upon updating state
   const hasCalledInitialCallbacks = useRef(false);
   const hasCalledConfirmationCallbacks = useRef(false);
+  
+  useEffect(() => {
+    console.log("Write contract callback props: ");
+    console.log("Receipt: ", receipt);
+    console.log("Is fetched: ", isFetched);
+    console.log("Is fetched confirmation: ", isFetchedConfirmation);
+    console.log("Is success confirmation: ", isSuccessConfirmation);
+  }, [receipt, isFetched, isFetchedConfirmation, isSuccessConfirmation]);
 
   useEffect(() => {
     if (

@@ -1,11 +1,14 @@
 import Add from "@/assets/icons/system-icons-svg/Add.svg";
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import NotFound from "@/components/Displays/SearchResult/NotFound";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import TokenRow from "@/components/Items/Token/TokenRow";
 import { colors } from "@/constants/Colors";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { GET_TOKENS } from "@/queries/token";
-import { useQuery } from "@apollo/client";
+import { clearCache } from "@/queries/util";
+import { useApolloClient, useQuery } from "@apollo/client";
 import { Link } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, View } from "react-native";
@@ -55,6 +58,7 @@ export default function TokenScreen() {
           </Link>
         </View>
       </View>
+
       {tokens !== undefined && tokens.length > 0 ? (
         <FlatList
           style={{ paddingHorizontal: 16 }}
@@ -71,9 +75,13 @@ export default function TokenScreen() {
               <TokenRow
                 name={"N/A"}
                 symbol={"N/A"}
-                totalSupply={item.item.maxTotalSupply}
+                totalSupply={
+                  item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR
+                }
                 address={item.item.address}
-                initialSupply={item.item.initialSupply}
+                initialSupply={
+                  item.item.initialSupply / BIGINT_CONVERSION_FACTOR
+                }
               />
             );
           }}

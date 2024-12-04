@@ -1,6 +1,9 @@
 // <---! IMPORT !---> //
 import getABI from "@/contracts/utils/getAbi.util";
-import { getERC20FactoryAddress, getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
+import {
+  getERC20FactoryAddress,
+  getIDOFactoryAddress,
+} from "@/contracts/utils/getAddress.util";
 import { TransactionReceipt } from "viem";
 import {
   useSimulateContract,
@@ -9,8 +12,8 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
-import { CreateIDOInput } from "@/contracts/types/IDO/CreateIDOInput";
 import { CreateNewERC20Input } from "@/contracts/types/ERC20/CreateNewERC20Input";
+import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -47,7 +50,7 @@ export const useCreateNewERC20 = ({
       newERC20.name,
       newERC20.symbol,
       newERC20.maxTotalSupply,
-      newERC20.initialSupply
+      newERC20.initialSupply,
     ],
     // <---! PARAMS IN ABI !---> //
 
@@ -105,7 +108,9 @@ export const useCreateNewERC20 = ({
         console.log("Create new ERC20 confirmed");
         onSuccess?.(data);
       } else {
-        console.log("ERC20 creation transaction received, awaiting confirmation");
+        console.log(
+          "ERC20 creation transaction received, awaiting confirmation"
+        );
       }
     },
     onSettled: (data?: TransactionReceipt, isConfirmed?: boolean) => {
@@ -119,6 +124,7 @@ export const useCreateNewERC20 = ({
   });
 
   const onCreateNewERC20 = async () => {
+    console.log("Crate new ERC20 triggered: ");
     console.log("Config: ", config);
     console.log("Enabled: ", enabled);
     if (config && enabled) {
@@ -128,7 +134,9 @@ export const useCreateNewERC20 = ({
         onError?.(
           errorWrite instanceof Error
             ? errorWrite
-            : new Error("Something went wrong in onCreateNewERC20 async function")
+            : new Error(
+                "Something went wrong in onCreateNewERC20 async function"
+              )
         );
       }
     }
@@ -148,9 +156,26 @@ export const useCreateNewERC20 = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
-    
+
+  useEffect(() => {
+    // Log all errors when they change
+    if (errorPrepare) {
+      console.log("Error in prepareContractWrite:", errorPrepare.message);
+    }
+    if (errorWrite) {
+      console.log("Error in contractWrite:", errorWrite.message);
+    }
+    if (errorTransaction) {
+      console.log("Error in transaction:", errorTransaction.message);
+    }
+    if (errorConfirmation) {
+      console.log("Error in confirmation:", errorConfirmation.message);
+    }
+  }, [errorPrepare, errorWrite, errorTransaction, errorConfirmation]);
+
   return {
     error,
+    errorWrite,
     isLoading,
     isSuccess,
     isSuccessConfirmation,

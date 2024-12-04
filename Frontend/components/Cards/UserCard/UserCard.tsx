@@ -3,8 +3,9 @@ import { AuthContext } from "@/contexts/AuthProvider";
 import { showToast } from "@/utils/toast";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useBalance } from "wagmi";
 
 function UserCard() {
   const { address } = useContext(AuthContext);
@@ -15,6 +16,10 @@ function UserCard() {
     showToast("info", "Copied address to clipboard", clipboard);
   };
 
+  const { data, isError, isLoading, error } = useBalance({
+    address: address
+  });
+  
   return (
     <View
       className="px-4 py-2 bg-white rounded-2xl shadow flex flex-row justify-between items-center border-border border-[0.5px]"
@@ -46,7 +51,8 @@ function UserCard() {
         </View>
         <View className="flex flex-row items-center mt-1">
           <Text className="text-slate-900 text-md font-readexRegular leading-none mr-1">
-            0.25 <Text className="text-secondary">SEPOLIAETH</Text>
+          {data && data.formatted.slice(0,4)}
+            <Text className="text-secondary"> ETH</Text>
           </Text>
         </View>
       </View>

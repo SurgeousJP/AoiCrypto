@@ -49,6 +49,17 @@ const LabelInput: React.FC<LabelInputProps> = (props) => {
     }
   };
 
+  const handleChangeText = (text) => {
+    if (props.type !== "numeric") {
+      props.onChange(text);
+    } else {
+      const regex = /^[0-9]*$/; // Allow only digits (no negative or decimal point)
+      if (regex.test(text)) {
+        props.onChange(+text);
+      }
+    }
+  };
+
   return (
     <View className="flex flex-col">
       <Text className="text-sm font-readexSemiBold">{props.title}</Text>
@@ -102,7 +113,7 @@ const LabelInput: React.FC<LabelInputProps> = (props) => {
             }}
             keyboardType={inputProps[props.type].keyboardType}
             secureTextEntry={inputProps[props.type].secureTextEntry}
-            onChangeText={(text) => props.onChange(text)}
+            onChangeText={handleChangeText}
           />
         )}
       </View>

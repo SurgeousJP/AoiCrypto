@@ -25,12 +25,12 @@ import { WagmiProvider } from "wagmi";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import { SUBGRAPH_ENDPOINT } from "@/configs/subgraph.config";
 import { PROJECT_ID, wagmiConfig } from "@/configs/wagmi.config";
-import { path } from "@/constants/Path";
 import AuthProvider from "@/contexts/AuthProvider";
 import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import { AppKit, createAppKit } from "@reown/appkit-wagmi-react-native";
 import * as SplashScreen from "expo-splash-screen";
 import Toast, { BaseToast } from "react-native-toast-message";
+import { path } from "@/constants/path";
 // Import
 
 SplashScreen.preventAutoHideAsync();
