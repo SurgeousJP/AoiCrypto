@@ -14,6 +14,7 @@ import {
 } from "@/constants/conversion";
 import { RESET_VALUE_DROPDOWN } from "@/constants/display";
 import { AuthContext } from "@/contexts/AuthProvider";
+import StateProvider, { StateContext, StateContextType } from "@/contexts/StateProvider";
 import {
   createDefaultCreateIDOInput,
   CreateIDOInput,
@@ -50,7 +51,7 @@ const CreateStepOne = () => {
     .filter(([key, value]) => !isNaN(Number(value)))
     .map(([key, value]) => ({ label: key, value }));
 
-  const createIDO = useRef<CreateIDOInput>(createDefaultCreateIDOInput());
+  const { createIDO, updateCreateIDO } = useContext(StateContext) as StateContextType;
 
   const [poolDetail, setPoolDetail] = useState<PoolDetails>({
     tokenAddress: "",
@@ -71,20 +72,16 @@ const CreateStepOne = () => {
   const [lockExpired, setLockExpired] = useState(0n);
 
   useEffect(() => {
-    createIDO.current.poolDetails = poolDetail;
+    updateCreateIDO("poolDetails", poolDetail);
   }, [poolDetail]);
 
   useEffect(() => {
-    createIDO.current.lockExpired = lockExpired;
+    updateCreateIDO("lockExpired", lockExpired);
   }, [lockExpired]);
 
   useEffect(() => {
-    createIDO.current.action = action;
+    updateCreateIDO("action", action);
   }, [action]);
-
-  useEffect(() => {
-    console.log("Create IDO object: ", createIDO.current);
-  }, [poolDetail, action, lockExpired]);
 
   const onNumericChange = (name: string, value: any) => {
     setPoolDetail({ ...poolDetail, [name]: value * BIGINT_CONVERSION_FACTOR });
