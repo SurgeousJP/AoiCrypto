@@ -5,7 +5,7 @@ import Row from "@/components/Items/Project/Row";
 import Container from "@/components/Layouts/Container";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { useNavigation, useRouter } from "expo-router";
 import React from "react";
 import {

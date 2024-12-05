@@ -2,7 +2,7 @@ import Profile from "@/assets/icons/system-icons-svg/Profile.svg";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import SettingCard from "@/components/Cards/SettingCard/SettingCard";
 import UserCard from "@/components/Cards/UserCard/UserCard";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import { useRouter } from "expo-router";

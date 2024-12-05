@@ -1,7 +1,7 @@
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import Input from "@/components/Inputs/Input/Input";
 import Container from "@/components/Layouts/Container";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 import * as Progress from "react-native-progress";

@@ -1,5 +1,5 @@
 import Search from "@/assets/icons/system-icons-svg/Search.svg";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React, { useState } from "react";
 import { TextInput, TouchableOpacity, View } from "react-native";
 

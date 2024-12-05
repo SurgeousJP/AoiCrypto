@@ -1,5 +1,5 @@
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Link } from "expo-router";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";

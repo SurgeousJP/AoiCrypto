@@ -2,7 +2,7 @@ import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
 import Line from "@/assets/icons/system-icons-svg/Line.svg";
 import Wallet from "@/assets/icons/system-icons-svg/Wallet.svg";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React from "react";
 import { Text, View } from "react-native";
 import { SvgProps } from "react-native-svg";

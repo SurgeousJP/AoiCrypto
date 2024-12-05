@@ -1,4 +1,4 @@
-import { colors, Colors } from "@/constants/Colors";
+import { colors, Colors } from "@/constants/colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { router, Tabs } from "expo-router";
 import { NativeWindStyleSheet } from "nativewind";

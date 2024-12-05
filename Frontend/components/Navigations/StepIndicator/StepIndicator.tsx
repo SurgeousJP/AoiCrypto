@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import React from "react";
 import { Text, View } from "react-native";
 import StepIndicator from "react-native-step-indicator";
@@ -50,7 +50,7 @@ const StepIndicatorComponent: React.FC<StepIndicatorProps> = ({
         return (
           <Text
             className={`font-readexBold ${
-              obj.position + 1 == currentPosition ? "text-white" : "Text-black"
+              obj.position + 1 <= currentPosition ? "text-white" : "Text-black"
             }`}
           >
             {obj.position + 1}

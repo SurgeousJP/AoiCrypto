@@ -13,6 +13,8 @@ export const GET_TOKENS = gql`
       createdTime
       initialSupply
       maxTotalSupply
+      name
+      symbol
     }
   }
 `;

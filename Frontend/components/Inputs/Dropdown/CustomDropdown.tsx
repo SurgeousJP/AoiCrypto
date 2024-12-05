@@ -1,5 +1,5 @@
-import { colors } from "@/constants/Colors";
-import React, { useState } from "react";
+import { colors } from "@/constants/colors";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 
@@ -7,23 +7,16 @@ interface CustomDropdownProps {
   placeholder?: string;
   width?: number;
   data: { label: string; value: string }[];
+  value: any;
+  onChange: (value: any) => void;
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = (props) => {
-  const [value, setValue] = useState(null);
 
   const renderItem = (item) => {
     return (
       <View style={styles.item}>
         <Text style={styles.textItem}>{item.label}</Text>
-        {/* {item.value === value && (
-          <AntDesign
-            style={styles.icon}
-            color="black"
-            name="Safety"
-            size={20}
-          />
-        )} */}
       </View>
     );
   };
@@ -31,8 +24,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = (props) => {
   const styles = StyleSheet.create({
     dropdown: {
       height: 32,
-      backgroundColor: value !== null ? colors.surface : "#f4f4f4",
-      borderWidth: value !== null ? 0.5 : 0,
+      backgroundColor: props.value !== null ? colors.surface : "#f4f4f4",
+      borderWidth: props.value !== null ? 0.5 : 0,
       borderColor: colors.primary,
       borderRadius: 4,
       padding: 12,
@@ -66,7 +59,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = (props) => {
       fontSize: 14,
     },
     iconStyle: {
-      tintColor: value !== null ? colors.primary : colors.secondary,
+      tintColor: props.value !== null ? colors.primary : colors.secondary,
       width: 20,
       height: 20,
     },
@@ -92,13 +85,10 @@ const CustomDropdown: React.FC<CustomDropdownProps> = (props) => {
         valueField="value"
         placeholder={props.placeholder ?? "Select item"}
         searchPlaceholder="Search..."
-        value={value}
+        value={props.value}
         onChange={(item) => {
-          setValue(item.value);
+          props.onChange(item.value);
         }}
-        // renderLeftIcon={() => (
-        //   <AntDesign style={styles.icon} color="black" name="Safety" size={20} />
-        // )}
         renderItem={renderItem}
       />
     </View>

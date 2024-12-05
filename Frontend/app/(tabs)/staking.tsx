@@ -5,7 +5,7 @@ import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/Se
 import AOISPower from "@/components/Segments/Stake/AOISPower";
 import StakeSegment from "@/components/Segments/Stake/Stake";
 import WithDrawn from "@/components/Segments/Stake/WithDrawn";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Link } from "expo-router";
 import React from "react";
 import { ScrollView, Text, View } from "react-native";

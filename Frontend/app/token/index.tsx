@@ -14,10 +14,13 @@ import { Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
 
 const TokenForm = () => {
-  const [name, setName] = useState("");
-  const [symbol, setSymbol] = useState("");
-  const [initialSupply, setInitialSupply] = useState(0);
-  const [maxSupply, setMaxSupply] = useState(0);
+
+  const [token, setToken] = useState({
+    name: "",
+    symbol: "",
+    initialSupply: 0,
+    maxSupply: 0
+  });
 
   const { chainId, address, isConnected } = useContext(AuthContext);
 
@@ -34,10 +37,10 @@ const TokenForm = () => {
   } = useCreateNewERC20({
     chainId: chainId,
     newERC20: {
-      name: name,
-      symbol: symbol,
-      initialSupply: BigInt(initialSupply * BIGINT_CONVERSION_FACTOR),
-      maxTotalSupply: BigInt(maxSupply * BIGINT_CONVERSION_FACTOR),
+      name: token.name,
+      symbol: token.symbol,
+      initialSupply: BigInt(token.initialSupply * BIGINT_CONVERSION_FACTOR),
+      maxTotalSupply: BigInt(token.maxSupply * BIGINT_CONVERSION_FACTOR),
     },
     enabled: true,
     onSuccess: (data: TransactionReceipt) => {
@@ -57,6 +60,7 @@ const TokenForm = () => {
       if (isLoadingModalVisible) {
         setLoadingModalVisible(false);
       }
+
       showToast(
         "error",
         "Transaction failed",
@@ -71,15 +75,15 @@ const TokenForm = () => {
   });
 
   const onTriggerCreateNewToken = async () => {
-    if (name === "") {
+    if (token.name === "") {
       showToast("error", "Form invalid", "The token name field is empty");
       return;
     }
-    if (symbol === "") {
+    if (token.symbol === "") {
       showToast("error", "Form invalid", "The token symbol field is empty");
       return;
     }
-    if (initialSupply <= 0) {
+    if (token.initialSupply <= 0) {
       showToast(
         "error",
         "Form invalid",
@@ -87,7 +91,7 @@ const TokenForm = () => {
       );
       return;
     }
-    if (maxSupply <= 0) {
+    if (token.maxSupply <= 0) {
       showToast(
         "error",
         "Form invalid",
@@ -95,7 +99,7 @@ const TokenForm = () => {
       );
       return;
     }
-    if (initialSupply > maxSupply) {
+    if (token.initialSupply > token.maxSupply) {
       showToast(
         "error",
         "Form invalid",
@@ -108,10 +112,16 @@ const TokenForm = () => {
   };
 
   const resetTokenFormState = () => {
-    setName("");
-    setSymbol("");
-    setInitialSupply(0);
-    setMaxSupply(0);
+    setToken({
+      name: "",
+      symbol: "",
+      initialSupply: 0,
+      maxSupply: 0
+    });
+  };
+
+  const onInputChange = (name: any, value: any) => {
+    setToken({ ...token, [name]: value });
   };
 
   useEffect(() => {
@@ -142,9 +152,9 @@ const TokenForm = () => {
                   type={"text"}
                   title={"Token name"}
                   name={"name"}
-                  value={name}
+                  value={token.name}
                   placeholder={""}
-                  onChange={setName}
+                  onChange={onInputChange}
                 />
               </View>
               <View className="mb-3">
@@ -152,9 +162,9 @@ const TokenForm = () => {
                   type={"text"}
                   title={"Token symbol"}
                   name={"symbol"}
-                  value={symbol}
+                  value={token.symbol}
                   placeholder={""}
-                  onChange={setSymbol}
+                  onChange={onInputChange}
                 />
               </View>
               <View className="mb-3">
@@ -162,9 +172,9 @@ const TokenForm = () => {
                   type={"numeric"}
                   title={"Initial supply"}
                   name={"initialSupply"}
-                  value={initialSupply}
+                  value={token.initialSupply}
                   placeholder={""}
-                  onChange={setInitialSupply}
+                  onChange={onInputChange}
                 />
               </View>
               <View className="mb-3">
@@ -172,9 +182,9 @@ const TokenForm = () => {
                   type={"numeric"}
                   title={"Max supply"}
                   name={"maxSupply"}
-                  value={maxSupply}
+                  value={token.maxSupply}
                   placeholder={""}
-                  onChange={setMaxSupply}
+                  onChange={onInputChange}
                 />
               </View>
 

@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import SegmentedControl, {
   FontStyle,
 } from "@react-native-segmented-control/segmented-control";

@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import {
   ReadexPro_400Regular,
   ReadexPro_700Bold,

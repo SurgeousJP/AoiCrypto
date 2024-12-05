@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { showToast } from "@/utils/toast";
 import { Ionicons } from "@expo/vector-icons";

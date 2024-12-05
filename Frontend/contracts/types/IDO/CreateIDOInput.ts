@@ -1,5 +1,7 @@
 // <---! GUIDELINES !---> //
 
+import { BIGINT_CONVERSION_FACTOR, getUnixTimestampFromDate } from "@/constants/conversion";
+
 // SOLIDITY TYPES => TYPESCRIPT TYPES
 // address => string
 // uint256 => bigint
@@ -44,26 +46,55 @@ export enum LiquidityPoolAction {
   BURN
 }
 
+const createEmptyPoolDetails = (): PoolDetails => ({
+  tokenAddress: '',
+  pricePerToken: 0n,
+  raisedAmount: 0n,
+  raisedTokenAmount: 0n,
+  softCap: 0n,
+  hardCap: 0n,
+  minInvest: 0n,
+  maxInvest: 0n,
+  liquidityWETH9: 0n,
+  liquidityToken: 0n,
+  privateSaleAmount: 0n,
+});
+
+const createEmptyPoolTime = (): PoolTime => ({
+  startTime: 0n,
+  endTime: 0n,
+  startPublicSale: 0n,
+});
+
+export const createDefaultCreateIDOInput = (): CreateIDOInput => ({
+  poolDetails: createEmptyPoolDetails(),
+  poolTime: createEmptyPoolTime(),
+  privateSale: false,  
+  whitelisted: '',  
+  action: LiquidityPoolAction.NOTHING,  
+  lockExpired: 0n, 
+});
+
 export const sampleCreateIDOInput: CreateIDOInput = {
   poolDetails: {
     tokenAddress: "0x82a9d5f57483163de82ef5d40d045be974d9d215",
-    pricePerToken: 1000000000000000000n, // 1 token per ETH (example in wei)
-    raisedAmount: 5000000000000000000n, // 5 ETH raised
-    raisedTokenAmount: 5000n, // 5000 tokens raised
-    softCap: 2000000000000000000n, // 2 ETH
-    hardCap: 10000000000000000000n, // 10 ETH
-    minInvest: 10000000000000000n, // 0.01 ETH
-    maxInvest: 1000000000000000000n, // 1 ETH
-    liquidityWETH9: 3000000000000000000n, // 3 ETH liquidity
-    liquidityToken: 3000n, // 3000 tokens for liquidity
-    privateSaleAmount: 2000n, // 2000 tokens reserved for private sale
+    pricePerToken: BigInt(0.001 * BIGINT_CONVERSION_FACTOR), 
+    raisedAmount: BigInt(0), 
+    raisedTokenAmount: BigInt(0), 
+    softCap: BigInt(5 * BIGINT_CONVERSION_FACTOR), 
+    hardCap: BigInt(10 * BIGINT_CONVERSION_FACTOR),
+    minInvest: BigInt(0.05 * BIGINT_CONVERSION_FACTOR),
+    maxInvest: BigInt(0.1 * BIGINT_CONVERSION_FACTOR),
+    liquidityWETH9: BigInt(2 * BIGINT_CONVERSION_FACTOR), 
+    liquidityToken: BigInt(Math.pow(10, 7) * BIGINT_CONVERSION_FACTOR), 
+    privateSaleAmount: BigInt(0),
   },
   poolTime: {
-    startTime: 1700000000000n, // Example timestamp in milliseconds
-    endTime: 1700100000000n, // Example timestamp in milliseconds
-    startPublicSale: 1700050000000n, // Example timestamp in milliseconds
+    startTime: BigInt(getUnixTimestampFromDate(new Date(2024, 4 - 1, 12))),
+    endTime: BigInt(getUnixTimestampFromDate(new Date(2024, 11 - 1, 12))), 
+    startPublicSale: BigInt(0),
   },
-  privateSale: true,
+  privateSale: false,
   whitelisted: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", // Example whitelist address
   action: LiquidityPoolAction.NOTHING, // Lock liquidity
   lockExpired: 1700200000000n, // Example timestamp for lock expiration

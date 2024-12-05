@@ -1,7 +1,7 @@
 // Import
 import TabHeader from "@/components/Layouts/TabHeader";
 import TitleHeader from "@/components/Layouts/TitleHeader";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import {
   DarkTheme,

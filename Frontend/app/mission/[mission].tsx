@@ -4,7 +4,7 @@ import Telegram from "@/assets/logos/Telegram.svg";
 import X from "@/assets/logos/X.svg";
 import MissionTask from "@/components/Items/Mission/MissionTask";
 import Container from "@/components/Layouts/Container";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";

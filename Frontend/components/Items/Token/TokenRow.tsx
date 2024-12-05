@@ -1,4 +1,4 @@
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { showToast } from "@/utils/toast";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";

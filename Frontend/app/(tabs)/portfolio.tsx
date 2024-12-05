@@ -5,7 +5,7 @@ import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/Se
 import ApplicationSegment from "@/components/Segments/Portfolio/Applications";
 import HistorySegment from "@/components/Segments/Portfolio/History";
 import ProfileSegment from "@/components/Segments/Portfolio/Profile";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";

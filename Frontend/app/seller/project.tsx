@@ -5,7 +5,7 @@ import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {

@@ -2,7 +2,7 @@ import WhitelistApplication from "@/components/Items/Application/WhitelistApplic
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import AOISLevelSegment from "@/components/Segments/Staking/AOISLevel";
 import SummarySegment from "@/components/Segments/Staking/Summary";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";

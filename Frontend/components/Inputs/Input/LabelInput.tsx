@@ -1,7 +1,7 @@
-import { colors } from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons"; // Import Ionicons from expo
+import { colors } from "@/constants/colors";
+import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Platform,
   Text,
@@ -15,9 +15,10 @@ interface LabelInputProps {
   type: InputType;
   title: string;
   name: string;
-  value: any;
   placeholder: string;
-  onChange: (e: any) => void;
+  value: any;
+  onChange: (name: any, value: any) => void;
+  isUnitVisible?: boolean;
 }
 
 export type InputType =
@@ -29,8 +30,13 @@ export type InputType =
   | "decimal"
   | "datetime";
 
-const LabelInput: React.FC<LabelInputProps> = (props) => {
+const LabelInput: React.FC<LabelInputProps> = ({
+  isUnitVisible = false,
+  ...props
+}) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [value, setValue] = useState("");
 
   const inputProps: Record<InputType, TextInputProps> = {
     text: { keyboardType: "default", secureTextEntry: false },
@@ -45,17 +51,22 @@ const LabelInput: React.FC<LabelInputProps> = (props) => {
   const handleDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios"); // Keep the picker open on iOS
     if (selectedDate) {
-      props.onChange(selectedDate);
+      props.onChange(props.name, selectedDate);
     }
   };
 
   const handleChangeText = (text) => {
+    const oldText = value;
     if (props.type !== "numeric") {
-      props.onChange(text);
+      props.onChange(props.name, text);
+      setValue(text);
     } else {
-      const regex = /^[0-9]*$/; // Allow only digits (no negative or decimal point)
-      if (regex.test(text)) {
-        props.onChange(+text);
+      const regex = /^[0-9]*\.?[0-9]*$/;
+      if (regex.test(text) && text !== ".") {
+        props.onChange(props.name, +text);
+        setValue(text);
+      } else {
+        props.onChange(props.name, oldText);
       }
     }
   };
@@ -103,18 +114,21 @@ const LabelInput: React.FC<LabelInputProps> = (props) => {
             )}
           </>
         ) : (
-          <TextInput
-            id={props.name}
-            placeholder={props.placeholder}
-            value={props.value}
-            style={{
-              flex: 1,
-              fontFamily: "ReadexPro_400Regular",
-            }}
-            keyboardType={inputProps[props.type].keyboardType}
-            secureTextEntry={inputProps[props.type].secureTextEntry}
-            onChangeText={handleChangeText}
-          />
+          <View className="flex flex-row items-center">
+            <TextInput
+              id={props.name}
+              placeholder={props.placeholder}
+              value={value}
+              style={{
+                flex: 1,
+                fontFamily: "ReadexPro_400Regular",
+              }}
+              keyboardType={inputProps[props.type].keyboardType}
+              secureTextEntry={inputProps[props.type].secureTextEntry}
+              onChangeText={handleChangeText}
+            />
+            {isUnitVisible && <Text className="font-readexRegular text-secondary">ETH</Text>}
+          </View>
         )}
       </View>
     </View>
