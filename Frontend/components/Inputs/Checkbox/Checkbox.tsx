@@ -21,10 +21,10 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
         unFillColor={colors.surface}
         text={props.content}
         useBuiltInState={false}
-        iconStyle={{ borderColor: "red", borderRadius: 4 }}
+        iconStyle={{ borderColor: "red", borderRadius: 12 }}
         innerIconStyle={{
           borderWidth: 2,
-          borderRadius: 4,
+          borderRadius: 12,
         }}
         textStyle={{
           fontFamily: "ReadexPro_400Regular",

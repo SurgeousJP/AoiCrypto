@@ -40,6 +40,8 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
+const initialScreen = path.createProjectStepThree;
+
 export default function RootLayout() {
   const insets = useSafeAreaInsets();
 
@@ -171,7 +173,7 @@ export default function RootLayout() {
                         animation: "fade",
                         animationDuration: 1000,
                       }}
-                      initialRouteName={path.sellerTab}
+                      initialRouteName={initialScreen}
                     >
                       <Stack.Screen
                         name={path.userSetting}
@@ -270,6 +272,18 @@ export default function RootLayout() {
                         }}
                       />
                       <Stack.Screen
+                        name={path.createProjectStepTwo}
+                        options={{
+                          headerShown: false,
+                        }}
+                      />
+                      <Stack.Screen
+                        name={path.createProjectStepThree}
+                        options={{
+                          headerShown: false,
+                        }}
+                      />
+                      <Stack.Screen
                         name={path.token}
                         options={{
                           headerShown: true,
@@ -310,5 +324,5 @@ export default function RootLayout() {
 
 export const unstable_settings = {
   // Ensure any route can link back to `/`
-  initialRouteName: path.sellerTab,
+  initialRouteName: initialScreen,
 };

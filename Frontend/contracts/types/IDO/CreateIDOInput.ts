@@ -60,9 +60,9 @@ const createEmptyPoolDetails = (): PoolDetails => ({
   privateSaleAmount: 0n,
 });
 
-const createEmptyPoolTime = (): PoolTime => ({
-  startTime: 0n,
-  endTime: 0n,
+export const createEmptyPoolTime = (): PoolTime => ({
+  startTime: BigInt(getUnixTimestampFromDate(new Date())),
+  endTime: BigInt(getUnixTimestampFromDate(new Date())),
   startPublicSale: 0n,
 });
 
@@ -90,8 +90,8 @@ export const sampleCreateIDOInput: CreateIDOInput = {
     privateSaleAmount: BigInt(0),
   },
   poolTime: {
-    startTime: BigInt(getUnixTimestampFromDate(new Date(2024, 4 - 1, 12))),
-    endTime: BigInt(getUnixTimestampFromDate(new Date(2024, 11 - 1, 12))), 
+    startTime: BigInt(getUnixTimestampFromDate(new Date())),
+    endTime: BigInt(getUnixTimestampFromDate(new Date())), 
     startPublicSale: BigInt(0),
   },
   privateSale: false,

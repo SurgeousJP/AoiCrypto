@@ -1,6 +1,8 @@
 // IMPORT
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
+import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Input from "@/components/Inputs/Input/Input";
 import Container from "@/components/Layouts/Container";
@@ -14,7 +16,10 @@ import {
 } from "@/constants/conversion";
 import { RESET_VALUE_DROPDOWN } from "@/constants/display";
 import { AuthContext } from "@/contexts/AuthProvider";
-import StateProvider, { StateContext, StateContextType } from "@/contexts/StateProvider";
+import StateProvider, {
+  StateContext,
+  StateContextType,
+} from "@/contexts/StateProvider";
 import {
   createDefaultCreateIDOInput,
   CreateIDOInput,
@@ -22,6 +27,7 @@ import {
   PoolDetails,
 } from "@/contracts/types/IDO/CreateIDOInput";
 import { GET_TOKENS } from "@/queries/token";
+import { showToast } from "@/utils/toast";
 import { useQuery } from "@apollo/client";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -51,7 +57,9 @@ const CreateStepOne = () => {
     .filter(([key, value]) => !isNaN(Number(value)))
     .map(([key, value]) => ({ label: key, value }));
 
-  const { createIDO, updateCreateIDO } = useContext(StateContext) as StateContextType;
+  const { createIDO, updateCreateIDO } = useContext(
+    StateContext
+  ) as StateContextType;
 
   const [poolDetail, setPoolDetail] = useState<PoolDetails>({
     tokenAddress: "",
@@ -69,7 +77,74 @@ const CreateStepOne = () => {
   const [action, setAction] = useState<LiquidityPoolAction>(
     LiquidityPoolAction.NOTHING
   );
-  const [lockExpired, setLockExpired] = useState(0n);
+  const [lockExpired, setLockExpired] = useState(
+    BigInt(getUnixTimestampFromDate(new Date()))
+  );
+
+  const onNavigateToStepTwo = () => {
+    // if (isStepOneInputValid()) {
+    //   router.push("/project/createStepTwo");
+    // }
+    router.push("/project/createStepTwo");
+  };
+
+  const isStepOneInputValid = () => {
+    if (poolDetail.pricePerToken <= 0n) {
+      showInvalidInputToast("Price per token must be positive");
+      return false;
+    }
+
+    if (poolDetail.softCap <= 0n) {
+      showInvalidInputToast("Soft cap must be positive");
+      return false;
+    }
+
+    if (poolDetail.hardCap <= 0n) {
+      showInvalidInputToast("Hard cap must be positive");
+      return false;
+    }
+
+    if (poolDetail.minInvest <= 0n) {
+      showInvalidInputToast("Min invest must be positive");
+      return false;
+    }
+
+    if (poolDetail.maxInvest <= 0n) {
+      showInvalidInputToast("Max invest must be positive");
+      return false;
+    }
+
+    if (poolDetail.liquidityWETH9 <= 0n) {
+      showInvalidInputToast("Liquidity ETH to List DEX must be positive");
+      return false;
+    }
+
+    if (poolDetail.liquidityToken <= 0n) {
+      showInvalidInputToast("Liquidity token must be positive");
+      return false;
+    }
+
+    if (poolDetail.softCap >= poolDetail.hardCap) {
+      showInvalidInputToast("Soft cap must be less than hard cap");
+      return false;
+    }
+
+    if (poolDetail.minInvest >= poolDetail.maxInvest) {
+      showInvalidInputToast("Min invest must be less than Max invest");
+      return false;
+    }
+
+    if (action === LiquidityPoolAction.LOCK && lockExpired <= 0n) {
+      showInvalidInputToast("Lock expired value is not valid");
+      return false;
+    }
+
+    return true;
+  };
+
+  const showInvalidInputToast = (message: string) => {
+    showToast("error", "Invalid Input", message);
+  };
 
   useEffect(() => {
     updateCreateIDO("poolDetails", poolDetail);
@@ -97,7 +172,11 @@ const CreateStepOne = () => {
 
   const onLockExpiredChange = (name: string, value: any) => {
     if (action === LiquidityPoolAction.LOCK)
-      setLockExpired(BigInt(getUnixTimestampFromDate(new Date(2024, 4 - 1, 12))));
+      setLockExpired(BigInt(getUnixTimestampFromDate(new Date(value))));
+  };
+
+  const onPrivateSaleChange = (checked: boolean) => {
+    updateCreateIDO("privateSale", checked);
   };
 
   return (
@@ -151,15 +230,6 @@ const CreateStepOne = () => {
                   isUnitVisible={true}
                 />
               </View>
-              <View className="mb-3">
-                <Input
-                  type="numeric"
-                  label={"Raised amount"}
-                  name={"raisedAmount"}
-                  value={poolDetail.raisedAmount}
-                  onChange={onNumericChange}
-                />
-              </View>
             </View>
           </Container>
         </View>
@@ -173,6 +243,13 @@ const CreateStepOne = () => {
               <Text className="font-readexBold text-md text-primary mb-2">
                 Sale Details
               </Text>
+              <View className="w-full mb-3">
+                <Checkbox
+                  keyValue={"isPrivateSale"}
+                  content={"Private sale enabled"}
+                  onChange={onPrivateSaleChange}
+                ></Checkbox>
+              </View>
               <View className="flex flex-row justify-between mb-3">
                 <View className="basis-[48%]">
                   <Input
@@ -280,9 +357,9 @@ const CreateStepOne = () => {
         </View>
 
         <View className="mt-4">
-          <NormalButton
+          <PrimaryButton
             content={"Go to next step"}
-            onClick={() => router.push("/project/createStepTwo")}
+            onPress={onNavigateToStepTwo}
           />
         </View>
       </View>

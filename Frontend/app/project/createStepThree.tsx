@@ -1,13 +1,15 @@
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import DataRow from "@/components/Items/Project/DataRow";
 import Row from "@/components/Items/Project/Row";
 import Container from "@/components/Layouts/Container";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { colors } from "@/constants/colors";
-import { useNavigation, useRouter } from "expo-router";
-import React from "react";
+import { StateContext, StateContextType } from "@/contexts/StateProvider";
+import { router, useNavigation, useRouter } from "expo-router";
+import React, { useContext } from "react";
 import {
   FlatList,
   ScrollView,
@@ -75,84 +77,89 @@ const rowData = [
   ],
 ];
 
-const basicData = [
-  {
-    tile: "Token address",
-    data: "N/A",
-  },
-  {
-    tile: "Price per token",
-    data: "$0.05",
-  },
-  {
-    tile: "Raise amount",
-    data: "$200,000",
-  },
-];
-const saleData = [
-  {
-    tile: "Soft Cap",
-    data: "N/A",
-  },
-  {
-    tile: "Hard Cap",
-    data: "$0.05",
-  },
-  {
-    tile: "Min Invest",
-    data: "$200,000",
-  },
-  {
-    tile: "Max Invest",
-    data: "$200,000",
-  },
-];
-const liquidData = [
-  {
-    tile: "Liquidity ETH to List DEX",
-    data: "N/A",
-  },
-  {
-    tile: "Liquidity Token to List DEX",
-    data: "$0.05",
-  },
-  {
-    tile: "Action for List DEX",
-    data: "$200,000",
-  },
-  {
-    tile: "Lock Expired",
-    data: "$200,000",
-  },
-];
-const saleConfigData = [
-  {
-    tile: "Start time",
-    data: "N/A",
-  },
-  {
-    tile: "End time",
-    data: "$0.05",
-  },
-  {
-    tile: "Sale type",
-    data: "$200,000",
-  },
-  {
-    tile: "Initial Sale Type",
-    data: "$200,000",
-  },
-];
-
 function createStepThree() {
-  const navigation = useNavigation();
-  const router = useRouter();
 
+  const { createIDO, updateCreateIDO } = useContext(
+    StateContext
+  ) as StateContextType;
+
+  const basicData = [
+    {
+      tile: "Token address",
+      data: createIDO.poolDetails.tokenAddress.toString().length > 0 ? createIDO.poolDetails.tokenAddress.toString() : "Elysia N/A",
+    },
+    {
+      tile: "Price per token",
+      data: createIDO.poolDetails.pricePerToken.toString() + " ETH",
+    },
+  ];
+
+  const saleData = [
+    {
+      tile: "Sale type",
+      data: createIDO.privateSale ? "Private" : "Public",
+    },
+    {
+      tile: "Soft Cap",
+      data: createIDO.poolDetails.softCap.toString() + " ETH",
+    },
+    {
+      tile: "Hard Cap",
+      data: createIDO.poolDetails.hardCap.toString() + " ETH",
+    },
+    {
+      tile: "Min Invest",
+      data: createIDO.poolDetails.minInvest.toString() + " ETH",
+    },
+    {
+      tile: "Max Invest",
+      data: createIDO.poolDetails.maxInvest.toString() + " ETH",
+    },
+  ];
+
+  const saleConfigData = [
+    {
+      tile: "Start time",
+      data: createIDO.poolTime.startTime.toLocaleString(),
+    },
+    {
+      tile: "End time",
+      data: createIDO.poolTime.endTime.toLocaleString(),
+    },
+    {
+      tile: "Initial sale time",
+      data: createIDO.poolTime.startPublicSale,
+    },
+  ];
+
+  const liquidData = [
+    {
+      tile: "Liquidity ETH to List DEX",
+      data: createIDO.poolDetails.liquidityWETH9.toString() + " ETH",
+    },
+    {
+      tile: "Liquidity Token to List DEX",
+      data: createIDO.poolDetails.liquidityToken.toString() + " ETH",
+    },
+    {
+      tile: "Action for List DEX",
+      data: createIDO.action,
+    },
+    {
+      tile: "Lock Expired",
+      data: createIDO.lockExpired.toString(),
+    },
+  ];
+
+  const onNavigatingBack = () => {
+    // router.back();
+    router.navigate("/project/createStepTwo");
+  }
   return (
     <ScrollView className="flex-1 bg-background">
       <ScreenHeader
         LeftComponent={
-          <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
+          <TouchableOpacity onPress={onNavigatingBack} className="p-2">
             <Back stroke={colors.secondary} width={24} height={24} />
           </TouchableOpacity>
         }
@@ -169,7 +176,7 @@ function createStepThree() {
       />
 
       <View className="flex flex-col p-4">
-        <View className="mt-2">
+        <View className="mt-4">
           <Container>
             <View
               className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
@@ -186,7 +193,7 @@ function createStepThree() {
             </View>
           </Container>
         </View>
-        <View className="mt-2">
+        <View className="mt-4">
           <Container>
             <View
               className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
@@ -203,7 +210,7 @@ function createStepThree() {
             </View>
           </Container>
         </View>
-        <View className="mt-2">
+        <View className="mt-4">
           <Container>
             <View
               className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
@@ -220,7 +227,7 @@ function createStepThree() {
             </View>
           </Container>
         </View>
-        <View className="mt-2">
+        <View className="mt-4">
           <Container>
             <View
               className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
@@ -243,13 +250,9 @@ function createStepThree() {
               className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
-              <Text className="font-readexBold text-md text-primary mb-2">
-                Whitelist Upload
+              <Text className="font-readexBold text-md text-primary ">
+                Whitelist users
               </Text>
-              <NormalButton
-                content={"Import Whiltelist from file"}
-                onClick={function (): void {}}
-              />
               <FlatList
                 style={{
                   paddingHorizontal: 0,
@@ -273,7 +276,7 @@ function createStepThree() {
             </View>
           </Container>
         </View>
-        <NormalButton content={"Save Project"} onClick={function (): void {}} />
+        <PrimaryButton content={"Save Project"} onPress={function (): void {}} />
       </View>
     </ScrollView>
   );
