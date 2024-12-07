@@ -18,7 +18,7 @@ contract CustomScript is Script {
         address weth = vm.envAddress("WETH");
         vm.startBroadcast(deployerPrivateKey);
         IDOFactory idoFactory = new IDOFactory(factory, router, weth);
-        ERC20Factory erc20Factory = new ERC20Factory();
+        // ERC20Factory erc20Factory = new ERC20Factory();
         vm.stopBroadcast();
     }
 }

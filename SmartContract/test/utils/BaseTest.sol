@@ -9,13 +9,13 @@ import {AoiRouter} from "../../src/DEX/AoiRouter.sol";
 
 abstract contract BaseTest is Test {
     bytes32 public constant EMPTY_ROOT = bytes32(0);
-    uint112 public constant MIN_DELAY_STARTING = uint112(10 * 60 * 60); // 10 minutes
-    uint112 public constant MIN_PRIVATE_SALES_ENDING = uint112(5 * 60 * 60); // 5 minutes
+    uint112 public constant MIN_DELAY_STARTING = uint112(10 * 60); // 10 minutes
+    uint112 public constant MIN_PRIVATE_SALES_ENDING = uint112(5 * 60); // 5 minutes
     uint256 public constant MINIMUM_LIQUIDITY = 10 ** 3;
     uint256 public constant MIN_PRICE_TOKEN = 10 ** 15; // MIN: 1 token = 0.001 WETH
     uint256 public constant MIN_WETH = 1 ether;
 
-    uint256 public constant HOUR = 60 * 60 * 60;
+    uint256 public constant HOUR = 60 * 60;
     uint256 public constant DAY = 24 * HOUR;
     uint256 public constant WEEK = 7 * DAY;
     uint256 public constant MONTH = 30 * DAY;

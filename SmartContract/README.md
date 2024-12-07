@@ -14,7 +14,9 @@
 
     - V1: `0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130` (deprecated)
 
-    - V2: `0x30B5aCF87E1E4b8a23F64270B86Aee7B416E2130` (latest)
+    - V2: `0x30B5aCF87E1E4b8a23F64270B86Aee7B416E2130` (deprecated)
+
+    - V3: `0x0Fa043F95487c58d1883A1A1965edaaD004Dc063` (latest)
 
   - ERC20Factory: `0xBB64692b13dE29e0f5370FBF476E471E6084d080`
 
@@ -108,7 +110,11 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ source .env
+```
+
+```shell
+$ forge script --chain sepolia script/CustomScript.s.sol:CustomScript --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
 ```
 
 ### Cast

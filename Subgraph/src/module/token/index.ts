@@ -2,6 +2,7 @@ import { Address, BigInt, Bytes, log } from "@graphprotocol/graph-ts";
 import { Token } from "../../../generated/schema";
 import { TokenDetail, tokenDetailDefault } from "./type";
 import { erc20FactoryContract } from "../util/contract";
+import { defaultId } from "../util/utils";
 
 export function getTokenId(tokenAddress: Address): Bytes {
   return Bytes.fromHexString(tokenAddress.toHexString());

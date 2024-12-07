@@ -12,13 +12,11 @@ export function handleTokenCreated(event: TokenCreated): void {
 
   const tokenDetail = getTokenDetail(tokenId);
 
-  log.info("{}", [
-    tokenDetail.tokenAddress.toHexString(),
-    tokenDetail.owner.toHexString(),
+  log.info("tokenDetail {}", [
     tokenDetail.name.toString(),
-    tokenDetail.maxSupply.toHexString(),
-    tokenDetail.initialSupply.toHexString(),
+    tokenDetail.symbol.toString(),
   ]);
+
   if (tokenAddress.equals(Address.zero())) {
     log.warning(
       "tokenAddress in tokenDetail of tokenId {} equals Zero Address",
@@ -29,6 +27,8 @@ export function handleTokenCreated(event: TokenCreated): void {
   let token = loadOrCreateToken(tokenAddress);
   token.creator = account.id;
   token.tokenId = tokenId;
+  token.name = tokenDetail.name.toString();
+  token.symbol = tokenDetail.symbol.toString();
   token.createdTime = event.block.timestamp;
   token.initialSupply = tokenDetail.initialSupply;
   token.maxTotalSupply = tokenDetail.maxSupply;
@@ -39,6 +39,8 @@ export function handleTokenCreated(event: TokenCreated): void {
     tokenAddress.toHexString(),
     [
       tokenId.toHexString(),
+      token.name,
+      token.symbol,
       token.initialSupply.toHexString(),
       token.maxTotalSupply.toHexString(),
     ].toString(),
