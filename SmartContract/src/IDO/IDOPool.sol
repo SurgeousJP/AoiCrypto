@@ -53,7 +53,7 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
     }
 
     modifier isIDONotStarted() {
-        if (block.timestamp < poolTime.startTime) {
+        if (block.timestamp >= poolTime.startTime) {
             revert IDOIsNotStarted();
         }
         _;
@@ -262,7 +262,7 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
             revert MaxInvestmentExceeded();
         }
         if (IDO_TYPE == IDOType.PRIVATE_SALE && currentTime < _poolTime.startPublicSale) {
-            if (!_verifyProof(proof, WHITELISTED, investorAddress) || !registers[investorAddress]) {
+            if (!_verifyProof(proof, WHITELISTED, investorAddress) && !registers[investorAddress]) {
                 revert IDOPoolIsPrivate();
             }
             if (_poolDetail.privateSaleAmount <= _poolDetail.raisedAmount + amountInvestment) {

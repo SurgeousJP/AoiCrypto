@@ -5,9 +5,9 @@ import {IIDOPoolState} from "../interfaces/IIDOPoolState.sol";
 contract IDOPoolState is IIDOPoolState{
     uint8 public constant RATE_DECIMALS = uint8(4);
 
-    uint112 public constant MIN_DELAY_STARTING = uint112(10 * 60 * 60); // 10 minutes
+    uint112 public constant MIN_DELAY_STARTING = uint112(10 * 60); // 10 minutes
 
-    uint112 public constant MIN_PRIVATE_SALES_ENDING = uint112(5 * 60 * 60); // 5 minutes
+    uint112 public constant MIN_PRIVATE_SALES_ENDING = uint112(5 * 60); // 5 minutes
 
     uint256 public constant MIN_PRICE_TOKEN = 10 ** 15; // MIN: 1 token = 0.001 WETH
 

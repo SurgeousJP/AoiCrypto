@@ -67,6 +67,8 @@ type Token @entity(immutable: true) {
   address: Bytes!
   tokenId: BigInt!
   creator: Account!
+  name: String!
+  symbol: String!
   initialSupply: BigInt!
   maxTotalSupply: BigInt!
   createdTime: BigInt!
