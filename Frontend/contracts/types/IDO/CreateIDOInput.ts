@@ -1,6 +1,6 @@
-// <---! GUIDELINES !---> //
-
 import { BIGINT_CONVERSION_FACTOR, getUnixTimestampFromDate } from "@/constants/conversion";
+import { EMPTY_MERKLE_ROOT } from "@/utils/merkleTree";
+// <---! GUIDELINES !---> //
 
 // SOLIDITY TYPES => TYPESCRIPT TYPES
 // address => string
@@ -10,6 +10,11 @@ import { BIGINT_CONVERSION_FACTOR, getUnixTimestampFromDate } from "@/constants/
 // enums => enums (nothing changes)
 
 // <---! GUIDELINES !---> //
+
+// <---! CONSTRAINTS !---> //
+// userWallet's token amount >= hardCap + liquidityToken
+// userWallet's ETH >= liquidityWETH9 (should be around 0.001 for testing)
+// <---! CONSTRAINTS !---> //
 
 export type CreateIDOInput = {
   poolDetails: PoolDetails,
@@ -70,7 +75,7 @@ export const createDefaultCreateIDOInput = (): CreateIDOInput => ({
   poolDetails: createEmptyPoolDetails(),
   poolTime: createEmptyPoolTime(),
   privateSale: false,  
-  whitelisted: '',  
+  whitelisted: EMPTY_MERKLE_ROOT,  
   action: LiquidityPoolAction.NOTHING,  
   lockExpired: 0n, 
 });
@@ -78,24 +83,24 @@ export const createDefaultCreateIDOInput = (): CreateIDOInput => ({
 export const sampleCreateIDOInput: CreateIDOInput = {
   poolDetails: {
     tokenAddress: "0x82a9d5f57483163de82ef5d40d045be974d9d215",
-    pricePerToken: BigInt(0.001 * BIGINT_CONVERSION_FACTOR), 
+    pricePerToken: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
     raisedAmount: BigInt(0), 
     raisedTokenAmount: BigInt(0), 
-    softCap: BigInt(5 * BIGINT_CONVERSION_FACTOR), 
-    hardCap: BigInt(10 * BIGINT_CONVERSION_FACTOR),
-    minInvest: BigInt(0.05 * BIGINT_CONVERSION_FACTOR),
-    maxInvest: BigInt(0.1 * BIGINT_CONVERSION_FACTOR),
-    liquidityWETH9: BigInt(2 * BIGINT_CONVERSION_FACTOR), 
-    liquidityToken: BigInt(Math.pow(10, 7) * BIGINT_CONVERSION_FACTOR), 
+    softCap: BigInt(0.005 * BIGINT_CONVERSION_FACTOR), 
+    hardCap: BigInt(0.01 * BIGINT_CONVERSION_FACTOR),
+    minInvest: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
+    maxInvest: BigInt(0.0003 * BIGINT_CONVERSION_FACTOR),
+    liquidityWETH9: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
+    liquidityToken: BigInt(0.01 * BIGINT_CONVERSION_FACTOR), 
     privateSaleAmount: BigInt(0),
   },
   poolTime: {
     startTime: BigInt(getUnixTimestampFromDate(new Date())),
     endTime: BigInt(getUnixTimestampFromDate(new Date())), 
-    startPublicSale: BigInt(0),
+    startPublicSale: BigInt(0)
   },
   privateSale: false,
-  whitelisted: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890", // Example whitelist address
-  action: LiquidityPoolAction.NOTHING, // Lock liquidity
-  lockExpired: 1700200000000n, // Example timestamp for lock expiration
+  whitelisted: EMPTY_MERKLE_ROOT,
+  action: LiquidityPoolAction.NOTHING, 
+  lockExpired: 0n, 
 };

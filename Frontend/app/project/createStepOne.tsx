@@ -61,75 +61,66 @@ const CreateStepOne = () => {
     StateContext
   ) as StateContextType;
 
-  const [poolDetail, setPoolDetail] = useState<PoolDetails>({
-    tokenAddress: "",
-    pricePerToken: 0n,
-    raisedAmount: 0n,
-    raisedTokenAmount: 0n,
-    softCap: 0n,
-    hardCap: 0n,
-    minInvest: 0n,
-    maxInvest: 0n,
-    liquidityWETH9: 0n,
-    liquidityToken: 0n,
-    privateSaleAmount: 0n,
+  const [poolDetails, setPoolDetail] = useState<PoolDetails>({
+    ...createIDO.poolDetails,
   });
-  const [action, setAction] = useState<LiquidityPoolAction>(
-    LiquidityPoolAction.NOTHING
-  );
-  const [lockExpired, setLockExpired] = useState(
-    BigInt(getUnixTimestampFromDate(new Date()))
-  );
+  const [action, setAction] = useState<LiquidityPoolAction>(createIDO.action);
+  const [lockExpired, setLockExpired] = useState(createIDO.lockExpired);
 
   const onNavigateToStepTwo = () => {
-    // if (isStepOneInputValid()) {
-    //   router.push("/project/createStepTwo");
-    // }
-    router.push("/project/createStepTwo");
+    if (isStepOneInputValid()) {
+      router.push("/project/createStepTwo");
+    }
+    // router.push("/project/createStepTwo");
   };
 
   const isStepOneInputValid = () => {
-    if (poolDetail.pricePerToken <= 0n) {
+    if (poolDetails.tokenAddress === '' || poolDetails.tokenAddress === null){
+      showInvalidInputToast("The token address has not been chosen");
+      return false;
+    }
+
+    if (poolDetails.pricePerToken <= 0n) {
       showInvalidInputToast("Price per token must be positive");
       return false;
     }
 
-    if (poolDetail.softCap <= 0n) {
+    if (poolDetails.softCap <= 0n) {
       showInvalidInputToast("Soft cap must be positive");
       return false;
     }
 
-    if (poolDetail.hardCap <= 0n) {
+    if (poolDetails.hardCap <= 0n) {
       showInvalidInputToast("Hard cap must be positive");
       return false;
     }
 
-    if (poolDetail.minInvest <= 0n) {
+    if (poolDetails.minInvest <= 0n) {
       showInvalidInputToast("Min invest must be positive");
       return false;
     }
 
-    if (poolDetail.maxInvest <= 0n) {
+    if (poolDetails.maxInvest <= 0n) {
       showInvalidInputToast("Max invest must be positive");
       return false;
     }
 
-    if (poolDetail.liquidityWETH9 <= 0n) {
+    if (poolDetails.liquidityWETH9 <= 0n) {
       showInvalidInputToast("Liquidity ETH to List DEX must be positive");
       return false;
     }
 
-    if (poolDetail.liquidityToken <= 0n) {
+    if (poolDetails.liquidityToken <= 0n) {
       showInvalidInputToast("Liquidity token must be positive");
       return false;
     }
 
-    if (poolDetail.softCap >= poolDetail.hardCap) {
+    if (poolDetails.softCap >= poolDetails.hardCap) {
       showInvalidInputToast("Soft cap must be less than hard cap");
       return false;
     }
 
-    if (poolDetail.minInvest >= poolDetail.maxInvest) {
+    if (poolDetails.minInvest >= poolDetails.maxInvest) {
       showInvalidInputToast("Min invest must be less than Max invest");
       return false;
     }
@@ -147,8 +138,8 @@ const CreateStepOne = () => {
   };
 
   useEffect(() => {
-    updateCreateIDO("poolDetails", poolDetail);
-  }, [poolDetail]);
+    updateCreateIDO("poolDetails", poolDetails);
+  }, [poolDetails]);
 
   useEffect(() => {
     updateCreateIDO("lockExpired", lockExpired);
@@ -159,11 +150,11 @@ const CreateStepOne = () => {
   }, [action]);
 
   const onNumericChange = (name: string, value: any) => {
-    setPoolDetail({ ...poolDetail, [name]: value * BIGINT_CONVERSION_FACTOR });
+    setPoolDetail({ ...poolDetails, [name]: value * BIGINT_CONVERSION_FACTOR });
   };
 
   const onTokenAddressChange = (value: any) => {
-    setPoolDetail({ ...poolDetail, ["tokenAddress"]: value });
+    setPoolDetail({ ...poolDetails, ["tokenAddress"]: value });
   };
 
   const onLiquidityActionChange = (value: any) => {
@@ -215,7 +206,7 @@ const CreateStepOne = () => {
                   <CustomDropdown
                     placeholder="Select token"
                     data={tokens}
-                    value={poolDetail.tokenAddress}
+                    value={poolDetails.tokenAddress}
                     onChange={onTokenAddressChange}
                   />
                 )}
@@ -224,7 +215,7 @@ const CreateStepOne = () => {
                 <Input
                   label={"Price per token"}
                   name={"pricePerToken"}
-                  value={poolDetail.pricePerToken}
+                  value={poolDetails.pricePerToken}
                   type="numeric"
                   onChange={onNumericChange}
                   isUnitVisible={true}
@@ -256,7 +247,7 @@ const CreateStepOne = () => {
                     label={"Soft cap"}
                     type="numeric"
                     name={"softCap"}
-                    value={poolDetail.softCap}
+                    value={poolDetails.softCap}
                     onChange={onNumericChange}
                     isUnitVisible={true}
                   />
@@ -266,7 +257,7 @@ const CreateStepOne = () => {
                     label={"Hard cap"}
                     type="numeric"
                     name={"hardCap"}
-                    value={poolDetail.hardCap}
+                    value={poolDetails.hardCap}
                     onChange={onNumericChange}
                     isUnitVisible={true}
                   />
@@ -279,7 +270,7 @@ const CreateStepOne = () => {
                     label={"Min invest"}
                     type="numeric"
                     name={"minInvest"}
-                    value={poolDetail.minInvest}
+                    value={poolDetails.minInvest}
                     onChange={onNumericChange}
                     isUnitVisible={true}
                   />
@@ -289,7 +280,7 @@ const CreateStepOne = () => {
                     label={"Max invest"}
                     type="numeric"
                     name="maxInvest"
-                    value={poolDetail.maxInvest}
+                    value={poolDetails.maxInvest}
                     onChange={onNumericChange}
                     isUnitVisible={true}
                   />
@@ -310,19 +301,19 @@ const CreateStepOne = () => {
               </Text>
               <View className="mb-3">
                 <Input
-                  label={"Liquidity ETH to List DEX"}
+                  label={"ETH to List DEX"}
                   type="numeric"
                   name="liquidityWETH9"
-                  value={poolDetail.liquidityWETH9}
+                  value={poolDetails.liquidityWETH9}
                   onChange={onNumericChange}
                   isUnitVisible={true}
                 />
               </View>
               <View className="mb-3">
                 <Input
-                  label={"Liquidity Token to List DEX"}
+                  label={"Token to List DEX"}
                   type="numeric"
-                  value={poolDetail.liquidityToken}
+                  value={poolDetails.liquidityToken}
                   name="liquidityToken"
                   onChange={onNumericChange}
                   isUnitVisible={true}

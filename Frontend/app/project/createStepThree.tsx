@@ -1,15 +1,27 @@
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
+import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import DataRow from "@/components/Items/Project/DataRow";
 import Row from "@/components/Items/Project/Row";
 import Container from "@/components/Layouts/Container";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { colors } from "@/constants/colors";
+import {
+  getDateFromUnixTimestamp,
+  getStringValueFromBigInt,
+} from "@/constants/conversion";
+import { AuthContext } from "@/contexts/AuthProvider";
 import { StateContext, StateContextType } from "@/contexts/StateProvider";
-import { router, useNavigation, useRouter } from "expo-router";
-import React, { useContext } from "react";
+import {
+  LiquidityPoolAction,
+  sampleCreateIDOInput,
+} from "@/contracts/types/IDO/CreateIDOInput";
+import { useCreateIDO } from "@/hooks/smart-contract/IDOFactory/useCreateIDO";
+import { showToast } from "@/utils/toast";
+import { useApolloClient } from "@apollo/client";
+import { router } from "expo-router";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
   ScrollView,
@@ -17,6 +29,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { TransactionReceipt } from "viem";
 
 const headerData = [
   {
@@ -78,19 +91,25 @@ const rowData = [
 ];
 
 function createStepThree() {
-
-  const { createIDO, updateCreateIDO } = useContext(
+  const { createIDO, resetCreateIDO } = useContext(
     StateContext
   ) as StateContextType;
+  const { chainId } = useContext(AuthContext);
+  const [isLoadingModalVisible, setLoadingModalVisible] = useState(false);
+  const client = useApolloClient();
 
   const basicData = [
     {
       tile: "Token address",
-      data: createIDO.poolDetails.tokenAddress.toString().length > 0 ? createIDO.poolDetails.tokenAddress.toString() : "Elysia N/A",
+      data:
+        createIDO.poolDetails.tokenAddress.toString().length > 0
+          ? createIDO.poolDetails.tokenAddress.toString()
+          : "Elysia N/A",
     },
     {
       tile: "Price per token",
-      data: createIDO.poolDetails.pricePerToken.toString() + " ETH",
+      data:
+        getStringValueFromBigInt(createIDO.poolDetails.pricePerToken) + " ETH",
     },
   ];
 
@@ -101,62 +120,137 @@ function createStepThree() {
     },
     {
       tile: "Soft Cap",
-      data: createIDO.poolDetails.softCap.toString() + " ETH",
+      data: getStringValueFromBigInt(createIDO.poolDetails.softCap) + " ETH",
     },
     {
       tile: "Hard Cap",
-      data: createIDO.poolDetails.hardCap.toString() + " ETH",
+      data: getStringValueFromBigInt(createIDO.poolDetails.hardCap) + " ETH",
     },
     {
       tile: "Min Invest",
-      data: createIDO.poolDetails.minInvest.toString() + " ETH",
+      data: getStringValueFromBigInt(createIDO.poolDetails.minInvest) + " ETH",
     },
     {
       tile: "Max Invest",
-      data: createIDO.poolDetails.maxInvest.toString() + " ETH",
+      data: getStringValueFromBigInt(createIDO.poolDetails.maxInvest) + " ETH",
     },
   ];
 
   const saleConfigData = [
     {
       tile: "Start time",
-      data: createIDO.poolTime.startTime.toLocaleString(),
+      data: getDateFromUnixTimestamp(
+        createIDO.poolTime.startTime
+      ).toLocaleString(),
     },
     {
       tile: "End time",
-      data: createIDO.poolTime.endTime.toLocaleString(),
+      data: getDateFromUnixTimestamp(
+        createIDO.poolTime.endTime
+      ).toLocaleString(),
     },
-    {
-      tile: "Initial sale time",
-      data: createIDO.poolTime.startPublicSale,
-    },
+    ...(createIDO.privateSale
+      ? [
+          {
+            tile: "Initial sale time",
+            data: getDateFromUnixTimestamp(
+              createIDO.poolTime.startPublicSale
+            ).toLocaleString(),
+          },
+        ]
+      : []),
   ];
 
   const liquidData = [
     {
-      tile: "Liquidity ETH to List DEX",
-      data: createIDO.poolDetails.liquidityWETH9.toString() + " ETH",
+      tile: "ETH to List DEX",
+      data:
+        getStringValueFromBigInt(createIDO.poolDetails.liquidityWETH9) + " ETH",
     },
     {
-      tile: "Liquidity Token to List DEX",
-      data: createIDO.poolDetails.liquidityToken.toString() + " ETH",
+      tile: "Token to List DEX",
+      data:
+        getStringValueFromBigInt(createIDO.poolDetails.liquidityToken) + " ETH",
     },
     {
       tile: "Action for List DEX",
-      data: createIDO.action,
+      data: LiquidityPoolAction[createIDO.action].toString(),
     },
-    {
-      tile: "Lock Expired",
-      data: createIDO.lockExpired.toString(),
-    },
+    ...(createIDO.action === LiquidityPoolAction.LOCK
+      ? [
+          {
+            tile: "Lock Expired",
+            data: getDateFromUnixTimestamp(
+              createIDO.lockExpired
+            ).toLocaleString(),
+          },
+        ]
+      : []),
   ];
+
+  console.log(createIDO);
+
+  const { error, errorWrite, isLoading, onCreateIDO } = useCreateIDO({
+    chainId: chainId,
+    idoInput: createIDO,
+    enabled: true,
+    onSuccess: (data: TransactionReceipt) => {
+      if (isLoadingModalVisible) {
+        setLoadingModalVisible(false);
+      }
+
+      showToast(
+        "success",
+        "Transaction success",
+        "Create new token successfully"
+      );
+
+      // clearCache(client, "GetTokens");
+    },
+    onError: (error?: Error) => {
+      if (isLoadingModalVisible) {
+        setLoadingModalVisible(false);
+      }
+
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+      resetCreateIDO();
+      router.navigate("/seller");
+    },
+  });
+
+  const onSaveProject = async () => {
+    setLoadingModalVisible(false);
+    await onCreateIDO();
+  }
+
+  useEffect(() => {
+    if (isLoadingModalVisible && errorWrite) {
+      setLoadingModalVisible(false);
+      showToast(
+        "error",
+        "Error writing transaction: ",
+        error?.message ?? "N/A"
+      );
+    }
+  }, [errorWrite]);
 
   const onNavigatingBack = () => {
     // router.back();
     router.navigate("/project/createStepTwo");
-  }
+  };
   return (
     <ScrollView className="flex-1 bg-background">
+      <LoadingModal
+        isVisible={isLoadingModalVisible}
+        task={"Creating new IDO pool. . ."}
+      />
       <ScreenHeader
         LeftComponent={
           <TouchableOpacity onPress={onNavigatingBack} className="p-2">
@@ -185,11 +279,24 @@ function createStepThree() {
               <Text className="font-readexBold text-md text-primary mb-2">
                 Basic Information
               </Text>
-              {basicData.map((item, index) => (
-                <View className="mt-3">
-                  <DataRow key={index} title={item.tile} data={item.data} />
-                </View>
-              ))}
+              {basicData.map((item, index) => {
+                if (index > 0)
+                  return (
+                    <View className="mt-3">
+                      <DataRow key={index} title={item.tile} data={item.data} />
+                    </View>
+                  );
+                return (
+                  <View>
+                    <Text className="text-md font-readexRegular text-secondary">
+                      {item.tile}
+                    </Text>
+                    <Text className="text-md font-readexSemiBold text-black">
+                      {item.data}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
           </Container>
         </View>
@@ -244,39 +351,47 @@ function createStepThree() {
             </View>
           </Container>
         </View>
+        {createIDO.privateSale && (
+          <View className="mt-4">
+            <Container>
+              <View
+                className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+                style={{ elevation: 2 }}
+              >
+                <Text className="font-readexBold text-md text-primary ">
+                  Whitelist users
+                </Text>
+                <FlatList
+                  style={{
+                    paddingHorizontal: 0,
+                    borderColor: colors.border,
+                    borderWidth: 0.5,
+                    elevation: 1,
+                    marginTop: 12,
+                    marginBottom: 5,
+                  }}
+                  contentContainerStyle={{ flexGrow: 1, gap: 0 }}
+                  data={[headerData, ...rowData]}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={(item) => {
+                    return (
+                      <View>
+                        <Row key={item.index} contents={item.item} />
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            </Container>
+          </View>
+        )}
         <View className="mt-4">
-          <Container>
-            <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
-              style={{ elevation: 2 }}
-            >
-              <Text className="font-readexBold text-md text-primary ">
-                Whitelist users
-              </Text>
-              <FlatList
-                style={{
-                  paddingHorizontal: 0,
-                  borderColor: colors.border,
-                  borderWidth: 0.5,
-                  elevation: 1,
-                  marginTop: 12,
-                  marginBottom: 5,
-                }}
-                contentContainerStyle={{ flexGrow: 1, gap: 0 }}
-                data={[headerData, ...rowData]}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={(item) => {
-                  return (
-                    <View>
-                      <Row key={item.index} contents={item.item} />
-                    </View>
-                  );
-                }}
-              />
-            </View>
-          </Container>
+          <PrimaryButton
+            disabled={isLoading}
+            content={"Save Project"}
+            onPress={onSaveProject}
+          />
         </View>
-        <PrimaryButton content={"Save Project"} onPress={function (): void {}} />
       </View>
     </ScrollView>
   );

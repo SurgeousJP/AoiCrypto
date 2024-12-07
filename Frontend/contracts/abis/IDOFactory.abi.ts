@@ -1,4 +1,4 @@
-export const IDOFactoryABI = [
+export const IDOFactory = [
   {
     type: "constructor",
     inputs: [

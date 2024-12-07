@@ -36,13 +36,17 @@ import {
   QueryClientProvider,
   useQueryClient,
 } from "@tanstack/react-query";
+import { Buffer } from "buffer";
 // Import
 
 SplashScreen.preventAutoHideAsync();
 
-const initialScreen = path.createProjectStepThree;
+const initialScreen = path.sellerTab;
+global.Buffer = global.Buffer || Buffer;
 
 export default function RootLayout() {
+  console.log("Buffer is available:", !!global.Buffer);
+
   const insets = useSafeAreaInsets();
 
   const colorScheme = useColorScheme();
@@ -236,6 +240,7 @@ export default function RootLayout() {
                           header: ({ options }) => (
                             <TitleHeader title={"Mission Detail"} />
                           ),
+                        
                         }}
                       />
                       <Stack.Screen

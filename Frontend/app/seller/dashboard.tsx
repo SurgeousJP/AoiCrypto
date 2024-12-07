@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { View, Text, ScrollView } from "react-native";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import Funded from "@/assets/icons/system-icons-svg/Funded.svg";
@@ -7,10 +7,15 @@ import Capital from "@/assets/icons/system-icons-svg/Capital.svg";
 import PieChartComponent from "@/components/Displays/Chart/PieChart";
 import XProject from "@/components/Items/Project/XProject";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { getWhitelistMerkleTreeRoot, demoAddresses } from "@/utils/merkleTree";
 
 const AdminDashboard = () => {
+  const { chainId, address, isConnected } = useContext(AuthContext);
 
-   const { chainId, address, isConnected } = useContext(AuthContext);
+  // console.log(
+  //   "Test print merkle tree proof: ",
+  //   getWhitelistMerkleTreeRoot(demoAddresses)
+  // );
 
   return (
     <ScrollView className="bg-background flex-1">
@@ -78,7 +83,9 @@ const AdminDashboard = () => {
 
       <View className="p-4">
         <View className="flex flex-row justify-between">
-          <Text className="font-readexSemiBold text-md">Top 3 Funded Projects</Text>
+          <Text className="font-readexSemiBold text-md">
+            Top 3 Funded Projects
+          </Text>
         </View>
         <View className="mt-2">
           <XProject />

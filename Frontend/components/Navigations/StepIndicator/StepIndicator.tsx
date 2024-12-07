@@ -61,7 +61,7 @@ const StepIndicatorComponent: React.FC<StepIndicatorProps> = ({
         return (
           <View className="flex text-left">
             <Text
-              className="font-readexRegular text-left"
+              className="font-readexRegular text-center"
               style={{ writingDirection: "ltr" }}
             >
               {obj.label}

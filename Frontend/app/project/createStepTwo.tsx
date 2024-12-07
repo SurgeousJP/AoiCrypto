@@ -20,7 +20,7 @@ import {
   PoolTime,
 } from "@/contracts/types/IDO/CreateIDOInput";
 import { showToast } from "@/utils/toast";
-import { useNavigation, useRouter } from "expo-router";
+import { useNavigation, router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
@@ -33,15 +33,10 @@ import {
 // Import
 
 function createStepTwo() {
-  const navigation = useNavigation();
-  const router = useRouter();
-
-  const [poolTime, setPoolTime] = useState<PoolTime>(createEmptyPoolTime());
-  const [whitelistDisplayData, setWhitelistData] = useState<any[]>([]);
-
   const { createIDO, updateCreateIDO } = useContext(
     StateContext
   ) as StateContextType;
+  const [poolTime, setPoolTime] = useState<PoolTime>({ ...createIDO.poolTime });
 
   useEffect(() => {
     updateCreateIDO("poolTime", poolTime);
@@ -54,6 +49,7 @@ function createStepTwo() {
     });
   };
 
+  const [whitelistDisplayData, setWhitelistData] = useState<any[]>([]);
   const onLoadWhitelist = (jsonData: any[]) => {
     const formattedData = jsonData.map((item) =>
       Object.keys(item).map((key) => ({
@@ -76,14 +72,16 @@ function createStepTwo() {
   };
 
   const onNavigateToStepThree = () => {
-    // if (isStepTwoInputValid()) {
-    //   router.push("/project/createStepThree");
-    // }
-    router.push("/project/createStepThree");
+    if (isStepTwoInputValid()) {
+      router.push("/project/createStepThree");
+    }
+    // router.push("/project/createStepThree");
   };
 
   const isStepTwoInputValid = () => {
-    const currentDateUnixTimeStamp = getUnixTimestampFromDate(new Date());
+    const currentDate = new Date();
+    const previousDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+    const currentDateUnixTimeStamp = getUnixTimestampFromDate(previousDate);
     if (poolTime.startTime < currentDateUnixTimeStamp) {
       showInvalidInputToast("Start time must be from now");
       return false;

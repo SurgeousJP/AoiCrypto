@@ -30,63 +30,6 @@ export default function HomeScreen() {
 
   const { chainId, address, isConnected } = useContext(AuthContext);
 
-  const [isLoadingModalVisible, setLoadingModalVisible] = useState(false);
-
-  const {
-    error,
-    isLoading,
-    isSuccess,
-    isError,
-    onCreateNewERC20: onExecute,
-  } = useCreateNewERC20({
-    chainId: chainId,
-    newERC20: sampleCreateNewERC20Input,
-    enabled: true,
-    onSuccess: (data: TransactionReceipt) => {
-      console.log("Test creating IDO successfully");
-    },
-    onSettled: (data?: TransactionReceipt) => {
-      console.log("Test settled IDO successfully");
-    },
-    onError: (error?: Error) => {
-      console.log("An error occurred: ", error);
-    },
-  });
-
-  const onTestClick = async () => {
-    setLoadingModalVisible(true);
-  };
-
-  useEffect(() => {
-    if (isLoadingModalVisible) {
-      onSmartContractExecute();
-    }
-  }, [isLoadingModalVisible]);
-
-  const onSmartContractExecute = async () => {
-    try {
-      await onExecute();
-    } catch (error: any) {
-      // DO NOTHING
-    }
-    setLoadingModalVisible(false);
-  };
-
-  useEffect(() => {
-    if (!isLoading && !isLoadingModalVisible) {
-      if (error) {
-        showToast("error", "Transaction failed", error.message);
-      }
-      if (isSuccess) {
-        showToast(
-          "success",
-          "Transaction success",
-          "Smart contract executed successfully"
-        );
-      }
-    }
-  }, [isLoading, isLoadingModalVisible]);
-
   if (loading) {
     return (
       <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
@@ -98,10 +41,6 @@ export default function HomeScreen() {
 
   return (
     <ScrollView className="flex flex-col px-4 bg-background">
-      <LoadingModal
-        isVisible={isLoadingModalVisible}
-        task={"Test loading modal"}
-      />
       <View className="rounded-2xl mt-4">
         <View className="w-full rounded-2xl h-fit">
           <Image
@@ -129,31 +68,13 @@ export default function HomeScreen() {
         </View>
         <View className="flex flex-row space-x-2">
           <View className="flex-1 overflow-visible">
-            <ProjectCard />
+            <ProjectCard isInProgress={true} isPrivateSale={false} />
           </View>
           <View className="flex-1 overflow-visible">
-            <ProjectCard />
+            <ProjectCard isInProgress={false} isPrivateSale={false} />
           </View>
         </View>
         <View className="flex flex-col mt-4 mb-2">
-          <Pressable className="mt-4 mb-4">
-            <NormalButton
-              content={isLoading ? "Loading hook..." : "Execute hook"}
-              onClick={onTestClick}
-            />
-          </Pressable>
-          <Pressable className="mb-4">
-            <NormalButton
-              content={"Display toast"}
-              onClick={() =>
-                showToast(
-                  "error",
-                  "Transaction completed",
-                  "The transaction has completed successfully."
-                )
-              }
-            />
-          </Pressable>
           <View className="flex flex-row justify-between mb-1">
             <Text className="text-textColor text-md font-readexBold">
               Funded Projects
