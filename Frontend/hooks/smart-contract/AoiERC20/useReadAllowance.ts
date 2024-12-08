@@ -1,5 +1,6 @@
 // <---! IMPORT !---> //
 import getABI from "@/contracts/utils/getAbi.util";
+import { useEffect } from "react";
 import { TransactionReceipt } from "viem";
 import { useReadContract } from "wagmi";
 // <---! IMPORT !---> //
@@ -34,6 +35,7 @@ export const useReadAllowance = ({
     isError,
     isSuccess,
     refetch: refetchAllowance,
+    error
   } = useReadContract({
     chainId,
     address: enabled ? tokenAddress : undefined,

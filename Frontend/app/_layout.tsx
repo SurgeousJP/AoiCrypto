@@ -45,8 +45,6 @@ const initialScreen = path.sellerTab;
 global.Buffer = global.Buffer || Buffer;
 
 export default function RootLayout() {
-  console.log("Buffer is available:", !!global.Buffer);
-
   const insets = useSafeAreaInsets();
 
   const colorScheme = useColorScheme();

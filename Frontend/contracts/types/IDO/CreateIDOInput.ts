@@ -91,7 +91,7 @@ export const sampleCreateIDOInput: CreateIDOInput = {
     minInvest: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
     maxInvest: BigInt(0.0003 * BIGINT_CONVERSION_FACTOR),
     liquidityWETH9: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
-    liquidityToken: BigInt(0.01 * BIGINT_CONVERSION_FACTOR), 
+    liquidityToken: BigInt(50 * BIGINT_CONVERSION_FACTOR), 
     privateSaleAmount: BigInt(0),
   },
   poolTime: {

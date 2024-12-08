@@ -1,3 +1,4 @@
+// IMPORT
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
@@ -8,6 +9,7 @@ import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { colors } from "@/constants/colors";
 import {
+  BIGINT_CONVERSION_FACTOR,
   getDateFromUnixTimestamp,
   getStringValueFromBigInt,
 } from "@/constants/conversion";
@@ -17,19 +19,27 @@ import {
   LiquidityPoolAction,
   sampleCreateIDOInput,
 } from "@/contracts/types/IDO/CreateIDOInput";
+import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
+import { useApproveSender } from "@/hooks/smart-contract/AoiERC20/useApproveSpender";
+import { useReadAllowance } from "@/hooks/smart-contract/AoiERC20/useReadAllowance";
 import { useCreateIDO } from "@/hooks/smart-contract/IDOFactory/useCreateIDO";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
+import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
+  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { TransactionReceipt } from "viem";
+import { useBalance } from "wagmi";
+import * as Clipboard from "expo-clipboard";
+// IMPORT
 
 const headerData = [
   {
@@ -94,10 +104,16 @@ function createStepThree() {
   const { createIDO, resetCreateIDO } = useContext(
     StateContext
   ) as StateContextType;
-  const { chainId } = useContext(AuthContext);
-  const [isLoadingModalVisible, setLoadingModalVisible] = useState(false);
+  const { address, chainId } = useContext(AuthContext);
+  const [isLoadingCreateIDOModalVisible, setLoadingCreateIDOModalVisible] =
+    useState(false);
+  const [
+    isLoadingApproveTokenModalVisible,
+    setLoadingApproveTokenModalVisible,
+  ] = useState(false);
   const client = useApolloClient();
 
+  // PRINT DATA
   const basicData = [
     {
       tile: "Token address",
@@ -187,16 +203,156 @@ function createStepThree() {
         ]
       : []),
   ];
+  // PRINT DATA
 
-  console.log(createIDO);
+  // READ ALLOWANCE HOOK
+  const {
+    isLoading: isLoadingAllowance,
+    isError: isErrorAllowance,
+    isSuccess: isSuccessAllowance,
+    allowance: createIDOPoolAllowance,
+  } = useReadAllowance({
+    chainId,
+    ownerAddress: address,
+    tokenAddress: createIDO.poolDetails.tokenAddress,
+    spenderAddress: getIDOFactoryAddress(chainId),
+    enabled: true,
+  });
 
+  const ethBalance = useBalance({
+    address: address,
+  });
+
+  // VALIDATE IDO CONSTRAINT
+  const [isWalletEnoughWETH9, setIsWalletEnoughWETH9] = useState(false);
+  const [numsOfTokenRequiredForIDO, setNumsOfTokenRequiredForIDO] = useState(0);
+  const [isWalletEnoughTokenForIDO, setIsWalletEnoughTokenForIDO] =
+    useState(false);
+  const [numsOfTokenLacked, setNumsOfTokenLacked] = useState(0);
+  const [ethsAvailable, setEthsAvailable] = useState(-1);
+  const [allowanceValue, setAllowanceValue] = useState<number>(-1);
+
+  useEffect(() => {
+    if (ethBalance !== undefined && ethBalance.data !== undefined) {
+      setEthsAvailable(
+        Number(ethBalance?.data?.value) / BIGINT_CONVERSION_FACTOR
+      );
+    }
+  }, [ethBalance]);
+
+  useEffect(() => {
+    if (createIDOPoolAllowance !== undefined) {
+      setAllowanceValue(
+        Number(createIDOPoolAllowance) / BIGINT_CONVERSION_FACTOR
+      );
+    }
+  }, [isLoadingAllowance, createIDOPoolAllowance]);
+
+  useEffect(() => {
+    if (ethsAvailable !== -1 && allowanceValue !== -1) {
+      const { liquidityWETH9, hardCap, pricePerToken, liquidityToken } =
+        createIDO.poolDetails;
+
+      const walletEnoughWETH9 = ethsAvailable >= Number(liquidityWETH9) / BIGINT_CONVERSION_FACTOR;
+      setIsWalletEnoughWETH9(walletEnoughWETH9);
+
+      const requiredTokens =
+        Number(hardCap / pricePerToken) +
+        Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
+
+      setNumsOfTokenRequiredForIDO(requiredTokens);
+
+      const walletEnoughTokens = allowanceValue > requiredTokens;
+      setIsWalletEnoughTokenForIDO(walletEnoughTokens);
+
+      // Calculate the number of tokens lacking, if any
+      const tokensLacked = walletEnoughTokens
+        ? 0
+        : requiredTokens - allowanceValue;
+      if (tokensLacked === 0){
+        setIsWalletEnoughTokenForIDO(true);
+      }
+      setNumsOfTokenLacked(tokensLacked);
+    }
+  }, [ethsAvailable, allowanceValue]);
+
+  const {
+    error: errorApprove,
+    errorWrite: errorWriteApprove,
+    isLoading: isLoadingApproveSender,
+    onApproveSender,
+  } = useApproveSender({
+    chainId,
+    tokenAddress: createIDO.poolDetails.tokenAddress,
+    spenderAddress: getIDOFactoryAddress(chainId),
+    numOfTokensAllowed: numsOfTokenLacked,
+    enabled: !isWalletEnoughTokenForIDO,
+    onSuccess: (data: TransactionReceipt) => {
+      if (isLoadingCreateIDOModalVisible) {
+        setLoadingCreateIDOModalVisible(false);
+      }
+
+      showToast(
+        "success",
+        "Approve success",
+        "The lacking tokens has been approved"
+      );
+
+      // clearCache(client, "GetTokens");
+    },
+    onError: (error?: Error) => {
+      if (isLoadingCreateIDOModalVisible) {
+        setLoadingCreateIDOModalVisible(false);
+      }
+
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+    },
+  });
+
+  useEffect(() => {
+    if (isLoadingApproveTokenModalVisible && errorWriteApprove) {
+      setLoadingApproveTokenModalVisible(false);
+      showToast(
+        "error",
+        "Error writing transaction: ",
+        errorApprove?.message ?? "N/A"
+      );
+    }
+  }, [errorWriteApprove]);
+
+  const onApproveTokenTriggered = async () => {
+    setLoadingApproveTokenModalVisible(false);
+    await onApproveSender();
+  };
+
+  const onSaveProject = async () => {
+    if (!isWalletEnoughWETH9) {
+      showToast(
+        "error",
+        "Insufficient balance",
+        "Your wallet has insufficient ETH for WETH9"
+      );
+      return;
+    }
+    setLoadingCreateIDOModalVisible(false);
+    await onCreateIDO();
+  };
+  // VALIDATE IDO CONSTRAINT
+
+  // CREATE IDO HOOK & HANDLING
   const { error, errorWrite, isLoading, onCreateIDO } = useCreateIDO({
     chainId: chainId,
     idoInput: createIDO,
-    enabled: true,
+    enabled: isWalletEnoughTokenForIDO,
     onSuccess: (data: TransactionReceipt) => {
-      if (isLoadingModalVisible) {
-        setLoadingModalVisible(false);
+      if (isLoadingCreateIDOModalVisible) {
+        setLoadingCreateIDOModalVisible(false);
       }
 
       showToast(
@@ -208,8 +364,8 @@ function createStepThree() {
       // clearCache(client, "GetTokens");
     },
     onError: (error?: Error) => {
-      if (isLoadingModalVisible) {
-        setLoadingModalVisible(false);
+      if (isLoadingCreateIDOModalVisible) {
+        setLoadingCreateIDOModalVisible(false);
       }
 
       showToast(
@@ -225,14 +381,9 @@ function createStepThree() {
     },
   });
 
-  const onSaveProject = async () => {
-    setLoadingModalVisible(false);
-    await onCreateIDO();
-  }
-
   useEffect(() => {
-    if (isLoadingModalVisible && errorWrite) {
-      setLoadingModalVisible(false);
+    if (isLoadingCreateIDOModalVisible && errorWrite) {
+      setLoadingCreateIDOModalVisible(false);
       showToast(
         "error",
         "Error writing transaction: ",
@@ -240,15 +391,27 @@ function createStepThree() {
       );
     }
   }, [errorWrite]);
+  // CREATE IDO HOOK & HANDLING
 
   const onNavigatingBack = () => {
     // router.back();
     router.navigate("/project/createStepTwo");
   };
+
+  const handleCopyToClipboard = async () => {
+    await Clipboard.setStringAsync(numsOfTokenLacked.toString());
+    const clipboard = await Clipboard.getStringAsync();
+    showToast("info", "Copied to clipboard", clipboard);
+  };
+
   return (
     <ScrollView className="flex-1 bg-background">
       <LoadingModal
-        isVisible={isLoadingModalVisible}
+        isVisible={isLoadingApproveTokenModalVisible}
+        task={"Approving tokens. . ."}
+      />
+      <LoadingModal
+        isVisible={isLoadingCreateIDOModalVisible}
         task={"Creating new IDO pool. . ."}
       />
       <ScreenHeader
@@ -385,13 +548,37 @@ function createStepThree() {
             </Container>
           </View>
         )}
-        <View className="mt-4">
-          <PrimaryButton
-            disabled={isLoading}
-            content={"Save Project"}
-            onPress={onSaveProject}
-          />
-        </View>
+        {isWalletEnoughTokenForIDO ? (
+          <View className="mt-4">
+            <PrimaryButton
+              disabled={isLoading}
+              content={"Save Project"}
+              onPress={onSaveProject}
+            />
+          </View>
+        ) : (
+          <View className="mt-4">
+            <Pressable className="flex flex-rowitems-center h-fit mb-4">
+              {numsOfTokenLacked > 0 && (
+                <Text className="font-readexSemiBold text-md">
+                  {`Number of tokens lacked: ${numsOfTokenLacked}`}{" "}
+                  <TouchableOpacity onPress={handleCopyToClipboard}>
+                    <Ionicons
+                      name="copy-outline"
+                      size={10}
+                      color={colors.secondary}
+                    />
+                  </TouchableOpacity>
+                </Text>
+              )}
+            </Pressable>
+            <PrimaryButton
+              content={"Approve missing tokens"}
+              disabled={isLoadingApproveSender}
+              onPress={onApproveTokenTriggered}
+            />
+          </View>
+        )}
       </View>
     </ScrollView>
   );

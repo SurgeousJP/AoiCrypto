@@ -8,6 +8,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
+import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -45,7 +46,7 @@ export const useApproveSender = ({
   } = useSimulateContract({
     chainId,
     address: tokenAddress,
-    abi: getABI("ERC20Factory"),
+    abi: getABI("AoiERC20"),
     // <---! PARAMS IN ABI !---> //
     args: [
       spenderAddress,
@@ -149,6 +150,10 @@ export const useApproveSender = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
+
+  useEffect(() => {
+    console.log("Error simulating approve spender: ", errorPrepare);
+  }, [errorPrepare]);
 
   return {
     error,

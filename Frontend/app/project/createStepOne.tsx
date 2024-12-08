@@ -26,12 +26,15 @@ import {
   LiquidityPoolAction,
   PoolDetails,
 } from "@/contracts/types/IDO/CreateIDOInput";
+import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
+import { useReadAllowance } from "@/hooks/smart-contract/AoiERC20/useReadAllowance";
 import { GET_TOKENS } from "@/queries/token";
 import { showToast } from "@/utils/toast";
 import { useQuery } from "@apollo/client";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useBalance } from "wagmi";
 // IMPORT
 
 const CreateStepOne = () => {
@@ -75,7 +78,7 @@ const CreateStepOne = () => {
   };
 
   const isStepOneInputValid = () => {
-    if (poolDetails.tokenAddress === '' || poolDetails.tokenAddress === null){
+    if (poolDetails.tokenAddress === "" || poolDetails.tokenAddress === null) {
       showInvalidInputToast("The token address has not been chosen");
       return false;
     }
@@ -311,12 +314,12 @@ const CreateStepOne = () => {
               </View>
               <View className="mb-3">
                 <Input
-                  label={"Token to List DEX"}
+                  label={"Tokens to List DEX"}
                   type="numeric"
                   value={poolDetails.liquidityToken}
                   name="liquidityToken"
                   onChange={onNumericChange}
-                  isUnitVisible={true}
+                  isUnitVisible={false}
                 />
               </View>
               <View className="mb-3">

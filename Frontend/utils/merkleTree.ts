@@ -9,9 +9,25 @@ export const demoAddresses = [
 export const EMPTY_MERKLE_ROOT =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-export const getWhitelistMerkleTreeRoot = (addresses: string[]) => {
+export const generateMerkleTreeFromAddressList = (addresses: string[]) => {
   const treeInput = addresses.map((address) => [address]);
   const tree = StandardMerkleTree.of(treeInput, ["address"]);
-  const root = tree.root;
-  return root;
+
+  return tree;
+}
+
+export const getWhitelistMerkleTreeRoot = (tree: StandardMerkleTree<string[]>) => {
+  return tree.root;
+}
+
+export const getWhitelistProofs = (tree: StandardMerkleTree<string[]>) => {
+  let proofs: any[] = [];
+  for (const [i, v] of tree.entries()) {
+    proofs.push({
+      Value: v,
+      Proof: tree.getProof(i)
+    });
+  }
+
+  return proofs;
 }
