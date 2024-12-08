@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "./utils/BaseTest.sol";
+import {console, console2} from "@forge-std/Test.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
 
 import {IIDOPoolState} from "../src/interfaces/IIDOPoolState.sol";
@@ -32,6 +33,60 @@ contract IDOFactoryTest is BaseTest {
             vm.deal(investor, 10 ether);
             investors.push(investor);
         }
+    }
+
+    function test_chooseOptimizedParameters() public {
+        address investor = makeAddr("investor");
+        MockERC20 tokenSale = new MockERC20();
+        IIDOPool.IDOPoolDetails memory poolDetail = IIDOPool.IDOPoolDetails({
+            tokenAddress: address(tokenSale),
+            pricePerToken: 1000000000000000,
+            raisedAmount: 0,
+            raisedTokenAmount: 0,
+            softCap: 1000000000000000,
+            hardCap: 10000000000000000,
+            minInvest: 100000000000000,
+            maxInvest: 1000000000000000,
+            liquidityWETH9: 10000000000000000,
+            liquidityToken: 100000000000000000000,
+            privateSaleAmount: 0
+        });
+        IIDOPool.IDOTime memory poolTime = IIDOPool.IDOTime({
+            startTime: 1733595177,
+            endTime: 1733767977,
+            startPublicSale: 0
+        });
+        uint256 tokenAmountInHardCap = poolDetail.hardCap.mulWad(
+            poolDetail.pricePerToken
+        );
+        IIDOFactory.LiquidityPoolAction action = IIDOFactory
+            .LiquidityPoolAction
+            .NOTHING;
+        uint256 lockExpired = 0;
+
+        require(addr1.balance > poolDetail.hardCap + poolDetail.liquidityWETH9);
+
+        tokenSale.mint(investor, tokenAmountInHardCap + poolDetail.liquidityToken);
+        console.log("Token: ", tokenAmountInHardCap + poolDetail.liquidityToken);
+        vm.deal(investor, poolDetail.hardCap + poolDetail.liquidityWETH9);
+        console.log("ETH: ", poolDetail.hardCap + poolDetail.liquidityWETH9);
+        vm.startPrank(investor);
+        tokenSale.approve(address(idoFactory), type(uint256).max);
+        address payable idoPoolAddress = payable(
+            idoFactory.createPool{value: poolDetail.liquidityWETH9}(
+                poolDetail,
+                poolTime,
+                false,
+                EMPTY_ROOT,
+                action,
+                lockExpired
+            )
+        );
+        idoPool = IDOPool(idoPoolAddress);
+
+        uint256 poolId = idoFactory.getTotalPool();
+        console.log(poolId);
+        console.log(action);
     }
 
     function test_createNewPublicIDOPoolSuccessful() public {
