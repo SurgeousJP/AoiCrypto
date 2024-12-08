@@ -4,7 +4,7 @@ import Participants from "@/assets/icons/system-icons-svg/Participants.svg";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import PieChartComponent from "@/components/Displays/Chart/PieChart";
 import XProject from "@/components/Items/Project/XProject";
-import { colors } from "@/constants/Colors";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { GET_SELLER_DASHBOARD } from "@/queries/seller_dashboard";
 import { useQuery } from "@apollo/client";
