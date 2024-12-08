@@ -11,7 +11,7 @@ contract IDOPoolState is IIDOPoolState{
 
     uint256 public constant MIN_PRICE_TOKEN = 10 ** 15; // MIN: 1 token = 0.001 WETH
 
-    uint256 public constant MIN_WETH = 1 ether;
+    uint256 public constant MIN_WETH = 0.01 ether;
 
     address public immutable AOI_DEX_FACTORY;
 

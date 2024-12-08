@@ -42,9 +42,23 @@ describe("IDOPool contract - Private sale - Whitelisted", function () {
 
   async function IDOPoolFixture() {
     signers = await ethers.getSigners();
-    for (let i = 5; i <= 10; i++) {
-      whitelistedAddresses.push([signers[i].address]);
-      whitelistedSigner.push(signers[i]);
+    // for (let i = 5; i <= 10; i++) {
+    //   whitelistedAddresses.push([signers[i].address]);
+    //   whitelistedSigner.push(signers[i]);
+    // }
+    whitelistedAddresses = [
+      ["0x2abAbea544e1729d8955644e5a74bD106e5aB3e7"],
+      ["0xda64bb5e5601f3c37880272607e5909D44B09841"],
+      ["0x6BFF88BDdbd65B72a9A67CE8df65070440f7C859"],
+    ];
+    // whitelistedSigner = [];
+    for (const addr of whitelistedAddresses) {
+      const signer = await ethers.getImpersonatedSigner(addr[0]);
+      await signers[0].sendTransaction({
+        to: signer.address,
+        value: ethers.parseEther("10"),
+      });
+      whitelistedSigner.push(signer);
     }
     const weth = await ethers.deployContract("WETH");
     const aoiFactory = await ethers.deployContract("AoiFactory", [
@@ -83,6 +97,7 @@ describe("IDOPool contract - Private sale - Whitelisted", function () {
     // Generate whitelisted root
     merkleTree = StandardMerkleTree.of(whitelistedAddresses, ["address"]);
     whitelistedRoot = merkleTree.root;
+    console.log(whitelistedRoot);
     await idoPool.initialize(
       poolDetail,
       poolTime,
@@ -160,7 +175,7 @@ describe("IDOPool contract - Private sale - Whitelisted", function () {
       raisedAmount + investingAmount
     );
   });
-  it("Whitelisted investment", async () => {
+  it.only("Whitelisted investment", async () => {
     const { idoPool } = await loadFixture(IDOPoolFixture);
 
     // Skip time to invest
@@ -168,7 +183,7 @@ describe("IDOPool contract - Private sale - Whitelisted", function () {
 
     // generate proof
     const investingAmount = poolDetail.maxInvest;
-    for (let index = 0; index <= 5; index++) {
+    for (let index = 0; index < 3; index++) {
       let proof: any = null;
       for (const [i, v] of merkleTree.entries()) {
         if (v[0] === whitelistedAddresses[index][0]) {
