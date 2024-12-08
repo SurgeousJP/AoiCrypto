@@ -1,15 +1,57 @@
-import React, { useContext } from "react";
-import { View, Text, ScrollView } from "react-native";
-import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import Capital from "@/assets/icons/system-icons-svg/Capital.svg";
 import Funded from "@/assets/icons/system-icons-svg/Funded.svg";
 import Participants from "@/assets/icons/system-icons-svg/Participants.svg";
-import Capital from "@/assets/icons/system-icons-svg/Capital.svg";
+import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import PieChartComponent from "@/components/Displays/Chart/PieChart";
 import XProject from "@/components/Items/Project/XProject";
+import { colors } from "@/constants/Colors";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { GET_SELLER_DASHBOARD } from "@/queries/seller_dashboard";
+import { useQuery } from "@apollo/client";
+import React, { useContext, useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 
 const AdminDashboard = () => {
   const { chainId, address, isConnected } = useContext(AuthContext);
+  const {
+    loading: isDashboardLoading,
+    error,
+    data: dashboardData,
+  } = useQuery(GET_SELLER_DASHBOARD, {
+    variables: { id: address },
+    skip: !address,
+    // fetchPolicy: "no-cache"
+  });
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  // console.log(
+  //   "Test print merkle tree proof: ",
+  //   getWhitelistMerkleTreeRoot(demoAddresses)
+  // );
+
+  if (loading || isDashboardLoading) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background ">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
+  console.log("Dashboard data: ", dashboardData);
+  const fundedProjects = dashboardData?.poolOwners.length ?? 20;
+  const participants =
+    dashboardData?.poolOwners.reduce(
+      (sum: number, item: any) => sum + item.idoPool.investors.length,
+      0
+    ) ?? 200;
+  const raised =
+    dashboardData?.poolOwners.reduce(
+      (sum: number, item: any) => sum + item.idoPool.raised,
+      0
+    ) ?? 2000;
 
   return (
     <ScrollView className="bg-background flex-1">
@@ -32,7 +74,9 @@ const AdminDashboard = () => {
                 Funded Projects
               </Text>
             </View>
-            <Text className="font-readexSemiBold text-black text-md">20</Text>
+            <Text className="font-readexSemiBold text-black text-md">
+              {fundedProjects}
+            </Text>
           </View>
 
           <View
@@ -45,7 +89,9 @@ const AdminDashboard = () => {
                 Participants
               </Text>
             </View>
-            <Text className="font-readexSemiBold text-black text-md">200</Text>
+            <Text className="font-readexSemiBold text-black text-md">
+              {participants}
+            </Text>
           </View>
 
           <View
@@ -59,7 +105,7 @@ const AdminDashboard = () => {
               </Text>
             </View>
             <Text className="font-readexSemiBold text-black text-md">
-              $2000
+              ${raised}
             </Text>
           </View>
         </View>
