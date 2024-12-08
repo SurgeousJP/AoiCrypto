@@ -2,7 +2,7 @@ import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import Input from "@/components/Inputs/Input/Input";
 import Container from "@/components/Layouts/Container";
 import React from "react";
-import { ScrollView, View, Text } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
 const WhitelistForm = () => {
   return (
@@ -17,16 +17,44 @@ const WhitelistForm = () => {
               Basic Information
             </Text>
             <View className="mt-4">
-              <Input label={"Full name"} />
+              <Input
+                label={"Full name"}
+                type={"text"}
+                name={""}
+                value={undefined}
+                onChange={function (name: any, value: any): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </View>
             <View className="mt-4">
-              <Input label={"Email address"} />
+              <Input
+                label={"Email address"}
+                type={"text"}
+                name={""}
+                value={undefined}
+                onChange={function (name: any, value: any): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </View>
             <View className="mt-4">
-              <Input label={"ERC20 Wallet Address"} />
+              <Input
+                label={"ERC20 Wallet Address"}
+                type={"text"}
+                name={""}
+                value={undefined}
+                onChange={function (name: any, value: any): void {
+                  throw new Error("Function not implemented.");
+                }}
+              />
             </View>
-            <View className="mb-2 mt-4"><NormalButton content={"Submit your application"} onClick={() => {}}/></View>
-            
+            <View className="mb-2 mt-4">
+              <NormalButton
+                content={"Submit your application"}
+                onClick={() => {}}
+              />
+            </View>
           </View>
         </Container>
       </View>
