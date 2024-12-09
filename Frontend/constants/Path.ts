@@ -12,5 +12,6 @@ export const path = {
   createProjectStepTwo: "project/createStepTwo",
   createProjectStepThree: "project/createStepThree",
   transaction: "transaction/index",
-  token: "token/index"
+  token: "token/index",
+  mintToken: "token/mintToken"
 };

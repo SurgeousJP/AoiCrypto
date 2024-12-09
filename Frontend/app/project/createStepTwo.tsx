@@ -1,6 +1,5 @@
 //Import//
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import NoDocument from "@/components/Displays/NoDocument/NoDocument";
 import Input from "@/components/Inputs/Input/Input";
@@ -15,12 +14,9 @@ import {
   getUnixTimestampFromDate,
 } from "@/constants/conversion";
 import { StateContext, StateContextType } from "@/contexts/StateProvider";
-import {
-  createEmptyPoolTime,
-  PoolTime,
-} from "@/contracts/types/IDO/CreateIDOInput";
+import { PoolTime } from "@/contracts/types/IDO/CreateIDOInput";
 import { showToast } from "@/utils/toast";
-import { useNavigation, router } from "expo-router";
+import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
@@ -80,10 +76,10 @@ function createStepTwo() {
 
   const isStepTwoInputValid = () => {
     const currentDate = new Date();
-    const previousDate = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
-    const currentDateUnixTimeStamp = getUnixTimestampFromDate(previousDate);
+    const currentDateAfterTenMinutes = new Date(currentDate.getTime() - 60 * 10);
+    const currentDateUnixTimeStamp = getUnixTimestampFromDate(currentDateAfterTenMinutes);
     if (poolTime.startTime < currentDateUnixTimeStamp) {
-      showInvalidInputToast("Start time must be from now");
+      showInvalidInputToast("Start time must be at least 10 minutes from now");
       return false;
     }
     if (poolTime.endTime < currentDateUnixTimeStamp) {
@@ -142,6 +138,7 @@ function createStepTwo() {
                   value={getDateFromUnixTimestamp(poolTime.startTime)}
                   name="startTime"
                   onChange={onDateTimeInputChange}
+                  initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
                 />
               </View>
               <View className="mb-3">
@@ -151,6 +148,7 @@ function createStepTwo() {
                   value={getDateFromUnixTimestamp(poolTime.endTime)}
                   name="endTime"
                   onChange={onDateTimeInputChange}
+                  initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
                 />
               </View>
               {createIDO.privateSale && (
@@ -161,6 +159,7 @@ function createStepTwo() {
                     value={getDateFromUnixTimestamp(poolTime.startPublicSale)}
                     name="startPublicSale"
                     onChange={onDateTimeInputChange}
+                    initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
                   />
                 </View>
               )}

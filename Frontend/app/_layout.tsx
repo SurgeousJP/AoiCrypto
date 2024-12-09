@@ -296,6 +296,16 @@ export default function RootLayout() {
                           ),
                         }}
                       />
+                       <Stack.Screen
+                        name={path.mintToken}
+                        options={{
+                          headerShown: true,
+                          headerShadowVisible: false,
+                          header: ({ options }) => (
+                            <TitleHeader title={"Mint token"} />
+                          ),
+                        }}
+                      />
                       <Stack.Screen
                         name={path.login}
                         options={{

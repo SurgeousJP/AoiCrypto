@@ -2,14 +2,23 @@ import Capital from "@/assets/icons/system-icons-svg/Capital.svg";
 import Funded from "@/assets/icons/system-icons-svg/Funded.svg";
 import Participants from "@/assets/icons/system-icons-svg/Participants.svg";
 import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import PieChartComponent from "@/components/Displays/Chart/PieChart";
 import XProject from "@/components/Items/Project/XProject";
 import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
 import { GET_SELLER_DASHBOARD } from "@/queries/seller_dashboard";
 import { useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+import { TransactionReceipt } from "viem";
 
 const AdminDashboard = () => {
   const { chainId, address, isConnected } = useContext(AuthContext);
@@ -26,6 +35,25 @@ const AdminDashboard = () => {
   useEffect(() => {
     setLoading(false);
   }, []);
+
+  const {
+    error: errorDeposit,
+    isLoading: isLoading,
+    onDepositLiquidityPool: onExecute,
+  } = useDepositLiquidityPool({
+    chainId: chainId,
+    poolId: 1700200000000n,
+    enabled: true,
+    onSuccess: (data: TransactionReceipt) => {
+      console.log("Test executing smart contract successfully");
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      console.log("Test settled smart contract successfully");
+    },
+    onError: (error?: Error) => {
+      console.log("An error occurred: ", error);
+    },
+  });
 
   // console.log(
   //   "Test print merkle tree proof: ",
@@ -52,6 +80,13 @@ const AdminDashboard = () => {
       (sum: number, item: any) => sum + item.idoPool.raised,
       0
     ) ?? 2000;
+
+
+
+  const onPressDeposit = async () => {
+    console.log("Deposit button clicked.");
+    await onExecute();
+  }
 
   return (
     <ScrollView className="bg-background flex-1">
@@ -110,6 +145,13 @@ const AdminDashboard = () => {
           </View>
         </View>
       </View>
+
+      <Pressable className="mb-4 mx-4">
+        <PrimaryButton
+          onPress={onPressDeposit}
+          content={"Test deposit hook"}
+        />
+      </Pressable>
 
       <View className="p-4">
         <Text className="font-readexSemiBold text-md mb-2">Funding Trends</Text>

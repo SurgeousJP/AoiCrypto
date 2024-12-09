@@ -7,10 +7,13 @@ interface CheckboxProps {
   keyValue: string;
   content: string;
   onChange?: (checked: boolean) => void;
+  initialValue?: boolean;
 }
 
 const Checkbox: React.FC<CheckboxProps> = (props) => {
-  const [localChecked, setLocalChecked] = useState(false);
+  const [localChecked, setLocalChecked] = useState(
+    props.initialValue !== undefined ? props.initialValue : false
+  );
   return (
     <View>
       <BouncyCheckbox

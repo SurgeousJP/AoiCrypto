@@ -18,7 +18,7 @@ export const StateContext = createContext<StateContextType | null>({
 });
 
 const StateProvider = ({ children }) => {
-  const [createIDO, setCreateIDO] = useState<CreateIDOInput>(createDefaultCreateIDOInput());
+  const [createIDO, setCreateIDO] = useState<CreateIDOInput>(sampleCreateIDOInput);
   // const [createIDO, setCreateIDO] =
   //   useState<CreateIDOInput>(sampleCreateIDOInput);
 
@@ -27,7 +27,7 @@ const StateProvider = ({ children }) => {
   };
 
   const resetCreateIDO = () => {
-    setCreateIDO(createDefaultCreateIDOInput());
+    setCreateIDO(sampleCreateIDOInput);
   }
 
   // useEffect(() => {

@@ -1,4 +1,5 @@
 import { colors } from "@/constants/colors";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
@@ -19,6 +20,7 @@ interface LabelInputProps {
   value: any;
   onChange: (name: any, value: any) => void;
   isUnitVisible?: boolean;
+  initialValue?: any;
 }
 
 export type InputType =
@@ -36,7 +38,9 @@ const LabelInput: React.FC<LabelInputProps> = ({
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const [value, setValue] = useState("");
+  const textValue = props.type === "numeric" && props.initialValue !== undefined && typeof(props.initialValue) === "bigint" ? (Number(props.initialValue) / BIGINT_CONVERSION_FACTOR) : "";
+
+  const [value, setValue] = useState(textValue.toString());
 
   const inputProps: Record<InputType, TextInputProps> = {
     text: { keyboardType: "default", secureTextEntry: false },

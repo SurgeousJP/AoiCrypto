@@ -1,8 +1,16 @@
 import { colors } from "@/constants/colors";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
+import { useReadTokenBalance } from "@/hooks/smart-contract/AoiERC20/useReadTokenBalance";
 import { handleCopyToClipboard } from "@/utils/clipboard";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React from "react";
-import { Pressable, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface TokenProps {
   name: string;
@@ -10,53 +18,92 @@ interface TokenProps {
   initialSupply: string;
   totalSupply: string;
   address: string;
+  ownerAddress: string;
+  chainId: number;
 }
 
 const TokenRow: React.FC<TokenProps> = (props) => {
-  const isNumber = (str: string) => !isNaN(Number(str));
+
+  const { balance } = useReadTokenBalance({
+    chainId: props.chainId,
+    tokenAddress: props.address,
+    ownerAddress: props.ownerAddress,
+    enabled: true,
+  });
+
+  const token = {
+    name: props.name,
+    initialSupply: props.initialSupply,
+    maxSupply: props.totalSupply,
+    address: props.address
+  }
+
+  const handleOnMintToken = () => {
+    router.push({
+      pathname: "/token/mintToken",
+      params: token
+    })
+  };
 
   const copyAddressToClipboard = async () => {
     await handleCopyToClipboard(props.address);
   };
 
   return (
-    <View className="flex flex-col p-2 bg-surface border-border border-[0.5px] items-center">
-      <View className="flex flex-row justify-between w-full">
-        <View className="flex flex-row space-x-1">
-          <Text className="font-readexBold text-sm  text-black">
-            {props.name}
-          </Text>
-          <Text className="font-readexRegular text-sm text-secondary">
-            (${props.symbol})
-          </Text>
+    <View className="">
+      <View className="flex flex-col p-2 bg-surface border-border border-[0.5px] items-center">
+        <View className="flex flex-row justify-between w-full items-baseline">
+          <View className="flex flex-row space-x-1">
+            <Text className="font-readexSemiBold  text-black text-md">
+              {props.name}
+            </Text>
+            <Text className="font-readexRegular text-md text-secondary">
+              (${props.symbol})
+            </Text>
+          </View>
+          <TouchableOpacity onPress={handleOnMintToken}>
+            <Ionicons name="add-outline" size={16} color={colors.secondary} />
+          </TouchableOpacity>
+        </View>
+        <View className="self-start flex flex-row justify-between w-full">
+          <Text className="font-readexRegular text-sm">Token balance: </Text>
+          {balance !== undefined ? (
+            <Text className="font-readexSemiBold text-sm">
+              {Intl.NumberFormat("en-US").format(
+                Number(balance) / BIGINT_CONVERSION_FACTOR
+              )}{" "}
+            </Text>
+          ) : (
+            <ActivityIndicator
+              size={"small"}
+              color={colors.primary}
+            ></ActivityIndicator>
+          )}
         </View>
 
-        <Pressable className="flex flex-rowitems-center h-fit">
+        <View className="flex flex-row justify-between w-full">
+          <Text className="font-readexRegular text-sm">Token address: </Text>
           <Text className="font-readexSemiBold text-sm">
-            {isNumber(props.totalSupply)
-              ? props.address.slice(0, 6) + ".. "
-              : props.address}
-            {isNumber(props.totalSupply) && (
-              <TouchableOpacity onPress={copyAddressToClipboard}>
-                <Ionicons
-                  name="copy-outline"
-                  size={14}
-                  color={colors.secondary}
-                />
-              </TouchableOpacity>
-            )}
+            {props.address.slice(0, 8) + ". . . "}
+            <TouchableOpacity onPress={copyAddressToClipboard}>
+              <Ionicons
+                name="copy-outline"
+                size={12}
+                color={colors.secondary}
+              />
+            </TouchableOpacity>
           </Text>
-        </Pressable>
-      </View>
-      <View className="flex flex-row justify-between w-full">
-        <Text className="font-readexRegular text-sm">
-          {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}{" "}
-          <Text className="text-secondary">Initially</Text>
-        </Text>
-        <Text className="font-readexRegular text-sm">
-          {Intl.NumberFormat("en-US").format(Number(props.totalSupply))}{" "}
-          <Text className="text-secondary">Max</Text>
-        </Text>
+        </View>
+        <View className="flex flex-row justify-between w-full">
+          <Text className="font-readexRegular text-sm">
+            Token supply range:{" "}
+          </Text>
+          <Text className="font-readexSemiBold text-sm">
+            {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}
+            {" - "}
+            {Intl.NumberFormat("en-US").format(Number(props.totalSupply))}{" "}
+          </Text>
+        </View>
       </View>
     </View>
   );

@@ -1,6 +1,5 @@
 // IMPORT
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
@@ -16,25 +15,20 @@ import {
 } from "@/constants/conversion";
 import { RESET_VALUE_DROPDOWN } from "@/constants/display";
 import { AuthContext } from "@/contexts/AuthProvider";
-import StateProvider, {
+import {
   StateContext,
   StateContextType,
 } from "@/contexts/StateProvider";
 import {
-  createDefaultCreateIDOInput,
-  CreateIDOInput,
   LiquidityPoolAction,
   PoolDetails,
 } from "@/contracts/types/IDO/CreateIDOInput";
-import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
-import { useReadAllowance } from "@/hooks/smart-contract/AoiERC20/useReadAllowance";
 import { GET_TOKENS } from "@/queries/token";
 import { showToast } from "@/utils/toast";
 import { useQuery } from "@apollo/client";
 import { useNavigation, useRouter } from "expo-router";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { useBalance } from "wagmi";
 // IMPORT
 
 const CreateStepOne = () => {
@@ -83,6 +77,8 @@ const CreateStepOne = () => {
       return false;
     }
 
+    console.log(createIDO);
+
     if (poolDetails.pricePerToken <= 0n) {
       showInvalidInputToast("Price per token must be positive");
       return false;
@@ -108,8 +104,10 @@ const CreateStepOne = () => {
       return false;
     }
 
-    if (poolDetails.liquidityWETH9 <= 0n) {
-      showInvalidInputToast("Liquidity ETH to List DEX must be positive");
+    const minWETH9 = BigInt(0.01 * BIGINT_CONVERSION_FACTOR);
+
+    if (poolDetails.liquidityWETH9 < minWETH9) {
+      showInvalidInputToast("Liquidity ETH to List DEX must be at least 0.01 ETH");
       return false;
     }
 
@@ -222,6 +220,7 @@ const CreateStepOne = () => {
                   type="numeric"
                   onChange={onNumericChange}
                   isUnitVisible={true}
+                  initialValue={poolDetails.pricePerToken}
                 />
               </View>
             </View>
@@ -242,6 +241,7 @@ const CreateStepOne = () => {
                   keyValue={"isPrivateSale"}
                   content={"Private sale enabled"}
                   onChange={onPrivateSaleChange}
+                  initialValue={createIDO.privateSale}
                 ></Checkbox>
               </View>
               <View className="flex flex-row justify-between mb-3">
@@ -253,6 +253,7 @@ const CreateStepOne = () => {
                     value={poolDetails.softCap}
                     onChange={onNumericChange}
                     isUnitVisible={true}
+                    initialValue={createIDO.poolDetails.softCap}
                   />
                 </View>
                 <View className="basis-[48%]">
@@ -263,6 +264,7 @@ const CreateStepOne = () => {
                     value={poolDetails.hardCap}
                     onChange={onNumericChange}
                     isUnitVisible={true}
+                    initialValue={createIDO.poolDetails.hardCap}
                   />
                 </View>
               </View>
@@ -276,6 +278,7 @@ const CreateStepOne = () => {
                     value={poolDetails.minInvest}
                     onChange={onNumericChange}
                     isUnitVisible={true}
+                    initialValue={createIDO.poolDetails.minInvest}
                   />
                 </View>
                 <View className="basis-[48%]">
@@ -286,6 +289,7 @@ const CreateStepOne = () => {
                     value={poolDetails.maxInvest}
                     onChange={onNumericChange}
                     isUnitVisible={true}
+                    initialValue={createIDO.poolDetails.maxInvest}
                   />
                 </View>
               </View>
@@ -310,6 +314,7 @@ const CreateStepOne = () => {
                   value={poolDetails.liquidityWETH9}
                   onChange={onNumericChange}
                   isUnitVisible={true}
+                  initialValue={createIDO.poolDetails.liquidityWETH9}
                 />
               </View>
               <View className="mb-3">
@@ -320,6 +325,7 @@ const CreateStepOne = () => {
                   name="liquidityToken"
                   onChange={onNumericChange}
                   isUnitVisible={false}
+                  initialValue={createIDO.poolDetails.liquidityToken}
                 />
               </View>
               <View className="mb-3">
@@ -343,6 +349,7 @@ const CreateStepOne = () => {
                     value={getDateFromUnixTimestamp(lockExpired)}
                     name="lockExpired"
                     onChange={onLockExpiredChange}
+                    initialValue={getDateFromUnixTimestamp(lockExpired)}
                   />
                 </View>
               )}

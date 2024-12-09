@@ -311,6 +311,8 @@ function createStepThree() {
         "The lacking tokens has been approved"
       );
 
+      setIsWalletEnoughTokenForIDO(true);
+
       // clearCache(client, "GetTokens");
     },
     onError: (error?: Error) => {
@@ -566,14 +568,14 @@ function createStepThree() {
             />
           </View>
         ) : (
-          <View className="mt-4">
-            <View className="mt-4">
+          <View className="">
+            <View className="mt-4 mb-4">
               <Container>
                 <View
                   className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
                   style={{ elevation: 2 }}
                 >
-                  <Pressable className="flex flex-col mb-4">
+                  <Pressable className="flex flex-col">
                     <View className="flex flex-row justify-between">
                       <Text className="font-readexRegular text-md text-secondary">
                         Allowance tokens:{" "}

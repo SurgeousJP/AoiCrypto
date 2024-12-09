@@ -1,6 +1,5 @@
 // <---! IMPORT !---> //
 import getABI from "@/contracts/utils/getAbi.util";
-import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
 import { TransactionReceipt } from "viem";
 import {
   useSimulateContract,
@@ -15,25 +14,28 @@ import { useEffect } from "react";
 type Props = {
   chainId?: number;
   // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
-  poolId: bigint;
+  tokenAddress: `0x${string}`;
+  address: `0x${string}`;
+  numOfTokensMint: bigint;
   // <---! CONTRACT PROPS IN ABI ENDS HERE !---> //
   enabled?: boolean;
   onSuccess?: (data: TransactionReceipt) => void;
   onSettled?: (data?: TransactionReceipt) => void;
   onError?: (error?: Error) => void;
-};
+}
 
-export const useDepositLiquidityPool = ({
+export const useMintToken = ({
   chainId,
-  poolId,
+  tokenAddress,
+  address,
+  numOfTokensMint,
   enabled,
   onSuccess,
   onSettled,
   onError,
 }: Props) => {
-
-  const CONTRACT_LABEL = "Deposit liquidity";
-  const FUNCTION_EXECUTION_NAME = "onDepositLiquidityPool";
+  const CONTRACT_LABEL = "Mint token";
+  const FUNCTION_EXECUTION_NAME = "onMintToken";
 
   const {
     data: config,
@@ -43,16 +45,14 @@ export const useDepositLiquidityPool = ({
     error: errorPrepare,
   } = useSimulateContract({
     chainId,
-    address: getIDOFactoryAddress(chainId),
-    abi: getABI("IDOFactory"),
+    address: tokenAddress,
+    abi: getABI("AoiERC20"),
     // <---! PARAMS IN ABI !---> //
-    args: [ poolId ],
+    args: [address, numOfTokensMint],
     // <---! PARAMS IN ABI !---> //
-
     // <---! FUNCTION IN ABI !---> //
-    functionName: "depositLiquidityPool",
+    functionName: "mint",
     // <---! FUNCTION IN ABI !---> //
-
     query: { enabled: enabled && !!chainId, retry: false },
   });
 
@@ -103,7 +103,9 @@ export const useDepositLiquidityPool = ({
         console.log(`${CONTRACT_LABEL} confirmed`);
         onSuccess?.(data);
       } else {
-        console.log(`${CONTRACT_LABEL} transaction received, awaiting confirmation`);
+        console.log(
+          `${CONTRACT_LABEL} transaction received, awaiting confirmation`
+        );
       }
     },
     onSettled: (data?: TransactionReceipt, isConfirmed?: boolean) => {
@@ -116,7 +118,8 @@ export const useDepositLiquidityPool = ({
     error: errorWrite,
   });
 
-  const onDepositLiquidityPool = async () => {
+  const onMintToken = async () => {
+    console.log("Mint token triggered: ");
     console.log("Config: ", config);
     console.log("Enabled: ", enabled);
     if (config && enabled) {
@@ -126,7 +129,9 @@ export const useDepositLiquidityPool = ({
         onError?.(
           errorWrite instanceof Error
             ? errorWrite
-            : new Error(`Something went wrong in ${FUNCTION_EXECUTION_NAME} async function`)
+            : new Error(
+                `Something went wrong in ${FUNCTION_EXECUTION_NAME} async function`
+              )
         );
       }
     }
@@ -148,9 +153,9 @@ export const useDepositLiquidityPool = ({
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
 
   useEffect(() => {
-    console.log("Error prepare deposit liquidity pool: ", errorPrepare)
-  }, [errorPrepare]);
-    
+    console.log("Mint token error: ", error);
+  }, [error]);
+
   return {
     error,
     errorWrite,
@@ -158,7 +163,7 @@ export const useDepositLiquidityPool = ({
     isSuccess,
     isSuccessConfirmation,
     isError,
-    onDepositLiquidityPool,
+    onMintToken,
     refetch,
   };
 };
