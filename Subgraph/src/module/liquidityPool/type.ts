@@ -1,8 +1,8 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-export const NOTHING = "Nothing";
-export const LOCK = "Lock";
-export const BURN = "Burn";
+export const NOTHING = "NOTHING";
+export const LOCK = "LOCK";
+export const BURN = "BURN";
 
 export class LiquidityPoolDetail {
   idoPoolId: BigInt;
