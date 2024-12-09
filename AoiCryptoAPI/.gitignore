@@ -1,0 +1,92 @@
+# Build output folders
+/bin/
+/obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+logs/
+*.vspscc
+
+# Database files
+*.mdf
+*.ldf
+*.ndf
+
+# Configuration files
+appsettings.*.json
+appsettings.json
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Visual Studio files
+.vs/
+*.VC.db
+*.VC.VC.opendb
+
+# Dependency folders
+node_modules/
+bower_components/
+
+# Publish output
+wwwroot/
+*.publish.xml
+*.pubxml
+*.pubxml.user
+
+# JetBrains Rider files
+.idea/
+
+# macOS files
+.DS_Store
+
+# Windows files
+Thumbs.db
+Desktop.ini
+
+# Other
+*.orig
+*.bak
+*.swp
+*.editorconfig
+.env
+.env.*
+
+# Exclude compiled DLLs and executables
+*.dll
+*.exe
+*.pdb
+
+# Dotnet restore artifacts
+project.lock.json
+project.fragment.lock.json
+
+# Resharper files
+_ReSharper*/ 
+*.[rR]e[Ss]harper 
+*.DotSettings.user
+
+# NPM debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Azure functions artifacts
+local.settings.json
+
+# Rider
+.idea/
+
+# Coverage files
+coverage/
+*.coverage
+*.coveragexml
+*.coveragejson
