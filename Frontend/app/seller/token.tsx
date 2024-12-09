@@ -33,7 +33,6 @@ export default function TokenScreen() {
   } = useQuery(GET_TOKENS, {
     variables: { address: address },
     skip: !address,
-    // fetchPolicy: "no-cache"
   });
 
   const [searchText, setSearchText] = useState("");
@@ -73,7 +72,10 @@ export default function TokenScreen() {
         </Pressable>
       </View>
 
-      {displayTokens !== undefined && displayTokens.length > 0 ? (
+      {!isTokenLoading &&
+      tokenQueryData &&
+      displayTokens !== undefined &&
+      displayTokens.length > 0 ? (
         <FlatList
           style={{ paddingHorizontal: 16 }}
           contentContainerStyle={{

@@ -201,6 +201,7 @@ export default function AdminProjectScreen() {
             return (
               <View className="basis-[50%]">
                 <ProjectCard
+                  tokenAddress={item.item.tokenPool}
                   isInProgress={true}
                   isPrivateSale={false}
                   softCap={item.item.softCap / BIGINT_CONVERSION_FACTOR}

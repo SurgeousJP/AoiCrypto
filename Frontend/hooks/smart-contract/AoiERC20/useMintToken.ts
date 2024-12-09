@@ -8,7 +8,6 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
-import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -151,10 +150,6 @@ export const useMintToken = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
-
-  useEffect(() => {
-    console.log("Mint token error: ", error);
-  }, [error]);
 
   return {
     error,

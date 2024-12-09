@@ -35,7 +35,7 @@ const TokenRow: React.FC<TokenProps> = (props) => {
     name: props.name,
     initialSupply: props.initialSupply,
     maxSupply: props.totalSupply,
-    address: props.address
+    tokenAddress: props.address
   }
 
   const handleOnMintToken = () => {

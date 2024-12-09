@@ -5,14 +5,13 @@ import Container from "@/components/Layouts/Container";
 import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useMintToken } from "@/hooks/smart-contract/AoiERC20/useMintToken";
-import { clearCache } from "@/queries/util";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
-
 
 const MintTokenForm = ({ route }) => {
   const token = useLocalSearchParams();
@@ -24,37 +23,62 @@ const MintTokenForm = ({ route }) => {
 
   const [mintValue, setMintValue] = useState(0);
 
-  const { error, errorWrite, isLoading, isSuccess, isError, onMintToken: onExecute } =
-    useMintToken({
-      chainId: chainId,
-      tokenAddress: token.tokenAddress,
-      address: address,
-      numOfTokensMint: BigInt(mintValue * BIGINT_CONVERSION_FACTOR),
-      enabled: true,
-      onSuccess: (data: TransactionReceipt) => {
-        if (isLoadingModalVisible) {
-          setLoadingModalVisible(false);
-        }
+  const queryClient = useQueryClient();
 
-        showToast("success", "Transaction success", "Mint tokens successfully");
-      },
-      onError: (error?: Error) => {
-        if (isLoadingModalVisible) {
-          setLoadingModalVisible(false);
-        }
+  const {
+    error,
+    errorWrite,
+    isLoading,
+    isSuccess,
+    isError,
+    onMintToken: onExecute,
+  } = useMintToken({
+    chainId: chainId,
+    tokenAddress: token.tokenAddress,
+    address: address,
+    numOfTokensMint: BigInt(mintValue * BIGINT_CONVERSION_FACTOR),
+    enabled: true,
+    onSuccess: (data: TransactionReceipt) => {
+      if (isLoadingModalVisible) {
+        setLoadingModalVisible(false);
+      }
 
-        showToast(
-          "error",
-          "Transaction failed",
-          error != undefined ? error.message : "No error"
-        );
-      },
-      onSettled: (data?: TransactionReceipt) => {
-        client.resetStore();
-        resetTokenFormState();
-        router.back();
-      },
-    });
+      showToast("success", "Transaction success", "Mint tokens successfully");
+    },
+    onError: (error?: Error) => {
+      if (isLoadingModalVisible) {
+        setLoadingModalVisible(false);
+      }
+
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+      clearTokenBalanceCache();
+      resetTokenFormState();
+      router.back();
+    },
+  });
+
+  const clearTokenBalanceCache = () => {
+    queryClient.invalidateQueries([
+      "readTokenBalance",
+      chainId,
+      token.tokenAddress,
+      address,
+    ]);
+  };
+
+  useEffect(() => {
+    console.log("Error: ", error);
+    console.log("Is loading: ", isLoading);
+    console.log("Is success: ", isSuccess);
+    console.log("Is error: ", isError);
+  });
 
   const onTriggerMintToken = async () => {
     if (mintValue <= 0) {
@@ -66,7 +90,7 @@ const MintTokenForm = ({ route }) => {
       return;
     }
 
-    if (mintValue >= Number(token.maxTotalSupply)){
+    if (mintValue >= Number(token.maxTotalSupply)) {
       showToast(
         "error",
         "Form invalid",
@@ -121,11 +145,10 @@ const MintTokenForm = ({ route }) => {
               <View className="flex flex-row items-center">
                 <Text className="font-readexRegular text-secondary">
                   Max supply:{" "}
-                  
                 </Text>
                 <Text className="font-readexSemiBold text-black">
-                    {token.maxSupply}
-                  </Text>
+                  {token.maxSupply}
+                </Text>
               </View>
               <View className="mb-3">
                 <LabelInput
