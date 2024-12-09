@@ -46,8 +46,8 @@ export default function AdminProjectScreen() {
   }
 
   return (
-    <View className="flex-1 pb-2">
-      <View className="bg-surface mb-4">
+    <View className="flex-1 pb-2 bg-background">
+      <View className="bg-background mb-4">
         <View className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
           <Searchbar placeholder={"Search project"} />
           <Link href={"/project/createOverview"}>

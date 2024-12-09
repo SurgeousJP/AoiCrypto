@@ -84,20 +84,20 @@ export const sampleCreateIDOInput: CreateIDOInput = {
   poolDetails: {
     tokenAddress: "0x82a9d5f57483163de82ef5d40d045be974d9d215",
     pricePerToken: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
-    raisedAmount: BigInt(0), 
-    raisedTokenAmount: BigInt(0), 
+    raisedAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR), 
+    raisedTokenAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR), 
     softCap: BigInt(0.005 * BIGINT_CONVERSION_FACTOR), 
     hardCap: BigInt(0.01 * BIGINT_CONVERSION_FACTOR),
     minInvest: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
     maxInvest: BigInt(0.0003 * BIGINT_CONVERSION_FACTOR),
     liquidityWETH9: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
     liquidityToken: BigInt(50 * BIGINT_CONVERSION_FACTOR), 
-    privateSaleAmount: BigInt(0),
+    privateSaleAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),
   },
   poolTime: {
     startTime: BigInt(getUnixTimestampFromDate(new Date())),
     endTime: BigInt(getUnixTimestampFromDate(new Date())), 
-    startPublicSale: BigInt(0)
+    startPublicSale: BigInt(0 * BIGINT_CONVERSION_FACTOR)
   },
   privateSale: false,
   whitelisted: EMPTY_MERKLE_ROOT,

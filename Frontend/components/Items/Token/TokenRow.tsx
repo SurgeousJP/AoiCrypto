@@ -1,7 +1,6 @@
 import { colors } from "@/constants/colors";
-import { showToast } from "@/utils/toast";
+import { handleCopyToClipboard } from "@/utils/clipboard";
 import { Ionicons } from "@expo/vector-icons";
-import * as Clipboard from "expo-clipboard";
 import React from "react";
 import { Pressable, Text, TouchableOpacity, View } from "react-native";
 
@@ -16,10 +15,8 @@ interface TokenProps {
 const TokenRow: React.FC<TokenProps> = (props) => {
   const isNumber = (str: string) => !isNaN(Number(str));
 
-  const handleCopyToClipboard = async () => {
-    await Clipboard.setStringAsync(props.address);
-    const clipboard = await Clipboard.getStringAsync();
-    showToast("info", "Copied address to clipboard", clipboard);
+  const copyAddressToClipboard = async () => {
+    await handleCopyToClipboard(props.address);
   };
 
   return (
@@ -40,7 +37,7 @@ const TokenRow: React.FC<TokenProps> = (props) => {
               ? props.address.slice(0, 6) + ".. "
               : props.address}
             {isNumber(props.totalSupply) && (
-              <TouchableOpacity onPress={handleCopyToClipboard}>
+              <TouchableOpacity onPress={copyAddressToClipboard}>
                 <Ionicons
                   name="copy-outline"
                   size={14}

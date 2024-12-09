@@ -1,7 +1,7 @@
 // <---! IMPORT !---> //
 import getABI from "@/contracts/utils/getAbi.util";
 import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
-import { TransactionReceipt } from "viem";
+import { decodeErrorResult, TransactionReceipt } from "viem";
 import {
   useSimulateContract,
   useTransactionConfirmations,
@@ -57,6 +57,7 @@ export const useCreateIDO = ({
     functionName: "createPool",
     // <---! FUNCTION IN ABI !---> //
     query: { enabled: enabled && !!chainId, retry: false },
+    value: idoInput.poolDetails.liquidityWETH9
   });
 
   const {

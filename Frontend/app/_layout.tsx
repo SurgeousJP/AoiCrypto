@@ -34,9 +34,9 @@ import StateProvider from "@/contexts/StateProvider";
 import {
   QueryClient,
   QueryClientProvider,
-  useQueryClient,
 } from "@tanstack/react-query";
 import { Buffer } from "buffer";
+
 // Import
 
 SplashScreen.preventAutoHideAsync();

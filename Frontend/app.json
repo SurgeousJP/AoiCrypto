@@ -38,7 +38,8 @@
         }
       ],
       "expo-asset",
-      "./queries.js"
+      "./queries.js",
+      "expo-av"
     ],
     "experiments": {
       "typedRoutes": true
