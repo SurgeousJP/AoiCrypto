@@ -16,6 +16,10 @@ export function getIDOPoolAddress(poolId: BigInt): Address {
       poolId.toString(),
     ]);
   } else {
+    log.info("getIdoPoolAddress result {} for poolId: {}", [
+      idoPoolAddressCallResult.value.toHexString(),
+      poolId.toString(),
+    ]);
     idoPoolAddress = idoPoolAddressCallResult.value;
   }
   return idoPoolAddress;
@@ -70,6 +74,14 @@ export function getWhitelistedRoot(idoPoolAddress: Address): Bytes {
 export function getIDOType(idoPoolAddress: Address): string {
   const idoPoolContract = utils.contracts.getIDOPoolContract(idoPoolAddress);
   const idoPoolDetailCallResult = idoPoolContract.try_getPoolType();
+  // let idoType = idoTypes.IDOTypeEnum.PUBLIC_SALE;
+  // if (idoPoolDetailCallResult.reverted) {
+  //   log.warning("getPoolType call reverted for idoPoolAddress: {}", [
+  //     idoPoolAddress.toHexString(),
+  //   ]);
+  // } else {
+  //   idoType = idoPoolDetailCallResult.value;
+  // }
   let idoType = "Unknown";
   if (idoPoolDetailCallResult.reverted) {
     log.warning("getPoolType call reverted for idoPoolAddress: {}", [
@@ -88,6 +100,8 @@ export function getIDOType(idoPoolAddress: Address): string {
       idoPoolAddress.toHexString(),
     ]);
   }
+
+  log.info("IDOType call result: {}", [idoType.toString()]);
 
   return idoType;
 }

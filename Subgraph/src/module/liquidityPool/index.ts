@@ -39,6 +39,14 @@ export function getLiquidityPoolAction(poolId: BigInt): string {
   const liquidityPoolAction = utils.contracts.idoFactoryContract.try_getLiquidityPoolAction(
     poolId
   );
+  // let action = liquidityPoolTypes.LiquidityPoolActionEnum.NOTHING;
+  // if (liquidityPoolAction.reverted) {
+  //   log.warning("getLiquidityPool call reverted for poolId: {}", [
+  //     poolId.toHexString(),
+  //   ]);
+  // } else {
+  //   action = liquidityPoolAction.value;
+  // }
   let action = "Unknown";
   if (liquidityPoolAction.reverted) {
     log.warning("getLiquidityPool call reverted for poolId: {}", [
@@ -57,7 +65,13 @@ export function getLiquidityPoolAction(poolId: BigInt): string {
     liquidityPoolAction.value == liquidityPoolTypes.LiquidityPoolActionEnum.BURN
   ) {
     action = liquidityPoolTypes.BURN;
+  } else {
+    log.warning("IDO Pool poolId {} is not being monitored", [
+      poolId.toHexString(),
+    ]);
   }
+
+  log.info("LiquidityPoolAction call result: {}", [action.toString()]);
 
   return action;
 }

@@ -6,7 +6,7 @@ dataSources:
     name: IDOFactory
     network: sepolia
     source:
-      address: "0x632a2Dca9A3Bb02Fde69C152A81160d54e38c130"
+      address: "0x12De8e7C39EE62282Af548F1a1E4128101567837"
       abi: IDOFactory
       startBlock: 7154831
     mapping:
@@ -20,6 +20,8 @@ dataSources:
       abis:
         - name: IDOFactory
           file: ./abis/IDOFactory.json
+        - name: IDOPool
+          file: ./abis/IDOPool.json
       eventHandlers:
         - event: PoolCreated(indexed address,indexed address,uint256)
           handler: handlePoolCreated

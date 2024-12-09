@@ -116,8 +116,8 @@ type IDOPool @entity {
 }
 
 enum IDOType {
-  PRIVATE_SALE
   PUBLIC_SALE
+  PRIVATE_SALE
 }
 
 enum LiquidityPoolAction {
