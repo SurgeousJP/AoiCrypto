@@ -10,6 +10,7 @@ interface InputProps {
   value: any;
   onChange: (name: any, value: any) => void;
   isUnitVisible?: boolean;
+  initialValue?: any;
 }
 
 const Input: React.FC<InputProps> = ({ isUnitVisible = false, ...props }) => {
@@ -20,6 +21,7 @@ const Input: React.FC<InputProps> = ({ isUnitVisible = false, ...props }) => {
           <LabelInput
             title={props.label}
             type={props.type}
+            initialValue={props.initialValue}
             value={props.value}
             onChange={props.onChange}
             name={props.name}

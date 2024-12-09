@@ -34,9 +34,9 @@ import StateProvider from "@/contexts/StateProvider";
 import {
   QueryClient,
   QueryClientProvider,
-  useQueryClient,
 } from "@tanstack/react-query";
 import { Buffer } from "buffer";
+
 // Import
 
 SplashScreen.preventAutoHideAsync();
@@ -293,6 +293,16 @@ export default function RootLayout() {
                           headerShadowVisible: false,
                           header: ({ options }) => (
                             <TitleHeader title={"Create token"} />
+                          ),
+                        }}
+                      />
+                       <Stack.Screen
+                        name={path.mintToken}
+                        options={{
+                          headerShown: true,
+                          headerShadowVisible: false,
+                          header: ({ options }) => (
+                            <TitleHeader title={"Mint token"} />
                           ),
                         }}
                       />

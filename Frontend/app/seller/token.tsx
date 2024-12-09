@@ -24,7 +24,7 @@ export default function TokenScreen() {
     setLoading(false);
   }, []);
 
-  const { address } = useContext(AuthContext);
+  const { chainId, address } = useContext(AuthContext);
 
   const {
     loading: isTokenLoading,
@@ -38,18 +38,13 @@ export default function TokenScreen() {
 
   const [searchText, setSearchText] = useState("");
   const tokens = tokenQueryData?.tokens;
-  const searchTokens = tokens?.filter((token) =>
-    token.address.includes(searchText)
+  const searchTokens = tokens?.filter(
+    (token) =>
+      token.address.includes(searchText) ||
+      token.name.includes(searchText) ||
+      token.symbol.includes(searchText)
   );
-  const displayTokens = searchText.length <= 0 ? tokens: searchTokens;
-
-  // useEffect(() => {
-  //   console.log("Tokens: ", tokens);
-  //   console.log("Search tokens: ", searchTokens);
-  //   console.log("Display tokens: ", displayTokens);
-  //   console.log("Query status: ", isTokenLoading);
-  //   console.log("Error: ", error?.message);
-  // }, [loading, isTokenLoading, error, tokens, searchText]);
+  const displayTokens = searchText.length <= 0 ? tokens : searchTokens;
 
   if (loading || isTokenLoading) {
     return (
@@ -87,6 +82,7 @@ export default function TokenScreen() {
             borderColor: colors.border,
             borderWidth: 1,
           }}
+          numColumns={1}
           data={displayTokens}
           keyExtractor={(item, index) => index.toString()}
           renderItem={(item) => {
@@ -101,6 +97,8 @@ export default function TokenScreen() {
                 initialSupply={(
                   item.item.initialSupply / BIGINT_CONVERSION_FACTOR
                 ).toString()}
+                ownerAddress={address}
+                chainId={chainId}
               />
             );
           }}

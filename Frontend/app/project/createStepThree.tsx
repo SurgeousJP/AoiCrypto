@@ -16,8 +16,8 @@ import {
 import { AuthContext } from "@/contexts/AuthProvider";
 import { StateContext, StateContextType } from "@/contexts/StateProvider";
 import {
+  CreateIDOInput,
   LiquidityPoolAction,
-  sampleCreateIDOInput,
 } from "@/contracts/types/IDO/CreateIDOInput";
 import { getIDOFactoryAddress } from "@/contracts/utils/getAddress.util";
 import { useApproveSender } from "@/hooks/smart-contract/AoiERC20/useApproveSpender";
@@ -39,6 +39,7 @@ import {
 import { TransactionReceipt } from "viem";
 import { useBalance } from "wagmi";
 import * as Clipboard from "expo-clipboard";
+import { handleCopyToClipboard } from "@/utils/clipboard";
 // IMPORT
 
 const headerData = [
@@ -100,21 +101,8 @@ const rowData = [
   ],
 ];
 
-function createStepThree() {
-  const { createIDO, resetCreateIDO } = useContext(
-    StateContext
-  ) as StateContextType;
-  const { address, chainId } = useContext(AuthContext);
-  const [isLoadingCreateIDOModalVisible, setLoadingCreateIDOModalVisible] =
-    useState(false);
-  const [
-    isLoadingApproveTokenModalVisible,
-    setLoadingApproveTokenModalVisible,
-  ] = useState(false);
-  const client = useApolloClient();
-
-  // PRINT DATA
-  const basicData = [
+const getBasicDataDisplay = (createIDO: CreateIDOInput) => {
+  return [
     {
       tile: "Token address",
       data:
@@ -128,8 +116,10 @@ function createStepThree() {
         getStringValueFromBigInt(createIDO.poolDetails.pricePerToken) + " ETH",
     },
   ];
+};
 
-  const saleData = [
+const getSaleDataDisplay = (createIDO: CreateIDOInput) => {
+  return [
     {
       tile: "Sale type",
       data: createIDO.privateSale ? "Private" : "Public",
@@ -151,8 +141,10 @@ function createStepThree() {
       data: getStringValueFromBigInt(createIDO.poolDetails.maxInvest) + " ETH",
     },
   ];
+};
 
-  const saleConfigData = [
+const getSaleConfigDataDisplay = (createIDO: CreateIDOInput) => {
+  return [
     {
       tile: "Start time",
       data: getDateFromUnixTimestamp(
@@ -176,8 +168,10 @@ function createStepThree() {
         ]
       : []),
   ];
+};
 
-  const liquidData = [
+const getLiquidDataDisplay = (createIDO: CreateIDOInput) => {
+  return [
     {
       tile: "ETH to List DEX",
       data:
@@ -203,9 +197,38 @@ function createStepThree() {
         ]
       : []),
   ];
-  // PRINT DATA
+};
 
-  // READ ALLOWANCE HOOK
+function createStepThree() {
+  const { createIDO, resetCreateIDO } = useContext(
+    StateContext
+  ) as StateContextType;
+  const { address, chainId } = useContext(AuthContext);
+  const [isLoadingCreateIDOModalVisible, setLoadingCreateIDOModalVisible] =
+    useState(false);
+  const [
+    isLoadingApproveTokenModalVisible,
+    setLoadingApproveTokenModalVisible,
+  ] = useState(false);
+  const [isWalletEnoughWETH9, setIsWalletEnoughWETH9] = useState(false);
+  const [numsOfTokenRequiredForIDO, setNumsOfTokenRequiredForIDO] = useState(0);
+  const [isWalletEnoughTokenForIDO, setIsWalletEnoughTokenForIDO] =
+    useState(false);
+  const [numsOfTokenLacked, setNumsOfTokenLacked] = useState(0);
+  const [ethsAvailable, setEthsAvailable] = useState(-1);
+  const [allowanceValue, setAllowanceValue] = useState<number>(-1);
+  const client = useApolloClient();
+
+  // PRINT DATA
+  const basicData = getBasicDataDisplay(createIDO);
+
+  const saleData = getSaleDataDisplay(createIDO);
+
+  const saleConfigData = getSaleConfigDataDisplay(createIDO);
+
+  const liquidData = getLiquidDataDisplay(createIDO);
+
+  // READING ALLOWANCE & WALLET BALANCE
   const {
     isLoading: isLoadingAllowance,
     isError: isErrorAllowance,
@@ -222,15 +245,6 @@ function createStepThree() {
   const ethBalance = useBalance({
     address: address,
   });
-
-  // VALIDATE IDO CONSTRAINT
-  const [isWalletEnoughWETH9, setIsWalletEnoughWETH9] = useState(false);
-  const [numsOfTokenRequiredForIDO, setNumsOfTokenRequiredForIDO] = useState(0);
-  const [isWalletEnoughTokenForIDO, setIsWalletEnoughTokenForIDO] =
-    useState(false);
-  const [numsOfTokenLacked, setNumsOfTokenLacked] = useState(0);
-  const [ethsAvailable, setEthsAvailable] = useState(-1);
-  const [allowanceValue, setAllowanceValue] = useState<number>(-1);
 
   useEffect(() => {
     if (ethBalance !== undefined && ethBalance.data !== undefined) {
@@ -253,7 +267,8 @@ function createStepThree() {
       const { liquidityWETH9, hardCap, pricePerToken, liquidityToken } =
         createIDO.poolDetails;
 
-      const walletEnoughWETH9 = ethsAvailable >= Number(liquidityWETH9) / BIGINT_CONVERSION_FACTOR;
+      const walletEnoughWETH9 =
+        ethsAvailable >= Number(liquidityWETH9) / BIGINT_CONVERSION_FACTOR;
       setIsWalletEnoughWETH9(walletEnoughWETH9);
 
       const requiredTokens =
@@ -262,20 +277,18 @@ function createStepThree() {
 
       setNumsOfTokenRequiredForIDO(requiredTokens);
 
-      const walletEnoughTokens = allowanceValue > requiredTokens;
+      const walletEnoughTokens = allowanceValue >= requiredTokens;
       setIsWalletEnoughTokenForIDO(walletEnoughTokens);
 
       // Calculate the number of tokens lacking, if any
       const tokensLacked = walletEnoughTokens
         ? 0
         : requiredTokens - allowanceValue;
-      if (tokensLacked === 0){
-        setIsWalletEnoughTokenForIDO(true);
-      }
       setNumsOfTokenLacked(tokensLacked);
     }
   }, [ethsAvailable, allowanceValue]);
 
+  // APPROVE HOOK & HANDLER
   const {
     error: errorApprove,
     errorWrite: errorWriteApprove,
@@ -298,6 +311,8 @@ function createStepThree() {
         "The lacking tokens has been approved"
       );
 
+      setIsWalletEnoughTokenForIDO(true);
+
       // clearCache(client, "GetTokens");
     },
     onError: (error?: Error) => {
@@ -311,8 +326,7 @@ function createStepThree() {
         error != undefined ? error.message : "No error"
       );
     },
-    onSettled: (data?: TransactionReceipt) => {
-    },
+    onSettled: (data?: TransactionReceipt) => {},
   });
 
   useEffect(() => {
@@ -331,21 +345,7 @@ function createStepThree() {
     await onApproveSender();
   };
 
-  const onSaveProject = async () => {
-    if (!isWalletEnoughWETH9) {
-      showToast(
-        "error",
-        "Insufficient balance",
-        "Your wallet has insufficient ETH for WETH9"
-      );
-      return;
-    }
-    setLoadingCreateIDOModalVisible(false);
-    await onCreateIDO();
-  };
-  // VALIDATE IDO CONSTRAINT
-
-  // CREATE IDO HOOK & HANDLING
+  // CREATE IDO HOOK & HANDLER
   const { error, errorWrite, isLoading, onCreateIDO } = useCreateIDO({
     chainId: chainId,
     idoInput: createIDO,
@@ -377,7 +377,7 @@ function createStepThree() {
     onSettled: (data?: TransactionReceipt) => {
       client.resetStore();
       resetCreateIDO();
-      router.navigate("/seller");
+      router.navigate("/seller/project");
     },
   });
 
@@ -391,17 +391,28 @@ function createStepThree() {
       );
     }
   }, [errorWrite]);
-  // CREATE IDO HOOK & HANDLING
+
+  const onSaveProject = async () => {
+    if (!isWalletEnoughWETH9) {
+      showToast(
+        "error",
+        "Insufficient balance",
+        "Your wallet has insufficient ETH for WETH9"
+      );
+      return;
+    }
+    setLoadingCreateIDOModalVisible(false);
+    await onCreateIDO();
+  };
 
   const onNavigatingBack = () => {
     // router.back();
     router.navigate("/project/createStepTwo");
   };
 
-  const handleCopyToClipboard = async () => {
-    await Clipboard.setStringAsync(numsOfTokenLacked.toString());
-    const clipboard = await Clipboard.getStringAsync();
-    showToast("info", "Copied to clipboard", clipboard);
+  // UTILS
+  const copyTokensDeficit = async () => {
+    await handleCopyToClipboard(numsOfTokenLacked.toString());
   };
 
   return (
@@ -557,21 +568,52 @@ function createStepThree() {
             />
           </View>
         ) : (
-          <View className="mt-4">
-            <Pressable className="flex flex-rowitems-center h-fit mb-4">
-              {numsOfTokenLacked > 0 && (
-                <Text className="font-readexSemiBold text-md">
-                  {`Number of tokens lacked: ${numsOfTokenLacked}`}{" "}
-                  <TouchableOpacity onPress={handleCopyToClipboard}>
-                    <Ionicons
-                      name="copy-outline"
-                      size={10}
-                      color={colors.secondary}
-                    />
-                  </TouchableOpacity>
-                </Text>
-              )}
-            </Pressable>
+          <View className="">
+            <View className="mt-4 mb-4">
+              <Container>
+                <View
+                  className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+                  style={{ elevation: 2 }}
+                >
+                  <Pressable className="flex flex-col">
+                    <View className="flex flex-row justify-between">
+                      <Text className="font-readexRegular text-md text-secondary">
+                        Allowance tokens:{" "}
+                      </Text>
+                      <Text className="font-readexSemiBold text-md">
+                        {allowanceValue}
+                      </Text>
+                    </View>
+                    <View className="flex flex-row justify-between">
+                      <Text className="font-readexRegular text-md text-secondary">
+                        Required tokens:{" "}
+                      </Text>
+                      <Text className="font-readexSemiBold text-md">
+                        {numsOfTokenRequiredForIDO}
+                      </Text>
+                    </View>
+
+                    {numsOfTokenLacked > 0 && (
+                      <View className="flex flex-row justify-between">
+                        <Text className="font-readexRegular text-md text-secondary">
+                          Lacked tokens:
+                        </Text>
+                        <Text className="font-readexSemiBold text-error text-md">
+                          {numsOfTokenLacked}{" "}
+                          <TouchableOpacity onPress={copyTokensDeficit}>
+                            <Ionicons
+                              name="copy-outline"
+                              size={14}
+                              color={colors.secondary}
+                            />
+                          </TouchableOpacity>
+                        </Text>
+                      </View>
+                    )}
+                  </Pressable>
+                </View>
+              </Container>
+            </View>
             <PrimaryButton
               content={"Approve missing tokens"}
               disabled={isLoadingApproveSender}

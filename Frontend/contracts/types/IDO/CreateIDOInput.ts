@@ -1,4 +1,7 @@
-import { BIGINT_CONVERSION_FACTOR, getUnixTimestampFromDate } from "@/constants/conversion";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getUnixTimestampFromDate,
+} from "@/constants/conversion";
 import { EMPTY_MERKLE_ROOT } from "@/utils/merkleTree";
 // <---! GUIDELINES !---> //
 
@@ -17,16 +20,16 @@ import { EMPTY_MERKLE_ROOT } from "@/utils/merkleTree";
 // <---! CONSTRAINTS !---> //
 
 export type CreateIDOInput = {
-  poolDetails: PoolDetails,
-  poolTime: PoolTime,
-  privateSale: boolean,
-  whitelisted: string,
-  action: LiquidityPoolAction,
-  lockExpired: bigint
-}
+  poolDetails: PoolDetails;
+  poolTime: PoolTime;
+  privateSale: boolean;
+  whitelisted: string;
+  action: LiquidityPoolAction;
+  lockExpired: bigint;
+};
 
 export type PoolDetails = {
-  tokenAddress: string; 
+  tokenAddress: string;
   pricePerToken: bigint;
   raisedAmount: bigint;
   raisedTokenAmount: bigint;
@@ -48,11 +51,11 @@ export type PoolTime = {
 export enum LiquidityPoolAction {
   NOTHING,
   LOCK,
-  BURN
+  BURN,
 }
 
 const createEmptyPoolDetails = (): PoolDetails => ({
-  tokenAddress: '',
+  tokenAddress: "",
   pricePerToken: 0n,
   raisedAmount: 0n,
   raisedTokenAmount: 0n,
@@ -74,33 +77,33 @@ export const createEmptyPoolTime = (): PoolTime => ({
 export const createDefaultCreateIDOInput = (): CreateIDOInput => ({
   poolDetails: createEmptyPoolDetails(),
   poolTime: createEmptyPoolTime(),
-  privateSale: false,  
-  whitelisted: EMPTY_MERKLE_ROOT,  
-  action: LiquidityPoolAction.NOTHING,  
-  lockExpired: 0n, 
+  privateSale: false,
+  whitelisted: EMPTY_MERKLE_ROOT,
+  action: LiquidityPoolAction.NOTHING,
+  lockExpired: 0n,
 });
 
 export const sampleCreateIDOInput: CreateIDOInput = {
   poolDetails: {
     tokenAddress: "0x82a9d5f57483163de82ef5d40d045be974d9d215",
-    pricePerToken: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
-    raisedAmount: BigInt(0), 
-    raisedTokenAmount: BigInt(0), 
-    softCap: BigInt(0.005 * BIGINT_CONVERSION_FACTOR), 
+    pricePerToken: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
+    raisedAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),
+    raisedTokenAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),
+    softCap: BigInt(0.005 * BIGINT_CONVERSION_FACTOR),
     hardCap: BigInt(0.01 * BIGINT_CONVERSION_FACTOR),
     minInvest: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
     maxInvest: BigInt(0.0003 * BIGINT_CONVERSION_FACTOR),
-    liquidityWETH9: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR), 
-    liquidityToken: BigInt(50 * BIGINT_CONVERSION_FACTOR), 
-    privateSaleAmount: BigInt(0),
+    liquidityWETH9: BigInt(0.01 * BIGINT_CONVERSION_FACTOR),
+    liquidityToken: BigInt(50 * BIGINT_CONVERSION_FACTOR),
+    privateSaleAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),
   },
   poolTime: {
     startTime: BigInt(getUnixTimestampFromDate(new Date())),
-    endTime: BigInt(getUnixTimestampFromDate(new Date())), 
-    startPublicSale: BigInt(0)
+    endTime: BigInt(getUnixTimestampFromDate(new Date())),
+    startPublicSale: BigInt(0),
   },
   privateSale: false,
   whitelisted: EMPTY_MERKLE_ROOT,
-  action: LiquidityPoolAction.NOTHING, 
-  lockExpired: 0n, 
+  action: LiquidityPoolAction.NOTHING,
+  lockExpired: 0n,
 };

@@ -1,19 +1,16 @@
 import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { showToast } from "@/utils/toast";
+import { handleCopyToClipboard } from "@/utils/clipboard";
 import { Ionicons } from "@expo/vector-icons";
-import * as Clipboard from "expo-clipboard";
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useBalance } from "wagmi";
 
 function UserCard() {
   const { address } = useContext(AuthContext);
 
-  const handleCopyToClipboard = async () => {
-    await Clipboard.setStringAsync(address);
-    const clipboard = await Clipboard.getStringAsync();
-    showToast("info", "Copied address to clipboard", clipboard);
+  const copyAddressToClipboard = async () => {
+    await handleCopyToClipboard(address);
   };
 
   const { data, isError, isLoading, error } = useBalance({
@@ -40,7 +37,7 @@ function UserCard() {
             >
               {address}
             </Text>
-            <TouchableOpacity onPress={handleCopyToClipboard}>
+            <TouchableOpacity onPress={copyAddressToClipboard}>
               <Ionicons
                 name="copy-outline"
                 size={20}
@@ -50,7 +47,8 @@ function UserCard() {
           </View>
         </View>
         <View className="flex flex-row items-center mt-1">
-          <Text className="text-slate-900 text-md font-readexRegular leading-none mr-1">
+          <Text className="font-readexRegular text-secondary text-sm">Balance: </Text>
+          <Text className="text-slate-900 text-sm font-readexRegular leading-none mr-1">
           {data && data.formatted.slice(0,4)}
             <Text className="text-secondary"> ETH</Text>
           </Text>

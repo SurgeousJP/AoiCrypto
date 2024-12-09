@@ -17,33 +17,46 @@ import {
 } from "../module/liquidityPool";
 import * as utils from "../module/util/index";
 import { buildCountFromIdoPool } from "../module/count";
-import { createOrLoadPoolOwner } from "../module/poolOwner";
+import { createOrLoadPoolOwner, getPoolOwnerId } from "../module/poolOwner";
 
 export function handlePoolCreated(event: PoolCreated): void {
   const poolId = event.params.poolId;
   const owner = event.params.owner;
+  log.info("Create IDOPool poolId {} owner {}", [
+    poolId.toString(),
+    owner.toHexString(),
+  ]);
   const tokenAddress = event.params.tokenAddress;
   const idoPoolAddress = getIDOPoolAddress(poolId);
   const idoPoolId = getIDOPoolId(idoPoolAddress); // id for both IDOPool and LiquidityPool
 
+  log.info("Create IDOPool instances for idoPoolAddress {} idoPoolId {}", [
+    idoPoolAddress.toHexString(),
+    idoPoolId.toString(),
+  ]);
   // Create the IDOPool instances
   IDOPoolTemplate.create(idoPoolAddress);
 
   const idoPoolDetail = getIDOPoolDetail(idoPoolAddress);
+  log.info("idoPoolDetail {}", [idoPoolDetail.tokenAddress.toHexString()]);
   if (idoPoolDetail.tokenAddress.equals(Address.zero())) {
     return;
   }
   const liquidityPoolDetail = getLiquidityPool(poolId);
+  log.info("liquidityPoolDetail {}", [
+    liquidityPoolDetail.idoPoolAddress.toHexString(),
+  ]);
   if (liquidityPoolDetail.idoPoolAddress.equals(Address.zero())) {
     return;
   }
   const idoTimeDetail = getIDOTime(idoPoolAddress);
+  log.info("idoTimeDetail {}", [idoTimeDetail.startTime.toString()]);
   if (idoTimeDetail.startTime.equals(BigInt.fromI32(0))) {
     return;
   }
+  log.info("Create IODPool entity", []);
   let idoPool = new IDOPool(idoPoolId);
   idoPool.poolId = poolId;
-  idoPool.poolOwner = owner;
   idoPool.poolAddress = idoPoolAddress;
   idoPool.tokenPool = tokenAddress;
   idoPool.pricePerToken = idoPoolDetail.pricePerToken;
@@ -55,8 +68,10 @@ export function handlePoolCreated(event: PoolCreated): void {
   idoPool.maxInvest = idoPoolDetail.maxInvest;
   idoPool.liquidityTokenAmount = idoPoolDetail.liquidityToken;
   idoPool.liquidityWETHAmount = idoPoolDetail.liquidityWETH9;
-  idoPool.whitelistedRoot = getWhitelistedRoot(idoPoolAddress);
-  idoPool.idoType = getIDOType(idoPoolAddress);
+  const whitelisted = getWhitelistedRoot(idoPoolAddress);
+  idoPool.whitelistedRoot = whitelisted;
+  const idoType = getIDOType(idoPoolAddress);
+  idoPool.idoType = idoType;
   idoPool.createdTime = event.block.timestamp;
   idoPool.startTime = idoTimeDetail.startTime;
   idoPool.endTime = idoTimeDetail.endTime;
@@ -66,15 +81,19 @@ export function handlePoolCreated(event: PoolCreated): void {
   liquidityPool.token1 = utils.addresses.wethAddress;
   liquidityPool.token0Amount = idoPoolDetail.liquidityToken;
   liquidityPool.token1Amount = idoPoolDetail.liquidityWETH9;
-  liquidityPool.action = getLiquidityPoolAction(poolId);
-  liquidityPool.lpToAddress = liquidityPoolDetail.to;
-  liquidityPool.lockExpired = liquidityPoolDetail.lockExpired;
+  // const action = getLiquidityPoolAction(poolId);
+  // liquidityPool.action = action;
+  // liquidityPool.lpToAddress = liquidityPoolDetail.to;
+  // liquidityPool.lockExpired = liquidityPoolDetail.lockExpired;
   liquidityPool.save();
+  idoPool.liquidityPool = liquidityPool.id;
 
   let metric = buildCountFromIdoPool(idoPool);
   metric.save();
 
-  createOrLoadPoolOwner(owner, idoPoolAddress);
+  let poolOwner = createOrLoadPoolOwner(owner, idoPoolAddress);
+  poolOwner.save();
+  idoPool.poolOwner = poolOwner.id;
   idoPool.save();
 
   log.info("Creating IDO Pool: {}", [

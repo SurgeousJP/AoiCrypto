@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 
-export const PRIVATE_SALE = "Private Sale";
-export const PUBLIC_SALE = "Public Sale";
+export const PRIVATE_SALE = "PRIVATE_SALE";
+export const PUBLIC_SALE = "PUBLIC_SALE";
 
 export enum IDOTypeEnum {
   PUBLIC_SALE,

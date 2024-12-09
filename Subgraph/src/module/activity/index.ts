@@ -22,6 +22,7 @@ export function createInvestorActivity(
   let activity = new InvestorActivity(activityId);
   activity.investor = investor.id;
   activity.value = value;
+  // activity.type = type;
   switch (type) {
     case activityTypes.ActivityType.INVEST: {
       activity.type = activityTypes.INVEST;

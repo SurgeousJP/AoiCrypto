@@ -9,6 +9,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
+import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -145,6 +146,10 @@ export const useDepositLiquidityPool = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
+
+  useEffect(() => {
+    console.log("Error prepare deposit liquidity pool: ", errorPrepare)
+  }, [errorPrepare]);
     
   return {
     error,
