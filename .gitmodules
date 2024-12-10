@@ -7,3 +7,6 @@
 [submodule "SmartContract/lib/solady"]
 	path = SmartContract/lib/solady
 	url = https://github.com/vectorized/solady
+[submodule "AoiCryptoAPI"]
+	path = AoiCryptoAPI
+	url = https://github.com/4nh3k/AoiCryptoAPI.git
