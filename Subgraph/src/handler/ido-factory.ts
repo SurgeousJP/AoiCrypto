@@ -18,6 +18,7 @@ import {
 import * as utils from "../module/util/index";
 import { buildCountFromIdoPool } from "../module/count";
 import { createOrLoadPoolOwner, getPoolOwnerId } from "../module/poolOwner";
+import { createOrLoadAccount } from "../module/account";
 
 export function handlePoolCreated(event: PoolCreated): void {
   const poolId = event.params.poolId;
@@ -94,6 +95,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   let poolOwner = createOrLoadPoolOwner(owner, idoPoolAddress);
   poolOwner.save();
   idoPool.poolOwner = poolOwner.id;
+  idoPool.searchPoolOwner = changetype<Bytes>(owner);
   idoPool.save();
 
   log.info("Creating IDO Pool: {}", [

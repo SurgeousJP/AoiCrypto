@@ -113,6 +113,9 @@ type IDOPool @entity {
   liquidityPool: LiquidityPool!
   analysisDaily: [AnalysisIDODaily!] @derivedFrom(field: "idoPool")
   investorActivities: [InvestorActivity!] @derivedFrom(field: "idoPool")
+
+  # Search props to support filter
+  searchPoolOwner: Bytes!
 }
 
 enum IDOType {
