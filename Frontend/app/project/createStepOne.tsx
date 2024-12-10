@@ -23,6 +23,7 @@ import {
 } from "@/contracts/types/IDO/CreateIDOInput";
 import getABI from "@/contracts/utils/getAbi.util";
 import { GET_TOKENS } from "@/queries/token";
+import { EMPTY_MERKLE_ROOT } from "@/utils/merkleTree";
 import { showToast } from "@/utils/toast";
 import { useQuery } from "@apollo/client";
 import { useNavigation, useRouter } from "expo-router";
@@ -63,6 +64,7 @@ const CreateStepOne = () => {
   });
   const [action, setAction] = useState<LiquidityPoolAction>(createIDO.action);
   const [lockExpired, setLockExpired] = useState(createIDO.lockExpired);
+  const [isPrivateSale, setPrivateSale] = useState(false);
 
   const onNavigateToStepTwo = () => {
     if (isStepOneInputValid()) {
@@ -156,7 +158,7 @@ const CreateStepOne = () => {
   }, [action]);
 
   const onNumericChange = (name: string, value: any) => {
-    setPoolDetail({ ...poolDetails, [name]: value * BIGINT_CONVERSION_FACTOR });
+    setPoolDetail({ ...poolDetails, [name]: BigInt(value * BIGINT_CONVERSION_FACTOR) });
   };
 
   const onLiquidityActionChange = (value: any) => {
@@ -169,7 +171,18 @@ const CreateStepOne = () => {
   };
 
   const onPrivateSaleChange = (checked: boolean) => {
+    setPrivateSale(checked);
     updateCreateIDO("privateSale", checked);
+    if (checked === false) {
+      setPoolDetail({
+        ...poolDetails,
+        ["privateSaleAmount"]: BigInt(0 * BIGINT_CONVERSION_FACTOR),
+      });
+      let poolTime = createIDO.poolTime;
+      poolTime.startPublicSale = BigInt(0);
+      updateCreateIDO("poolTime", poolTime);
+      updateCreateIDO("whitelisted", EMPTY_MERKLE_ROOT);
+    }
   };
 
   const [tokenContract, setTokenContract] = useState({
@@ -196,6 +209,11 @@ const CreateStepOne = () => {
     setPoolDetail({ ...poolDetails, ["tokenAddress"]: value });
     setTokenContract({ ...tokenContract, ["address"]: value });
   };
+
+  console.log("Pricp per token: ", createIDO.poolDetails.privateSaleAmount);
+  console.log(typeof(createIDO.poolDetails.privateSaleAmount));
+  console.log("Hard cap: ", createIDO.poolDetails.hardCap);
+  console.log("Price per token: ", createIDO.poolDetails.pricePerToken);
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -285,6 +303,19 @@ const CreateStepOne = () => {
                   initialValue={createIDO.privateSale}
                 ></Checkbox>
               </View>
+              {isPrivateSale && (
+                <View className="mb-3">
+                  <Input
+                    label={"Private sale amount"}
+                    type="numeric"
+                    name="privateSaleAmount"
+                    value={poolDetails.privateSaleAmount}
+                    onChange={onNumericChange}
+                    isUnitVisible={true}
+                    initialValue={createIDO.poolDetails.privateSaleAmount}
+                  />
+                </View>
+              )}
               <View className="flex flex-row justify-between mb-3">
                 <View className="basis-[48%]">
                   <Input

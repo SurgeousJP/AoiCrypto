@@ -15,6 +15,10 @@ import {
 } from "@/constants/conversion";
 import { StateContext, StateContextType } from "@/contexts/StateProvider";
 import { PoolTime } from "@/contracts/types/IDO/CreateIDOInput";
+import {
+  generateMerkleTreeFromAddressList,
+  getWhitelistMerkleTreeRoot,
+} from "@/utils/merkleTree";
 import { showToast } from "@/utils/toast";
 import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
@@ -33,7 +37,7 @@ function createStepTwo() {
     StateContext
   ) as StateContextType;
   const [poolTime, setPoolTime] = useState<PoolTime>({ ...createIDO.poolTime });
-
+  const [addressList, setAddressList] = useState<string[]>([]);
   useEffect(() => {
     updateCreateIDO("poolTime", poolTime);
   }, [poolTime]);
@@ -50,34 +54,39 @@ function createStepTwo() {
     const formattedData = jsonData.map((item) =>
       Object.keys(item).map((key) => ({
         value: item[key],
-        style: styles[key],
+        style: "font-readexRegular text-sm text-left",
       }))
     );
     setWhitelistData(formattedData);
-  };
-
-  const styles = {
-    "Wallet Address": "font-readexRegular text-sm",
-    Allocation: "font-readexRegular text-sm",
-    Remarks: "font-readexRegular text-sm text-error",
+    const addresses = jsonData
+      .map((item) => Object.keys(item).map((key) => item[key]))
+      .map((item) => item[0]);
+    const merkleTree = generateMerkleTreeFromAddressList(addresses);
+    updateCreateIDO("whitelisted", getWhitelistMerkleTreeRoot(merkleTree));
+    setAddressList(addresses);
   };
 
   const onNavigatingBack = () => {
-    // router.back();
     router.navigate("/project/createStepOne");
   };
 
   const onNavigateToStepThree = () => {
     if (isStepTwoInputValid()) {
-      router.push("/project/createStepThree");
+      router.push({
+        pathname: "/project/createStepThree",
+        params: addressList
+      });
     }
-    // router.push("/project/createStepThree");
   };
 
   const isStepTwoInputValid = () => {
     const currentDate = new Date();
-    const currentDateAfterTenMinutes = new Date(currentDate.getTime() - 60 * 10);
-    const currentDateUnixTimeStamp = getUnixTimestampFromDate(currentDateAfterTenMinutes);
+    const currentDateAfterTenMinutes = new Date(
+      currentDate.getTime() - 60 * 10
+    );
+    const currentDateUnixTimeStamp = getUnixTimestampFromDate(
+      currentDateAfterTenMinutes
+    );
     if (poolTime.startTime < currentDateUnixTimeStamp) {
       showInvalidInputToast("Start time must be at least 10 minutes from now");
       return false;
@@ -91,6 +100,17 @@ function createStepTwo() {
       poolTime.startPublicSale <= currentDateUnixTimeStamp
     ) {
       showInvalidInputToast("Start time must be in the future");
+      return false;
+    }
+
+    if (
+      createIDO.privateSale &&
+      (poolTime.startPublicSale <= poolTime.startTime ||
+        poolTime.startPublicSale >= poolTime.endTime)
+    ) {
+      showInvalidInputToast(
+        "Start public sale time must be between start & finish time"
+      );
       return false;
     }
 
@@ -159,7 +179,7 @@ function createStepTwo() {
                     value={getDateFromUnixTimestamp(poolTime.startPublicSale)}
                     name="startPublicSale"
                     onChange={onDateTimeInputChange}
-                    initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
+                    initialValue={getDateFromUnixTimestamp(poolTime.startPublicSale)}
                   />
                 </View>
               )}
@@ -185,8 +205,6 @@ function createStepTwo() {
                   <FlatList
                     style={{
                       paddingHorizontal: 0,
-                      borderColor: colors.border,
-                      borderWidth: 0.5,
                       elevation: 1,
                       marginTop: 12,
                       marginBottom: 5,

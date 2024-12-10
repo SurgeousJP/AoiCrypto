@@ -26,7 +26,7 @@ import { useCreateIDO } from "@/hooks/smart-contract/IDOFactory/useCreateIDO";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
@@ -38,68 +38,8 @@ import {
 } from "react-native";
 import { TransactionReceipt } from "viem";
 import { useBalance } from "wagmi";
-import * as Clipboard from "expo-clipboard";
 import { handleCopyToClipboard } from "@/utils/clipboard";
 // IMPORT
-
-const headerData = [
-  {
-    value: "Wallet Address",
-    style: "font-readexBold text-sm",
-  },
-  {
-    value: "Allocation",
-    style: "font-readexBold text-sm",
-  },
-  {
-    value: "Remarks",
-    style: "font-readexBold text-sm",
-  },
-];
-const rowData = [
-  [
-    {
-      value: "EurjosAMMpk9V9ygMMxg3dpm3GQA6qXFP2cjH4wsMudf",
-      style: "font-readexRegular text-sm",
-    },
-    {
-      value: "2500 ETH",
-      style: "font-readexRegular text-sm",
-    },
-    {
-      value: "Early Bird Investor",
-      style: "font-readexRegular text-sm text-error",
-    },
-  ],
-  [
-    {
-      value: "EurjosAMMpk9V9ygMMxg3dpm3GQA6qXFP2cjH4wsMudf",
-      style: "font-readexRegular text-sm",
-    },
-    {
-      value: "2500 ETH",
-      style: "font-readexRegular text-sm",
-    },
-    {
-      value: "Early Bird Investor",
-      style: "font-readexRegular text-sm text-error",
-    },
-  ],
-  [
-    {
-      value: "EurjosAMMpk9V9ygMMxg3dpm3GQA6qXFP2cjH4wsMudf",
-      style: "font-readexRegular text-sm",
-    },
-    {
-      value: "2500 ETH",
-      style: "font-readexRegular text-sm",
-    },
-    {
-      value: "Early Bird Investor",
-      style: "font-readexRegular text-sm text-error",
-    },
-  ],
-];
 
 const getBasicDataDisplay = (createIDO: CreateIDOInput) => {
   return [
@@ -199,7 +139,20 @@ const getLiquidDataDisplay = (createIDO: CreateIDOInput) => {
   ];
 };
 
+const getAddressDataDisplay = (addressList: string[]) => {
+  return addressList.map((item) => {
+    return [
+      {
+        style: "text-left font-readexRegular",
+        value: item,
+      },
+    ];
+  });
+};
+
 function createStepThree() {
+  const addressList = Object.values(useLocalSearchParams()) as string[];
+  // console.log(addressList);
   const { createIDO, resetCreateIDO } = useContext(
     StateContext
   ) as StateContextType;
@@ -227,6 +180,9 @@ function createStepThree() {
   const saleConfigData = getSaleConfigDataDisplay(createIDO);
 
   const liquidData = getLiquidDataDisplay(createIDO);
+
+  const whitelistData = getAddressDataDisplay(addressList);
+  // console.log(whitelistData);
 
   // READING ALLOWANCE & WALLET BALANCE
   const {
@@ -264,16 +220,19 @@ function createStepThree() {
 
   useEffect(() => {
     if (ethsAvailable !== -1 && allowanceValue !== -1) {
-      const { liquidityWETH9, hardCap, pricePerToken, liquidityToken } =
+      const { liquidityWETH9, hardCap, pricePerToken, liquidityToken, privateSaleAmount } =
         createIDO.poolDetails;
 
       const walletEnoughWETH9 =
         ethsAvailable >= Number(liquidityWETH9) / BIGINT_CONVERSION_FACTOR;
       setIsWalletEnoughWETH9(walletEnoughWETH9);
 
-      const requiredTokens =
-        Number(hardCap / pricePerToken) +
-        Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
+      const requiredTokens = createIDO.privateSale
+        ? Number(privateSaleAmount / pricePerToken) +
+          Number(hardCap / pricePerToken) +
+          Number(liquidityToken) / BIGINT_CONVERSION_FACTOR
+        : Number(hardCap / pricePerToken) +
+          Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
 
       setNumsOfTokenRequiredForIDO(requiredTokens);
 
@@ -525,7 +484,7 @@ function createStepThree() {
             </View>
           </Container>
         </View>
-        {createIDO.privateSale && (
+        {createIDO.privateSale && whitelistData && (
           <View className="mt-4">
             <Container>
               <View
@@ -545,7 +504,7 @@ function createStepThree() {
                     marginBottom: 5,
                   }}
                   contentContainerStyle={{ flexGrow: 1, gap: 0 }}
-                  data={[headerData, ...rowData]}
+                  data={whitelistData}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={(item) => {
                     return (

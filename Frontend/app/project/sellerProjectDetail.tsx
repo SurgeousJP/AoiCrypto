@@ -4,6 +4,7 @@ import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import ApplicationSegment from "@/components/Segments/Portfolio/Applications";
 import ProfileSegment from "@/components/Segments/Portfolio/Profile";
+import ProjectMetadataSegment from "@/components/Segments/ProjectDetail/ProjectMetadata";
 import SellerAnalyticsSegment from "@/components/Segments/ProjectDetail/SellerAnalytics";
 import SellerWhitelistSegment from "@/components/Segments/ProjectDetail/SellerWhitelist";
 import { colors } from "@/constants/colors";
@@ -61,9 +62,9 @@ export default function SellerProjectDetailScreen() {
       <View className="px-4 py-4 flex-1">
         <View className="pt-4 flex-1">
           <CustomSegmentedControl
-            screens={["Metadata", "Analytics", "Whitelist"]}
+            screens={["Metadata", "Analytics", "Allowlist"]}
             components={[
-              <ApplicationSegment />,
+              <ProjectMetadataSegment />,
               <SellerAnalyticsSegment />,
               <SellerWhitelistSegment />,
             ]}

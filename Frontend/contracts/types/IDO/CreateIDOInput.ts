@@ -71,7 +71,7 @@ const createEmptyPoolDetails = (): PoolDetails => ({
 export const createEmptyPoolTime = (): PoolTime => ({
   startTime: BigInt(getUnixTimestampFromDate(new Date())),
   endTime: BigInt(getUnixTimestampFromDate(new Date())),
-  startPublicSale: 0n,
+  startPublicSale: BigInt(getUnixTimestampFromDate(new Date())),
 });
 
 export const createDefaultCreateIDOInput = (): CreateIDOInput => ({
@@ -94,13 +94,13 @@ export const sampleCreateIDOInput: CreateIDOInput = {
     minInvest: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
     maxInvest: BigInt(0.0003 * BIGINT_CONVERSION_FACTOR),
     liquidityWETH9: BigInt(0.01 * BIGINT_CONVERSION_FACTOR),
-    liquidityToken: BigInt(50 * BIGINT_CONVERSION_FACTOR),
-    privateSaleAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),
+    liquidityToken: BigInt(200 * BIGINT_CONVERSION_FACTOR),
+    privateSaleAmount: 0n,
   },
   poolTime: {
     startTime: BigInt(getUnixTimestampFromDate(new Date())),
     endTime: BigInt(getUnixTimestampFromDate(new Date())),
-    startPublicSale: BigInt(0),
+    startPublicSale: BigInt(getUnixTimestampFromDate(new Date())),
   },
   privateSale: false,
   whitelisted: EMPTY_MERKLE_ROOT,

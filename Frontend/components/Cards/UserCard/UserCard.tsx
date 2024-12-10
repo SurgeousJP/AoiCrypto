@@ -10,7 +10,11 @@ function UserCard() {
   const { address } = useContext(AuthContext);
 
   const copyAddressToClipboard = async () => {
-    await handleCopyToClipboard(address);
+    try {
+      await handleCopyToClipboard(address);
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+    }
   };
 
   const { data, isError, isLoading, error } = useBalance({
