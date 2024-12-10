@@ -3,7 +3,7 @@ import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
-import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import Add from "@/assets/icons/system-icons-svg/Add.svg";
 import { colors } from "@/constants/colors";
 import {
   BIGINT_CONVERSION_FACTOR,
@@ -66,7 +66,7 @@ export default function AdminProjectScreen() {
   const [saleType, setSaleType] = useState<boolean | null>(null);
   const onChangeSaleType = (value: any) => {
     setSaleType(value);
-  }
+  };
 
   const { address } = useContext(AuthContext);
 
@@ -82,24 +82,24 @@ export default function AdminProjectScreen() {
       orderBy,
       orderDirection,
       status: saleType,
-      poolOwner: address
+      poolOwner: address,
     },
   });
 
   return (
     <View className="flex-1 bg-background">
       <View className="bg-surface mb-4">
-      <View
-      className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3"
-      style={{ elevation: 2 }}
-    >
-      <Searchbar placeholder={"Search projects"} />
-      <TouchableOpacity onPress={() => {}}>
-        <Link href={"/seller/setting"}>
-          <Setting fill={colors.secondary} width={24} height={24} />
-        </Link>
-      </TouchableOpacity>
-    </View>
+        <View
+          className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3"
+          style={{ elevation: 2 }}
+        >
+          <Searchbar placeholder={"Search projects"} />
+          <TouchableOpacity onPress={() => {}}>
+            <Link href={"/project/createOverview"}>
+              <Add width={24} height={24} stroke={colors.secondary} />
+            </Link>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View
@@ -192,7 +192,7 @@ export default function AdminProjectScreen() {
       {!isProjectLoading && projectQueryData && (
         <FlatList
           style={{ paddingHorizontal: 16 }}
-          columnWrapperStyle={{ gap: 4, marginBottom: 4,overflow: "visible" }}
+          columnWrapperStyle={{ gap: 4, marginBottom: 4, overflow: "visible" }}
           contentContainerStyle={{ flexGrow: 1, gap: 8, overflow: "visible" }}
           data={projectQueryData.idopools}
           numColumns={2}
@@ -211,6 +211,7 @@ export default function AdminProjectScreen() {
                   raisedAmount={
                     item.item.raisedTokenAmount / BIGINT_CONVERSION_FACTOR
                   }
+                  isSeller={true}
                 />
               </View>
             );

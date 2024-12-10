@@ -1,10 +1,10 @@
 import { colors } from "@/constants/colors";
 import getABI from "@/contracts/utils/getAbi.util";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { Image, ImageBackground, Pressable, Text, View } from "react-native";
 import * as Progress from "react-native-progress";
-import { useReadContract, useReadContracts, useToken } from "wagmi";
+import { useReadContracts } from "wagmi";
 
 interface ProjectCardProps {
   isInProgress: boolean;
@@ -13,6 +13,7 @@ interface ProjectCardProps {
   pricePerToken: number;
   raisedAmount: number;
   tokenAddress: `0x${string}`;
+  isSeller?: boolean;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -21,6 +22,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   softCap = 1,
   pricePerToken = 0,
   raisedAmount = 0,
+  isSeller = false,
   ...props
 }) => {
   const projectIllust = require("@/assets/images/ProjectIllust.png");
@@ -31,6 +33,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   const handleNavigateProjectDetail = (e) => {
     router.navigate("/project/1");
   };
+
+  const handleNavigateSellerProjectDetail = (e) => {
+    router.navigate("/project/sellerProjectDetail");
+  };
+
+  const handleNavigation = isSeller
+    ? handleNavigateSellerProjectDetail
+    : handleNavigateProjectDetail;
 
   const tokenContract = {
     address: props.tokenAddress,
@@ -54,7 +64,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   if (isInProgress)
     return (
-      <Pressable onPress={handleNavigateProjectDetail}>
+      <Pressable onPress={handleNavigation}>
         <View
           className="flex flex-col bg-surface rounded-lg overflow-hidden border-border border h-[224px]"
           style={{ elevation: 1 }}

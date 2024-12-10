@@ -41,6 +41,7 @@ module.exports = {
         error: "#CD0000",
         fall: "F7931A",
         success: "#098C26",
+        pending: "#C29119"
       },
       fontSize: {
         xxs: "4px", // Extra Extra Small

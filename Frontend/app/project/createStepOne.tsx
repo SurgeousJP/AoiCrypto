@@ -4,6 +4,7 @@ import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import Checkbox from "@/components/Inputs/Checkbox/Checkbox";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Input from "@/components/Inputs/Input/Input";
+import DataRow from "@/components/Items/Project/DataRow";
 import Container from "@/components/Layouts/Container";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
@@ -15,20 +16,19 @@ import {
 } from "@/constants/conversion";
 import { RESET_VALUE_DROPDOWN } from "@/constants/display";
 import { AuthContext } from "@/contexts/AuthProvider";
-import {
-  StateContext,
-  StateContextType,
-} from "@/contexts/StateProvider";
+import { StateContext, StateContextType } from "@/contexts/StateProvider";
 import {
   LiquidityPoolAction,
   PoolDetails,
 } from "@/contracts/types/IDO/CreateIDOInput";
+import getABI from "@/contracts/utils/getAbi.util";
 import { GET_TOKENS } from "@/queries/token";
 import { showToast } from "@/utils/toast";
 import { useQuery } from "@apollo/client";
 import { useNavigation, useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useReadContracts } from "wagmi";
 // IMPORT
 
 const CreateStepOne = () => {
@@ -77,7 +77,10 @@ const CreateStepOne = () => {
       return false;
     }
 
-    console.log(createIDO);
+    if (name === undefined || symbol === undefined) {
+      showInvalidInputToast("The token address is not valid");
+      return false;
+    }
 
     if (poolDetails.pricePerToken <= 0n) {
       showInvalidInputToast("Price per token must be positive");
@@ -107,7 +110,9 @@ const CreateStepOne = () => {
     const minWETH9 = BigInt(0.01 * BIGINT_CONVERSION_FACTOR);
 
     if (poolDetails.liquidityWETH9 < minWETH9) {
-      showInvalidInputToast("Liquidity ETH to List DEX must be at least 0.01 ETH");
+      showInvalidInputToast(
+        "Liquidity ETH to List DEX must be at least 0.01 ETH"
+      );
       return false;
     }
 
@@ -154,10 +159,6 @@ const CreateStepOne = () => {
     setPoolDetail({ ...poolDetails, [name]: value * BIGINT_CONVERSION_FACTOR });
   };
 
-  const onTokenAddressChange = (value: any) => {
-    setPoolDetail({ ...poolDetails, ["tokenAddress"]: value });
-  };
-
   const onLiquidityActionChange = (value: any) => {
     setAction(value);
   };
@@ -169,6 +170,31 @@ const CreateStepOne = () => {
 
   const onPrivateSaleChange = (checked: boolean) => {
     updateCreateIDO("privateSale", checked);
+  };
+
+  const [tokenContract, setTokenContract] = useState({
+    address: poolDetails.tokenAddress,
+    abi: getABI("AoiERC20"),
+  });
+
+  const { data: token } = useReadContracts({
+    contracts: [
+      {
+        ...tokenContract,
+        functionName: "name",
+      },
+      {
+        ...tokenContract,
+        functionName: "symbol",
+      },
+    ],
+  });
+
+  const [name, symbol] = token?.map((token) => token.result) || ["Loading..."];
+
+  const onTokenAddressChange = (name: any, value: any) => {
+    setPoolDetail({ ...poolDetails, ["tokenAddress"]: value });
+    setTokenContract({ ...tokenContract, ["address"]: value });
   };
 
   return (
@@ -202,15 +228,30 @@ const CreateStepOne = () => {
                 Basic Information
               </Text>
               <View className="mb-3">
-                <Text className="font-readexSemiBold">Select token</Text>
-                {tokens && (
-                  <CustomDropdown
-                    placeholder="Select token"
-                    data={tokens}
-                    value={poolDetails.tokenAddress}
-                    onChange={onTokenAddressChange}
-                  />
-                )}
+                <Input
+                  label={"Token address"}
+                  name={"Token address"}
+                  value={poolDetails.tokenAddress}
+                  type="text"
+                  onChange={onTokenAddressChange}
+                  initialValue={poolDetails.tokenAddress}
+                />
+              </View>
+              <View className="flex flex-col w-full mb-3">
+                <Text className="text-sm font-readexSemiBold">
+                  Token name & symbol:
+                </Text>
+                <Text
+                  className={`text-sm font-readexRegular ${
+                    name !== undefined && symbol !== undefined
+                      ? "text-success"
+                      : "text-error"
+                  } `}
+                >
+                  {name !== undefined && symbol !== undefined
+                    ? name + " " + "(" + symbol + ")"
+                    : "Wrong token input"}
+                </Text>
               </View>
               <View className="mb-3">
                 <Input

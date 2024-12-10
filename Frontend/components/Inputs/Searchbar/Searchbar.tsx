@@ -7,7 +7,7 @@ interface SearchbarProps {
   value: any;
   placeholder?: string;
   onChange: (e: any) => void;
-  onPerformSearch: () => void;
+  onPerformSearch?: () => void;
 }
 
 const Searchbar: React.FC<SearchbarProps> = (props) => {

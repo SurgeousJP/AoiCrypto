@@ -18,6 +18,7 @@ const Row: React.FC<RowProps> = ({ contents }) => {
         );
       })}
     </View>
+    
   );
 };
 
