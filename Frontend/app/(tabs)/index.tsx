@@ -1,103 +1,265 @@
-// Import
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
-import LoadingModal from "@/components/Displays/Modal/LoadingModal";
+import DividerLine from "@/components/Displays/Divider/DividerLine";
+import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
+import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
-import XProject from "@/components/Items/Project/XProject";
+import SearchHeader from "@/components/Layouts/SearchHeader";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import { colors } from "@/constants/colors";
-import { AuthContext } from "@/contexts/AuthProvider";
-import { sampleCreateNewERC20Input } from "@/contracts/types/ERC20/CreateNewERC20Input";
-import { useCreateNewERC20 } from "@/hooks/smart-contract/AoiERC20/useCreateNewERC20";
-import { showToast } from "@/utils/toast";
-import React, { useContext, useEffect, useState } from "react";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getUnixTimestampFromDate,
+} from "@/constants/conversion";
+import { GET_PROJECTS } from "@/queries/projects";
+import { useQuery } from "@apollo/client";
+import { Ionicons } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
+  FlatList,
   Pressable,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
-import { TransactionReceipt } from "viem";
-// Import
+import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
+import { Link, router } from "expo-router";
 
-export default function HomeScreen() {
-  const banner = require("@/assets/logos/Kima.png");
+export default function ProjectScreen() {
+  const projectState = [
+    { label: "Public", value: "PUBLIC_SALE" },
+    { label: "Private", value: "PRIVATE_SALE" },
+    { label: "Reset", value: null },
+  ];
+
+  const projectStatuses = [
+    { label: "Ongoing", value: "Ongoing" },
+    { label: "Upcoming", value: "Upcoming" },
+    { label: "Ended", value: "Ended" },
+    { label: "All", value: null },
+  ];
+
+  const [selectedOption, setSelectedOption] = useState<string>("Most recent");
+  const [isPriceAscending, setPriceAscending] = useState<boolean | undefined>(
+    undefined
+  );
+
+  const getOrderVariables = () => {
+    switch (selectedOption) {
+      case "Popular":
+        return { orderBy: "raisedAmount", orderDirection: "desc" };
+      case "Token price":
+        let setOrderDirection = isPriceAscending ? "asc" : "desc";
+        let setOrderBy = "pricePerToken";
+        return { orderBy: setOrderBy, orderDirection: setOrderDirection };
+      default: // "Most recent"
+        return { orderBy: "startTime", orderDirection: "desc" };
+    }
+  };
+
+  const handlePress = (option: string) => {
+    setSelectedOption(option);
+    if (option === "Token price") {
+      if (isPriceAscending === true) {
+        setPriceAscending(false);
+      } else if (isPriceAscending === false) {
+        setPriceAscending(undefined);
+      } else if (isPriceAscending === undefined) {
+        setPriceAscending(true);
+      }
+    }
+  };
+
+  const [saleType, setSaleType] = useState<string | null>(null);
+  const onChangeSaleType = (value: any) => {
+    setSaleType(value);
+  };
+
+  const [status, setStatus] = useState<string | null>(null);
+  const onChangeStatus = (value: any) => {
+    setStatus(value);
+  };
 
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading((loading) => false);
   }, []);
 
-  const { chainId, address, isConnected } = useContext(AuthContext);
+  const { orderBy, orderDirection } = getOrderVariables();
 
-  if (loading) {
-    return (
-      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text className="font-readexRegular text-primary text-md">Loading</Text>
-      </View>
-    );
-  }
+  const {
+    loading: isProjectLoading,
+    error,
+    data: projectQueryData,
+  } = useQuery(GET_PROJECTS(status, saleType), {
+    variables: {
+      orderBy,
+      orderDirection,
+    },
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const onChangeSearchTerm = (value: any) => {
+    setSearchTerm(value);
+  };
+  const [displayData, setDisplayData] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (projectQueryData !== undefined && projectQueryData.idopools !== undefined) {
+      console.log(projectQueryData.idopools);
+      setDisplayData(projectQueryData.idopools.filter(ido => ido.tokenPool.includes(searchTerm)))
+    }
+  }, [projectQueryData, searchTerm]);
 
   return (
-    <ScrollView className="flex flex-col px-4 bg-background">
-      <View className="rounded-2xl mt-4">
-        <View className="w-full rounded-2xl h-fit">
-          <Image
-            source={banner}
-            style={{
-              flex: 1,
-              width: "100%",
-              height: 112,
-              borderRadius: 16,
-            }}
-          />
+    <View className="flex-1 bg-background">
+      <View className="bg-surface mb-4">
+        <View
+          className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3"
+          style={{ elevation: 2 }}
+        >
+          <Searchbar value={searchTerm} onChange={onChangeSearchTerm} placeholder={"Search by token contract address"} />
+          <TouchableOpacity onPress={() => {}}>
+            <Link href={"/settings"}>
+              <Setting fill={colors.secondary} width={24} height={24} />
+            </Link>
+          </TouchableOpacity>
         </View>
       </View>
 
-      <View className="flex flex-col mt-4">
-        <View className="flex flex-row justify-between mb-1">
-          <Text className="text-textColor text-md font-readexBold">
-            Upcoming Projects
-          </Text>
-          <Pressable>
-            <Text className="text-md font-readexSemiBold text-primary">
-              More
+      <View
+        className="bg-surface flex flex-col mb-4 mx-4 py-2 border-border border-[1px] rounded-md"
+        style={{ elevation: 2 }}
+      >
+        <View className="flex flex-row justify-between mx-2 items-center py-1">
+          <Pressable
+            className="flex-1"
+            onPress={() => handlePress("Most recent")}
+          >
+            <Text
+              className={`font-readexRegular mx-auto ${
+                selectedOption === "Most recent"
+                  ? "text-blue-500"
+                  : "text-secondary"
+              }`}
+            >
+              Most recent
+            </Text>
+          </Pressable>
+
+          <VerticalDivider />
+
+          <Pressable className="flex-1" onPress={() => handlePress("Popular")}>
+            <Text
+              className={`font-readexRegular mx-auto ${
+                selectedOption === "Popular"
+                  ? "text-blue-500"
+                  : "text-secondary"
+              }`}
+            >
+              Popular
+            </Text>
+          </Pressable>
+
+          <VerticalDivider />
+
+          <Pressable
+            className="flex flex-row space-x-1 items-center flex-1"
+            onPress={() => handlePress("Token price")}
+          >
+            <Text
+              className={`font-readexRegular mx-auto ${
+                selectedOption === "Token price"
+                  ? "text-blue-500"
+                  : "text-secondary"
+              }`}
+            >
+              Token price{" "}
+              {orderBy === "pricePerToken" && orderDirection === "asc" && (
+                <Ionicons
+                  name="arrow-up-outline"
+                  size={12}
+                  color={colors.primary}
+                />
+              )}
+              {orderBy === "pricePerToken" && orderDirection === "desc" && (
+                <Ionicons
+                  name="arrow-down-outline"
+                  size={12}
+                  color={colors.primary}
+                />
+              )}
             </Text>
           </Pressable>
         </View>
-        <View className="flex flex-row space-x-2">
-          <View className="flex-1 overflow-visible">
-            <ProjectCard isInProgress={true} isPrivateSale={false} />
-          </View>
-          <View className="flex-1 overflow-visible">
-            <ProjectCard isInProgress={false} isPrivateSale={false} />
-          </View>
-        </View>
-        <View className="flex flex-col mt-4 mb-2">
-          <View className="flex flex-row justify-between mb-1">
-            <Text className="text-textColor text-md font-readexBold">
-              Funded Projects
-            </Text>
-            <Pressable>
-              <Text className="text-md font-readexSemiBold text-primary">
-                More
-              </Text>
-            </Pressable>
-          </View>
-          <View className="flex flex-col">
-            <Pressable className="mb-2">
-              <XProject />
-            </Pressable>
-            <Pressable className="mb-2">
-              <XProject />
-            </Pressable>
-            <Pressable className="mb-2">
-              <XProject />
-            </Pressable>
-          </View>
+        <DividerLine />
+        <View className="overflow-hidden px-2">
+          <ScrollView
+            horizontal={true}
+            indicatorStyle="white"
+            showsHorizontalScrollIndicator={false}
+            scrollToOverflowEnabled={false}
+          >
+            <View className="mt-2 mx-2 flex flex-row justify-between space-x-2 items-center">
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Stage"
+                  width={96}
+                  data={projectState}
+                  value={saleType}
+                  onChange={onChangeSaleType}
+                />
+              </View>
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Status"
+                  width={96}
+                  data={projectStatuses}
+                  value={status}
+                  onChange={onChangeStatus}
+                />
+              </View>
+            </View>
+          </ScrollView>
         </View>
       </View>
-    </ScrollView>
+      {!isProjectLoading && projectQueryData && displayData && (
+        <FlatList
+          style={{ paddingHorizontal: 16 }}
+          columnWrapperStyle={{ gap: 4, marginBottom: 4 }}
+          contentContainerStyle={{ flexGrow: 1, gap: 8 }}
+          data={displayData}
+          numColumns={2}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={(item) => {
+            return (
+              <View className="basis-1/2">
+                <ProjectCard
+                  isInProgress={true}
+                  isPrivateSale={false}
+                  softCap={item.item.softCap / BIGINT_CONVERSION_FACTOR}
+                  pricePerToken={
+                    item.item.pricePerToken / BIGINT_CONVERSION_FACTOR
+                  }
+                  raisedAmount={
+                    item.item.raisedTokenAmount / BIGINT_CONVERSION_FACTOR
+                  }
+                  tokenAddress={item.item.tokenPool}
+                  poolId={item.item.id}
+                />
+              </View>
+            );
+          }}
+        />
+      )}
+      {isProjectLoading && (
+        <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text className="font-readexRegular text-primary text-md">
+            Loading
+          </Text>
+        </View>
+      )}
+    </View>
   );
 }

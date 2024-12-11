@@ -74,7 +74,7 @@ function createStepTwo() {
     if (isStepTwoInputValid()) {
       router.push({
         pathname: "/project/createStepThree",
-        params: addressList
+        params: addressList,
       });
     }
   };
@@ -97,6 +97,7 @@ function createStepTwo() {
     }
     if (
       createIDO.privateSale &&
+      createIDO.poolDetails.privateSaleAmount < createIDO.poolDetails.hardCap &&
       poolTime.startPublicSale <= currentDateUnixTimeStamp
     ) {
       showInvalidInputToast("Start time must be in the future");
@@ -105,6 +106,7 @@ function createStepTwo() {
 
     if (
       createIDO.privateSale &&
+      createIDO.poolDetails.privateSaleAmount < createIDO.poolDetails.hardCap &&
       (poolTime.startPublicSale <= poolTime.startTime ||
         poolTime.startPublicSale >= poolTime.endTime)
     ) {
@@ -171,18 +173,22 @@ function createStepTwo() {
                   initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
                 />
               </View>
-              {createIDO.privateSale && (
-                <View className="mb-3">
-                  <Input
-                    label={"Start public sale time"}
-                    type="datetime"
-                    value={getDateFromUnixTimestamp(poolTime.startPublicSale)}
-                    name="startPublicSale"
-                    onChange={onDateTimeInputChange}
-                    initialValue={getDateFromUnixTimestamp(poolTime.startPublicSale)}
-                  />
-                </View>
-              )}
+              {createIDO.privateSale &&
+                createIDO.poolDetails.privateSaleAmount <
+                  createIDO.poolDetails.hardCap && (
+                  <View className="mb-3">
+                    <Input
+                      label={"Start public sale time"}
+                      type="datetime"
+                      value={getDateFromUnixTimestamp(poolTime.startPublicSale)}
+                      name="startPublicSale"
+                      onChange={onDateTimeInputChange}
+                      initialValue={getDateFromUnixTimestamp(
+                        poolTime.startPublicSale
+                      )}
+                    />
+                  </View>
+                )}
             </View>
           </Container>
         </View>

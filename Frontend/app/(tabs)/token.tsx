@@ -1,4 +1,4 @@
-import Add from "@/assets/icons/system-icons-svg/Add.svg";
+import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import NotFound from "@/components/Displays/SearchResult/NotFound";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import TokenRow from "@/components/Items/Token/TokenRow";
@@ -18,7 +18,7 @@ import {
   View,
 } from "react-native";
 
-export default function TokenSellerScreen() {
+export default function TokenScreen() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(false);
@@ -59,14 +59,14 @@ export default function TokenSellerScreen() {
       <View className="bg-surface mb-4">
         <Pressable className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
           <Searchbar
-            placeholder={"Search token"}
+            placeholder={"Search by name or address"}
             value={searchText}
             onChange={setSearchText}
             onPerformSearch={() => {}}
           />
           <TouchableOpacity>
-            <Link href={"/token"}>
-              <Add width={24} height={24} stroke={colors.secondary} />
+            <Link href={"/settings"}>
+              <Setting fill={colors.secondary} width={24} height={24} />
             </Link>
           </TouchableOpacity>
         </Pressable>
@@ -101,6 +101,7 @@ export default function TokenSellerScreen() {
                 ).toString()}
                 ownerAddress={address}
                 chainId={chainId}
+                displayMintIcon={false}
               />
             );
           }}

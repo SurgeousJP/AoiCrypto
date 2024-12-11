@@ -59,12 +59,12 @@ const Overview = () => {
               <Text className="font-readexRegular">50 ETH ($30K)</Text>
             </View>
 
-            <View className="flex flex-col mt-2">
+            {/* <View className="flex flex-col mt-2">
               <Input label={"Amount"} />
               <View className="mt-4">
                 <NormalButton content={"Import HIGH to wallet"} />
               </View>
-            </View>
+            </View> */}
           </View>
         </Container>
       </View>

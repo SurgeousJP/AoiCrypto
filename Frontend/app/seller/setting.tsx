@@ -33,7 +33,7 @@ const AdminSetting = () => {
       <View className="border-b-[0.2px] border-border" style={{ elevation: 2 }}>
         <View className="flex flex-row justify-between items-center bg-surface py-2 px-4">
           <Text className="text-[20px] font-readexSemiBold text-center mx-auto">
-            Setting
+            Settings
           </Text>
         </View>
       </View>

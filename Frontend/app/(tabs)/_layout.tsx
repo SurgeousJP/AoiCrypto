@@ -5,11 +5,10 @@ import { NativeWindStyleSheet } from "nativewind";
 import React, { useContext, useEffect, useState } from "react";
 
 import Calendar from "@/assets/icons/system-icons-svg/Calendar.svg";
-import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
-import Home from "@/assets/icons/system-icons-svg/Home.svg";
-import Layers from "@/assets/icons/system-icons-svg/Layers.svg";
 import Pipe from "@/assets/icons/system-icons-svg/Pipe.svg";
+import Trade from "@/assets/icons/system-icons-svg/Trade.svg";
 import { AuthContext } from "@/contexts/AuthProvider";
+import Dollar from "@/assets/icons/system-icons-svg/Dollar.svg";
 
 NativeWindStyleSheet.setOutput({
   default: "native",
@@ -56,19 +55,29 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color, focused }) => (
-            <Home stroke={focused ? colors.primary : colors.secondary} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="project"
-        options={{
           headerShown: false,
           title: "Projects",
           tabBarIcon: ({ color, focused }) => (
             <Calendar stroke={focused ? colors.primary : colors.secondary} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="token"
+        options={{
+          title: "Token",
+          tabBarIcon: ({ color, focused }) => (
+            <Dollar fill={focused ? colors.primary : colors.secondary} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="trade"
+        options={{
+          title: "Trade",
+          tabBarIcon: ({ color, focused }) => (
+            <Trade stroke={focused ? colors.primary : colors.secondary} />
           ),
         }}
       />
@@ -78,24 +87,6 @@ export default function TabLayout() {
           title: "Portfolio",
           tabBarIcon: ({ color, focused }) => (
             <Pipe stroke={focused ? colors.primary : colors.secondary} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="staking"
-        options={{
-          title: "Staking",
-          tabBarIcon: ({ color, focused }) => (
-            <Layers stroke={focused ? colors.primary : colors.secondary} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="missions"
-        options={{
-          title: "Missions",
-          tabBarIcon: ({ color, focused }) => (
-            <Dollar stroke={focused ? colors.primary : colors.secondary} />
           ),
         }}
       />

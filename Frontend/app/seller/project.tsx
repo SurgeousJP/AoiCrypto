@@ -14,7 +14,7 @@ import { GET_PROJECTS_FROM_OWNER } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -26,10 +26,17 @@ import {
 } from "react-native";
 
 export default function AdminProjectScreen() {
-  const projectState = [
+  const projectStates = [
     { label: "Public", value: "PUBLIC_SALE" },
     { label: "Private", value: "PRIVATE_SALE" },
     { label: "Reset", value: null },
+  ];
+
+  const projectStatuses = [
+    { label: "Ongoing", value: "Ongoing" },
+    { label: "Upcoming", value: "Upcoming" },
+    { label: "Ended", value: "Ended" },
+    { label: "All", value: null },
   ];
 
   const [selectedOption, setSelectedOption] = useState<string>("Most recent");
@@ -63,28 +70,42 @@ export default function AdminProjectScreen() {
     }
   };
 
-  const [saleType, setSaleType] = useState<boolean | null>(null);
+  const [saleType, setSaleType] = useState<string | null>(null);
   const onChangeSaleType = (value: any) => {
     setSaleType(value);
   };
+  const [status, setStatus] = useState<string | null>(null);
+  const onChangeStatus = (value: any) => {
+    setStatus(value);
+  }
 
   const { address } = useContext(AuthContext);
 
   const { orderBy, orderDirection } = getOrderVariables();
 
-  const {
-    loading: isProjectLoading,
-    error,
-    data: projectQueryData,
-  } = useQuery(GET_PROJECTS_FROM_OWNER(saleType), {
-    variables: {
-      currentTime: getUnixTimestampFromDate(new Date()),
-      orderBy,
-      orderDirection,
-      status: saleType,
-      poolOwner: address,
-    },
-  });
+  const { loading: isProjectLoading, data: projectQueryData } = useQuery(
+    GET_PROJECTS_FROM_OWNER(status, saleType),
+    {
+      variables: {
+        orderBy,
+        orderDirection,
+        poolOwner: address,
+      },
+    }
+  );
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const onChangeSearchTerm = (value: any) => {
+    setSearchTerm(value);
+  };
+  const [displayData, setDisplayData] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    if (projectQueryData !== undefined && projectQueryData.idopools !== undefined) {
+      console.log(projectQueryData.idopools);
+      setDisplayData(projectQueryData.idopools.filter(ido => ido.tokenPool.includes(searchTerm)))
+    }
+  }, [projectQueryData, searchTerm]);
 
   return (
     <View className="flex-1 bg-background">
@@ -93,7 +114,7 @@ export default function AdminProjectScreen() {
           className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3"
           style={{ elevation: 2 }}
         >
-          <Searchbar placeholder={"Search projects"} />
+          <Searchbar placeholder={"Search by token contract address"} value={searchTerm} onChange={onChangeSearchTerm}/>
           <TouchableOpacity onPress={() => {}}>
             <Link href={"/project/createOverview"}>
               <Add width={24} height={24} stroke={colors.secondary} />
@@ -180,9 +201,18 @@ export default function AdminProjectScreen() {
                 <CustomDropdown
                   placeholder="Stage"
                   width={96}
-                  data={projectState}
+                  data={projectStates}
                   value={saleType}
                   onChange={onChangeSaleType}
+                />
+              </View>
+              <View className="flex-1">
+                <CustomDropdown
+                  placeholder="Status"
+                  width={96}
+                  data={projectStatuses}
+                  value={status}
+                  onChange={onChangeStatus}
                 />
               </View>
             </View>
@@ -212,6 +242,7 @@ export default function AdminProjectScreen() {
                     item.item.raisedTokenAmount / BIGINT_CONVERSION_FACTOR
                   }
                   isSeller={true}
+                  poolId={item.item.id}
                 />
               </View>
             );

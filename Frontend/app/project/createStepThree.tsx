@@ -97,7 +97,8 @@ const getSaleConfigDataDisplay = (createIDO: CreateIDOInput) => {
         createIDO.poolTime.endTime
       ).toLocaleString(),
     },
-    ...(createIDO.privateSale
+    ...(createIDO.privateSale &&
+    createIDO.poolDetails.privateSaleAmount < createIDO.poolDetails.hardCap
       ? [
           {
             tile: "Initial sale time",
@@ -220,19 +221,16 @@ function createStepThree() {
 
   useEffect(() => {
     if (ethsAvailable !== -1 && allowanceValue !== -1) {
-      const { liquidityWETH9, hardCap, pricePerToken, liquidityToken, privateSaleAmount } =
+      const { liquidityWETH9, hardCap, pricePerToken, liquidityToken } =
         createIDO.poolDetails;
 
       const walletEnoughWETH9 =
         ethsAvailable >= Number(liquidityWETH9) / BIGINT_CONVERSION_FACTOR;
       setIsWalletEnoughWETH9(walletEnoughWETH9);
 
-      const requiredTokens = createIDO.privateSale
-        ? Number(privateSaleAmount / pricePerToken) +
-          Number(hardCap / pricePerToken) +
-          Number(liquidityToken) / BIGINT_CONVERSION_FACTOR
-        : Number(hardCap / pricePerToken) +
-          Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
+      const requiredTokens =
+        Number(hardCap / pricePerToken) +
+        Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
 
       setNumsOfTokenRequiredForIDO(requiredTokens);
 
