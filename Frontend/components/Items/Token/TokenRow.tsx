@@ -5,12 +5,7 @@ import { handleCopyToClipboard } from "@/utils/clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
-import {
-  ActivityIndicator,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 interface TokenProps {
   name: string;
@@ -20,10 +15,13 @@ interface TokenProps {
   address: string;
   ownerAddress: string;
   chainId: number;
+  displayMintIcon?: boolean;
 }
 
-const TokenRow: React.FC<TokenProps> = (props) => {
-
+const TokenRow: React.FC<TokenProps> = ({
+  displayMintIcon = true,
+  ...props
+}) => {
   const { balance } = useReadTokenBalance({
     chainId: props.chainId,
     tokenAddress: props.address,
@@ -35,14 +33,14 @@ const TokenRow: React.FC<TokenProps> = (props) => {
     name: props.name,
     initialSupply: props.initialSupply,
     maxSupply: props.totalSupply,
-    tokenAddress: props.address
-  }
+    tokenAddress: props.address,
+  };
 
   const handleOnMintToken = () => {
     router.push({
       pathname: "/token/mintToken",
-      params: token
-    })
+      params: token,
+    });
   };
 
   const copyAddressToClipboard = async () => {
@@ -61,9 +59,11 @@ const TokenRow: React.FC<TokenProps> = (props) => {
               (${props.symbol})
             </Text>
           </View>
-          <TouchableOpacity onPress={handleOnMintToken}>
-            <Ionicons name="add-outline" size={16} color={colors.secondary} />
-          </TouchableOpacity>
+          {displayMintIcon && (
+            <TouchableOpacity onPress={handleOnMintToken}>
+              <Ionicons name="add-outline" size={16} color={colors.secondary} />
+            </TouchableOpacity>
+          )}
         </View>
         <View className="self-start flex flex-row justify-between w-full">
           <Text className="font-readexRegular text-sm">Token balance: </Text>
@@ -94,16 +94,20 @@ const TokenRow: React.FC<TokenProps> = (props) => {
             </TouchableOpacity>
           </Text>
         </View>
-        <View className="flex flex-row justify-between w-full">
-          <Text className="font-readexRegular text-sm">
-            Token supply range:{" "}
-          </Text>
-          <Text className="font-readexSemiBold text-sm">
-            {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}
-            {" - "}
-            {Intl.NumberFormat("en-US").format(Number(props.totalSupply))}{" "}
-          </Text>
-        </View>
+        {displayMintIcon && (
+          <View className="flex flex-row justify-between w-full">
+            <Text className="font-readexRegular text-sm">
+              Token supply range:{" "}
+            </Text>
+            <Text className="font-readexSemiBold text-sm">
+              {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}
+              {" - "}
+              {Intl.NumberFormat("en-US").format(
+                Number(props.totalSupply)
+              )}{" "}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

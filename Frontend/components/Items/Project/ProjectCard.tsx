@@ -13,6 +13,7 @@ interface ProjectCardProps {
   pricePerToken: number;
   raisedAmount: number;
   tokenAddress: `0x${string}`;
+  poolId: string;
   isSeller?: boolean;
 }
 
@@ -30,12 +31,20 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const router = useRouter();
 
+  console.log(props.poolId);
+
   const handleNavigateProjectDetail = (e) => {
-    router.navigate("/project/1");
+    router.push({
+      pathname:"/project/1",
+      params: { poolId: props.poolId }
+    });
   };
 
   const handleNavigateSellerProjectDetail = (e) => {
-    router.navigate("/project/sellerProjectDetail");
+    router.push({
+      pathname:"/project/sellerProjectDetail",
+      params: { poolId: props.poolId }
+    });
   };
 
   const handleNavigation = isSeller

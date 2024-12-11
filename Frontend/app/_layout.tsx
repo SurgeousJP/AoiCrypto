@@ -31,11 +31,13 @@ import * as SplashScreen from "expo-splash-screen";
 import Toast, { BaseToast } from "react-native-toast-message";
 import { path } from "@/constants/path";
 import StateProvider from "@/contexts/StateProvider";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Buffer } from "buffer";
+import {
+  commonToastStyle,
+  defaultText1Style,
+  defaultText2Style,
+} from "@/utils/toast";
 
 // Import
 
@@ -78,70 +80,36 @@ export default function RootLayout() {
       <BaseToast
         {...props}
         style={{
-          width: "92%",
-          height: "auto",
-          backgroundColor: colors.background,
-          borderLeftColor: colors.success,
-          paddingHorizontal: 0,
-          marginHorizontal: 0,
+          ...commonToastStyle,
+          borderLeftColor: colors.error,
         }}
-        contentContainerStyle={{}}
-        text1Style={{
-          fontFamily: "ReadexPro_400Regular",
-          fontSize: 16,
-          fontWeight: "400",
-        }}
-        text2Style={{
-          fontFamily: "ReadexPro_400Regular",
-          fontSize: 14,
-          fontWeight: "400",
-        }}
+        text1Style={defaultText1Style}
+        text2Style={defaultText2Style}
+        text2NumberOfLines={2}
       />
     ),
     info: (props: any) => (
       <BaseToast
         {...props}
         style={{
-          width: "92%",
-          backgroundColor: colors.background,
-          borderLeftColor: colors.secondary,
-          paddingHorizontal: 0,
-          marginHorizontal: 0,
+          ...commonToastStyle,
+          borderLeftColor: colors.error,
         }}
-        contentContainerStyle={{}}
-        text1Style={{
-          fontFamily: "ReadexPro_400Regular",
-          fontSize: 16,
-          fontWeight: "400",
-        }}
-        text2Style={{
-          fontFamily: "ReadexPro_400Regular",
-          fontSize: 14,
-          fontWeight: "400",
-        }}
+        text1Style={defaultText1Style}
+        text2Style={defaultText2Style}
+        text2NumberOfLines={2}
       />
     ),
     error: (props: any) => (
       <BaseToast
         {...props}
         style={{
-          width: "92%",
-          backgroundColor: colors.background,
+          ...commonToastStyle,
           borderLeftColor: colors.error,
-          paddingHorizontal: 0,
-          marginHorizontal: 0,
         }}
-        contentContainerStyle={{}}
-        text1Style={{
-          fontFamily: "ReadexPro_400Regular",
-          fontSize: 16,
-          fontWeight: "400",
-        }}
-        text2Style={{
-          fontFamily: "ReadexPro_400Regular",
-          fontSize: 14,
-          fontWeight: "400",
-        }}
+        text1Style={defaultText1Style}
+        text2Style={defaultText2Style}
+        text2NumberOfLines={2}
       />
     ),
   };
@@ -238,7 +206,6 @@ export default function RootLayout() {
                           header: ({ options }) => (
                             <TitleHeader title={"Mission Detail"} />
                           ),
-                        
                         }}
                       />
                       <Stack.Screen
@@ -296,7 +263,7 @@ export default function RootLayout() {
                           ),
                         }}
                       />
-                       <Stack.Screen
+                      <Stack.Screen
                         name={path.mintToken}
                         options={{
                           headerShown: true,

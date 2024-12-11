@@ -133,6 +133,16 @@ const CreateStepOne = () => {
       return false;
     }
 
+    if (isPrivateSale && poolDetails.privateSaleAmount <= 0n){
+      showInvalidInputToast("Private sale amount must be positive");
+      return false;
+    }
+
+    if (isPrivateSale && poolDetails.privateSaleAmount > poolDetails.hardCap){
+      showInvalidInputToast("Private sale amount must not exceed the hard cap");
+      return false;
+    }
+
     if (action === LiquidityPoolAction.LOCK && lockExpired <= 0n) {
       showInvalidInputToast("Lock expired value is not valid");
       return false;

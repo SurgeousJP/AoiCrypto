@@ -14,7 +14,6 @@ import { Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
 
 const TokenForm = () => {
-
   const [token, setToken] = useState({
     name: "",
     symbol: "",

@@ -1,71 +1,111 @@
-import Container from "@/components/Layouts/Container";
+import DisplayBox from "@/components/Displays/DisplayBox/DisplayBox";
+import { colors } from "@/constants/colors";
+import { BIGINT_CONVERSION_FACTOR, getStringValueFromBigInt, getDateFromUnixTimestamp } from "@/constants/conversion";
 import React from "react";
-import { View, Text } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 
-const TokenNPool = () => {
-  const tokenOverview = [
-    { label: "Address", data: "N/A" },
-    { label: "Name", data: "High" },
-    { label: "Symbol", data: "High" },
-    { label: "Decimals", data: "18" },
-    { label: "Total Supply", data: "21,000,000" },
+interface Props {
+  project: any;
+  token: any;
+}
+
+const getTokenDataDisplay = (project: any, token: any) => {
+  const [name, symbol, maxSupply] = token?.map((token) => token.result) || ["Loading..."];
+  return [
+    {
+      tile: "Address",
+      data: project.tokenPool,
+    },
+    {
+      tile: "Name",
+      data: name
+    },
+    {
+      tile: "Symbol",
+      data: "$" + symbol,
+    },
+    {
+      tile: "Max total supply",
+      data:  Intl.NumberFormat("en-US").format(
+        Number(maxSupply) / BIGINT_CONVERSION_FACTOR)
+    },
+    {
+      tile: "Price per token",
+      data: project.pricePerToken / BIGINT_CONVERSION_FACTOR + " ETH",
+    },
   ];
+};
 
-  const poolInfo = [
-    { label: "Address", data: "N/A" },
-    { label: "Token For Presale", data: "14,444,444 High" },
-    { label: "Token For Liquidity", data: "6,852,953.118 High" },
-    { label: "Initial Market Cap", data: "$44,483.2935" },
-    { label: "SoftCap", data: "50ETH" },
-    { label: "Start Time", data: "2024/11/07" },
-    { label: "End Time", data: "2024/11/08" },
-    { label: "Listing On", data: "Pancakeswap" },
-    { label: "Liquidity", data: "51%" },
-    { label: "Listing Until", data: "180 days after pool ends" },
-  ]
+const getSaleDataDisplay = (project: any) => {
+  return [
+    {
+      tile: "Sale type",
+      data: project.idoType === "PUBLIC_SALE" ? "Public sale" : "Private sale",
+    },
+    {
+      tile: "Soft Cap",
+      data: getStringValueFromBigInt(project.softCap) + " ETH",
+    },
+    {
+      tile: "Hard Cap",
+      data: getStringValueFromBigInt(project.hardCap) + " ETH",
+    },
+    // {
+    //   tile: "Min Invest",
+    //   data: getStringValueFromBigInt(project.minInvest) + " ETH",
+    // },
+    // {
+    //   tile: "Max Invest",
+    //   data: getStringValueFromBigInt(project.maxInvest) + " ETH",
+    // },
+    {
+      tile: "Start time",
+      data: getDateFromUnixTimestamp(project.createdTime).toLocaleString(),
+    },
+    {
+      tile: "End time",
+      data: getDateFromUnixTimestamp(project.endTime).toLocaleString(),
+    },
+  ];
+};
 
+const getLiquidDataDisplay = (project: any) => {
+  return [
+    {
+      tile: "Pool address",
+      data: project.id
+    },
+    {
+      tile: "ETH to List DEX",
+      data: getStringValueFromBigInt(project.liquidityWETHAmount) + " ETH",
+    },
+    {
+      tile: "Token to List DEX",
+      data: getStringValueFromBigInt(project.liquidityTokenAmount) + " ETH",
+    },
+    {
+      tile: "Action for List DEX",
+      data: project.liquidityPool.action,
+    },
+    ...(project.liquidityPool.action === "LOCK"
+      ? [
+          {
+            tile: "Lock Expired",
+            data: getDateFromUnixTimestamp(
+              project.liquidityPool.lockExpired
+            ).toLocaleString(),
+          },
+        ]
+      : []),
+  ];
+};
+
+const TokenNPool:React.FC<Props> = ({project, token}) => {
   return (
     <View className="w-full">
-      <View className="mt-2">
-        <Container>
-          <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
-            <Text className="font-readexBold text-md text-primary">
-              Token
-            </Text>
-            {tokenOverview.map((p) => {
-              return (
-                <View
-                  key={p.label}
-                  className="flex flex-row justify-between mt-2"
-                >
-                  <Text className="font-readexRegular">{p.label}</Text>
-                  <Text className="font-readexRegular">{p.data}</Text>
-                </View>
-              );
-            })}
-          </View>
-        </Container>
-      </View>
-      <View className="mt-4">
-        <Container>
-          <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
-            <Text className="font-readexBold text-md text-primary">
-              Pool Info
-            </Text>
-            {poolInfo.map((p) => {
-              return (
-                <View
-                  key={p.label}
-                  className="flex flex-row justify-between mt-2"
-                >
-                  <Text className="font-readexRegular">{p.label}</Text>
-                  <Text className="font-readexRegular">{p.data}</Text>
-                </View>
-              );
-            })}
-          </View>
-        </Container>
-      </View>
+      {token ? <DisplayBox values={getTokenDataDisplay(project, token)} title={"Token"}  /> : <ActivityIndicator size={"large"} color={colors.primary} />}
+      <DisplayBox values={getSaleDataDisplay(project)} title={"Sale info"}  />
+      <DisplayBox values={getLiquidDataDisplay(project)} title={"Pool info"}  />
     </View>
   );
 };
