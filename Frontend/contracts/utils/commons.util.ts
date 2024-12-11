@@ -1,6 +1,7 @@
 import { IDOFactory } from "@/contracts/abis/IDOFactory.abi";
 import { ERC20Factory } from "@/contracts/abis/ERC20Factory.abi";
 import { AoiERC20 } from "@/contracts/abis/AoiERC20.abi";
+import { IDOPool } from "../abis/IDOPool.abi";
 
 export const SMART_CONTRACT_ADDRESS = {
   IDOFactory: {
@@ -14,7 +15,8 @@ export const SMART_CONTRACT_ADDRESS = {
 export const ABI_CONTRACT = {
   IDOFactory: IDOFactory,
   ERC20Factory: ERC20Factory,
-  AoiERC20: AoiERC20
+  AoiERC20: AoiERC20,
+  IDOPool: IDOPool
 }
 
 export const EXPLORER_URL = {

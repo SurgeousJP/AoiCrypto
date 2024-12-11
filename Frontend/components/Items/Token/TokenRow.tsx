@@ -94,16 +94,20 @@ const TokenRow: React.FC<TokenProps> = ({
             </TouchableOpacity>
           </Text>
         </View>
-        <View className="flex flex-row justify-between w-full">
-          <Text className="font-readexRegular text-sm">
-            Token supply range:{" "}
-          </Text>
-          <Text className="font-readexSemiBold text-sm">
-            {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}
-            {" - "}
-            {Intl.NumberFormat("en-US").format(Number(props.totalSupply))}{" "}
-          </Text>
-        </View>
+        {displayMintIcon && (
+          <View className="flex flex-row justify-between w-full">
+            <Text className="font-readexRegular text-sm">
+              Token supply range:{" "}
+            </Text>
+            <Text className="font-readexSemiBold text-sm">
+              {Intl.NumberFormat("en-US").format(Number(props.initialSupply))}
+              {" - "}
+              {Intl.NumberFormat("en-US").format(
+                Number(props.totalSupply)
+              )}{" "}
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );

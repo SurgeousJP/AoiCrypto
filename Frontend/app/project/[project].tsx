@@ -4,15 +4,23 @@ import Description from "@/components/Segments/ProjectDetail/Description";
 import Overview from "@/components/Segments/ProjectDetail/Overview";
 import PrivateSaleSegment from "@/components/Segments/ProjectDetail/PrivateSale";
 import TokenNPool from "@/components/Segments/ProjectDetail/TokenNPool";
-import { getDateFromUnixTimestamp, getStringValueFromBigInt } from "@/constants/conversion";
+import { colors } from "@/constants/colors";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getDateFromUnixTimestamp,
+  getStringValueFromBigInt,
+} from "@/constants/conversion";
+import getABI from "@/contracts/utils/getAbi.util";
 import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
+import { useReadContracts } from "wagmi";
 // Import
 
 const getBasicDataDisplay = (project: any) => {
+  console.log("Basic data display: ", project);
   return [
     {
       tile: "Token address",
@@ -20,7 +28,7 @@ const getBasicDataDisplay = (project: any) => {
     },
     {
       tile: "Price per token",
-      data: project.pricePerToken,
+      data: project.pricePerToken / BIGINT_CONVERSION_FACTOR + " ETH",
     },
   ];
 };
@@ -54,16 +62,12 @@ const getSaleConfigDataDisplay = (project: any) => {
   return [
     {
       tile: "Start time",
-      data: getDateFromUnixTimestamp(
-        project.createdTime
-      ).toLocaleString(),
+      data: getDateFromUnixTimestamp(project.createdTime).toLocaleString(),
     },
     {
       tile: "End time",
-      data: getDateFromUnixTimestamp(
-        project.endTime
-      ).toLocaleString(),
-    }
+      data: getDateFromUnixTimestamp(project.endTime).toLocaleString(),
+    },
   ];
 };
 
@@ -71,13 +75,11 @@ const getLiquidDataDisplay = (project: any) => {
   return [
     {
       tile: "ETH to List DEX",
-      data:
-        getStringValueFromBigInt(project.liquidityWETHAmount) + " ETH",
+      data: getStringValueFromBigInt(project.liquidityWETHAmount) + " ETH",
     },
     {
       tile: "Token to List DEX",
-      data:
-        getStringValueFromBigInt(project.liquidityTokenAmount) + " ETH",
+      data: getStringValueFromBigInt(project.liquidityTokenAmount) + " ETH",
     },
     {
       tile: "Action for List DEX",
@@ -88,7 +90,7 @@ const getLiquidDataDisplay = (project: any) => {
           {
             tile: "Lock Expired",
             data: getDateFromUnixTimestamp(
-              project.lockExpired
+              project.liquidityPool.lockExpired
             ).toLocaleString(),
           },
         ]
@@ -104,32 +106,60 @@ const ProjectDetail = () => {
   const {
     loading,
     error,
-    data: project,
+    data: query,
   } = useQuery(GET_PROJECT_BY_POOL_ID, {
     variables: {
       poolId: poolId,
     },
   });
 
-  console.log("Pool id: ", poolId);
+  const project = query?.idopool;
 
-  useEffect(() => {
-    console.log(project);
-  }, [project]);
+  const tokenContract = {
+    address: project?.tokenPool,
+    abi: getABI("AoiERC20"),
+  } as const;
+
+  const { data: token } = useReadContracts({
+    contracts: [
+      {
+        ...tokenContract,
+        functionName: "name",
+      },
+      {
+        ...tokenContract,
+        functionName: "symbol",
+      },
+      {
+        ...tokenContract,
+        functionName: "MAX_SUPPLY",
+      },
+    ],
+  });
 
   return (
     <ScrollView
       className="bg-background"
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      {!isPrivateSale && (
+      {!isPrivateSale &&
+      !loading &&
+      project !== undefined &&
+      token !== undefined ? (
         <View className="px-4 py-4">
           <View className="pt-4 flex flex-col">
             <CustomSegmentedControl
-              screens={["Overview", "Description", "Token & Pool"]}
-              components={[<Overview />, <Description />, <TokenNPool />]}
+              screens={["Overview", "Token & Pool"]}
+              components={[
+                <Overview project={project} token={token} />,
+                <TokenNPool project={project} token={token} />,
+              ]}
             />
           </View>
+        </View>
+      ) : (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size={"large"} color={colors.primary} />
         </View>
       )}
 

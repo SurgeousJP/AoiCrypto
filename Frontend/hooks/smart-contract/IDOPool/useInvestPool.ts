@@ -8,6 +8,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
+import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -54,6 +55,7 @@ export const useInvestPool = ({
     functionName: "investPool",
     // <---! FUNCTION IN ABI !---> //
     query: { enabled: enabled && !!chainId, retry: false },
+    // value: 
   });
 
   const {
@@ -146,6 +148,10 @@ export const useInvestPool = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
+
+  useEffect(() => {
+    console.log("Error invest pool hook: ", error);
+  }, [error]);
     
   return {
     error,
