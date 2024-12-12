@@ -241,10 +241,10 @@ export default function ProjectScreen() {
           contentContainerStyle={{ flexGrow: 1, gap: 4 }}
           data={displayData}
           numColumns={2}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.id}
           renderItem={(item) => {
             return (
-              <View className="basis-1/2">
+              <View key={item.item.id} className="basis-1/2">
                 <ProjectCard
                   isInProgress={true}
                   isPrivateSale={false}

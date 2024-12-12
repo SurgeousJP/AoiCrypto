@@ -1,3 +1,4 @@
+import { ProjectStatus } from "@/app/project/[project]";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import Container from "@/components/Layouts/Container";
 import Description from "@/components/Segments/ProjectDetail/Description";
@@ -5,7 +6,13 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 
-const PrivateSaleSegment = () => {
+interface Props {
+  project: any;
+  token: any;
+  status: ProjectStatus | undefined;
+}
+
+const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
   const router = useRouter();
   const navigateToWhitelistApplication = () => {
     router.navigate("/project/whitelistForm");

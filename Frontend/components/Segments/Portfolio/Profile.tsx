@@ -75,7 +75,7 @@ const ProfileSegment = () => {
         {summaryItems.map((summary, index) => {
           const Icon = summary.icon;
           return (
-            <View id={index.toString()} className="">
+            <View id={summary.label} className="">
               <View className="flex flex-row justify-between p-4 bg-surface">
                 <View className="flex flex-row space-x-2">
                   <Icon stroke={colors.secondary} />

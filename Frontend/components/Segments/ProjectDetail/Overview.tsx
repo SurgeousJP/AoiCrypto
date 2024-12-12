@@ -6,8 +6,8 @@ import Container from "@/components/Layouts/Container";
 import { colors } from "@/constants/colors";
 import {
   BIGINT_CONVERSION_FACTOR,
-  getUnixTimestampFromDate,
 } from "@/constants/conversion";
+import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
 import { showToast } from "@/utils/toast";
@@ -22,25 +22,24 @@ import { useBalance } from "wagmi";
 interface Props {
   project: any;
   token: any;
+  status: ProjectStatus | undefined;
 }
 
-export const getProjectStatusAndCreatedTime = (project: any) => {
-  const currentDateTstamp = getUnixTimestampFromDate(new Date());
-
+export const getProjectStatusAndCreatedTime = (status: ProjectStatus) => {
   let projectStatus = "";
   let projectStatusStyle = "";
-  if (currentDateTstamp < project.createdTime) {
+  if (status === ProjectStatus.Upcoming) {
     projectStatus = "Upcoming";
     projectStatusStyle = "text-primary";
-  } else if (currentDateTstamp >= project.endTime) {
+  } else if (status === ProjectStatus.Ended) {
     projectStatus = "Ended";
     projectStatusStyle = "text-secondary";
   } else {
-    projectStatus = "Sale live";
+    projectStatus = "Ongoing";
     projectStatusStyle = "text-success";
   }
 
-  return {projectStatus, projectStatusStyle}
+  return { projectStatus, projectStatusStyle };
 };
 
 const getProjectOverview = (project: any, token: any) => {
@@ -48,7 +47,8 @@ const getProjectOverview = (project: any, token: any) => {
     "Loading...",
   ];
 
-  const {projectStatus, projectStatusStyle} = getProjectStatusAndCreatedTime(project);
+  const { projectStatus, projectStatusStyle } =
+    getProjectStatusAndCreatedTime(project);
 
   return [
     { label: "Status", data: projectStatus, textDataStyle: projectStatusStyle },
@@ -102,14 +102,14 @@ const getProjectOverview = (project: any, token: any) => {
   ];
 };
 
-const Overview: React.FC<Props> = ({ project, token }) => {
+const Overview: React.FC<Props> = ({ project, token, status }) => {
   const projectOverview = getProjectOverview(project, token);
   const projectIllust = require("@/assets/images/ProjectIllust.png");
   const projectLogo = require("@/assets/images/ProjectLogo.png");
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
     "Loading...",
   ];
-  const {projectStatus, projectStatusStyle} = getProjectStatusAndCreatedTime(project);
+  const { projectStatus } = getProjectStatusAndCreatedTime(status);
   const [investAmount, setInvestAmount] = useState(0);
   const onChangeInvestAmount = (name: any, value: any) => {
     setInvestAmount(value);
@@ -230,7 +230,7 @@ const Overview: React.FC<Props> = ({ project, token }) => {
               height={12}
               borderRadius={6}
             />
-            <View className="flex flex-row justify-between mt-3">
+            <View className="flex flex-row justify-between mt-3 mb-3">
               <Text className="font-readexRegular">
                 {project.softCap / BIGINT_CONVERSION_FACTOR}{" "}
                 <Text className="text-secondary">ETH</Text>
@@ -241,31 +241,44 @@ const Overview: React.FC<Props> = ({ project, token }) => {
               </Text>
             </View>
 
-            {projectStatus !== "Ended" && <View className="flex flex-col mt-3">
-              <Input
-                type="numeric"
-                label={`Amount (Max: ${maxAmountInvest} ETH)`}
-                name={""}
-                value={investAmount}
-                onChange={onChangeInvestAmount}
-              />
-              <View>
-                <Text className="font-readexRegular text-primary">
-                  You will receive{" "}
-                  {(investAmount / project.pricePerToken) *
-                    BIGINT_CONVERSION_FACTOR}{" "}
-                  {symbol}{" "}
-                  <Text className="font-readexSemiBold">(Estimated)</Text>
-                </Text>
-              </View>
-              <View className="mt-3">
-                <PrimaryButton
-                  content={`Import $${symbol} to wallet`}
-                  onPress={onTriggerInvestPool}
-                  disabled={isLoading}
+            {projectStatus === "Ongoing" && (
+              <View className="flex flex-col mt-3">
+                <Input
+                  type="numeric"
+                  label={`Amount (Max: ${maxAmountInvest} ETH)`}
+                  name={""}
+                  value={investAmount}
+                  onChange={onChangeInvestAmount}
                 />
+                <View>
+                  <Text className="font-readexRegular text-primary">
+                    You will receive{" "}
+                    {(investAmount / project.pricePerToken) *
+                      BIGINT_CONVERSION_FACTOR}{" "}
+                    {symbol}{" "}
+                    <Text className="font-readexSemiBold">(Estimated)</Text>
+                  </Text>
+                </View>
+                <View className="mt-3">
+                  <PrimaryButton
+                    content={`Import $${symbol} to wallet`}
+                    onPress={onTriggerInvestPool}
+                    disabled={isLoading}
+                  />
+                </View>
               </View>
-            </View>}
+            )}
+            {projectStatus === "Upcoming" && (
+              <Text className="font-readexRegular text-primary">
+                The project funding has not started yet. Please wait until the
+                start time.
+              </Text>
+            )}
+            {projectStatus === "Ended" && (
+              <Text className="font-readexRegular text-secondary">
+                The project funding has ended.
+              </Text>
+            )}
           </View>
         </Container>
       </View>

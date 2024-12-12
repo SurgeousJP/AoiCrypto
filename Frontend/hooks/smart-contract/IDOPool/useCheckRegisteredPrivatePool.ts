@@ -8,8 +8,8 @@ import { useReadContract } from "wagmi";
 type Props = {
   chainId?: number;
   // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
-  tokenAddress: `0x${string}`;
-  ownerAddress: `0x${string}`;
+  poolAddress: `0x${string}`;
+  spenderAddress: `0x${string}`;
   // <---! CONTRACT PROPS IN ABI ENDS HERE !---> //
   enabled?: boolean;
   onSuccess?: (data: TransactionReceipt) => void;
@@ -17,41 +17,42 @@ type Props = {
   onError?: (error?: Error) => void;
 };
 
-export const useReadTokenBalance = ({
+export const useCheckRegisteredPrivatePool = ({
   chainId,
-  tokenAddress,
-  ownerAddress,
+  poolAddress,
+  spenderAddress,
   enabled,
 }: Props) => {
+  const isEnabled =
+    (!!poolAddress && !!spenderAddress && !!enabled) || !!chainId;
+
+  console.log("Is enabled: ", isEnabled);
+  console.log("Pool address: ", poolAddress);
   const {
-    data: balance,
+    data: isRegistered,
     isLoading,
     isFetching,
     isError,
     isSuccess,
-    refetch: refetchBalance,
+    refetch: refetchAllowance,
     error
   } = useReadContract({
     chainId,
-    address: tokenAddress,
-    args: [ownerAddress],
-    abi: getABI("AoiERC20"),
-    functionName: "balanceOf",
-    query: { enabled: enabled && !!chainId},
+    address: enabled ? poolAddress : undefined,
+    args: isEnabled ? [spenderAddress] : undefined,
+    abi: getABI("IDOPool"),
+    functionName: "isRegistered",
+    query: { enabled: isEnabled },
   });
 
-  const refetch = enabled ? refetchBalance : undefined;
-
-  // useEffect(() => {
-  //   console.log("Error get balance of token: ", error);
-  // }, [error]);
+  const refetch = enabled ? refetchAllowance : undefined;
 
   return {
     isLoading,
     isFetching,
     isSuccess,
     isError,
-    balance,
+    isRegistered,
     refetch
   };
 };

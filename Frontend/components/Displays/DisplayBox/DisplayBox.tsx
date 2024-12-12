@@ -32,7 +32,7 @@ const DisplayBox: React.FC<Props> = ({ title, values }) => {
                 await handleCopyToClipboard(item.data);
               };
               return (
-                <View className="w-full flex-row justify-between items-center">
+                <View key={Math.random()} className="w-full flex-row justify-between items-center">
                   <Text className="text-sm font-readexRegular text-secondary">
                     {item.tile}
                   </Text>
@@ -51,8 +51,8 @@ const DisplayBox: React.FC<Props> = ({ title, values }) => {
             }
 
             return (
-              <View className={`${index > 0 ? "mt-3" : ""}`}>
-                <DataRow key={index} title={item.tile} data={item.data} />
+              <View key={Math.random()} className={`${index > 0 ? "mt-3" : ""}`}>
+                <DataRow key={Math.random()} title={item.tile} data={item.data} />
               </View>
             );
           })}

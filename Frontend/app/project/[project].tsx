@@ -5,100 +5,21 @@ import PrivateSaleSegment from "@/components/Segments/ProjectDetail/PrivateSale"
 import TokenNPool from "@/components/Segments/ProjectDetail/TokenNPool";
 import { colors } from "@/constants/colors";
 import {
-  BIGINT_CONVERSION_FACTOR,
-  getDateFromUnixTimestamp,
-  getStringValueFromBigInt,
+  getUnixTimestampFromDate,
 } from "@/constants/conversion";
+import { ProjectState, ProjectStatus } from "@/constants/enum";
+import { AuthContext } from "@/contexts/AuthProvider";
 import getABI from "@/contracts/utils/getAbi.util";
+import { useCheckRegisteredPrivatePool } from "@/hooks/smart-contract/IDOPool/useCheckRegisteredPrivatePool";
 import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import { useReadContracts } from "wagmi";
 // Import
 
-const getBasicDataDisplay = (project: any) => {
-  // console.log("Basic data display: ", project);
-  return [
-    {
-      tile: "Token address",
-      data: project.tokenPool,
-    },
-    {
-      tile: "Price per token",
-      data: project.pricePerToken / BIGINT_CONVERSION_FACTOR + " ETH",
-    },
-  ];
-};
-
-const getSaleDataDisplay = (project: any) => {
-  return [
-    {
-      tile: "Sale type",
-      data: project.idoType === "PUBLIC_SALE" ? "Public sale" : "Private sale",
-    },
-    {
-      tile: "Soft Cap",
-      data: getStringValueFromBigInt(project.softCap) + " ETH",
-    },
-    {
-      tile: "Hard Cap",
-      data: getStringValueFromBigInt(project.hardCap) + " ETH",
-    },
-    {
-      tile: "Min Invest",
-      data: getStringValueFromBigInt(project.minInvest) + " ETH",
-    },
-    {
-      tile: "Max Invest",
-      data: getStringValueFromBigInt(project.maxInvest) + " ETH",
-    },
-  ];
-};
-
-const getSaleConfigDataDisplay = (project: any) => {
-  return [
-    {
-      tile: "Start time",
-      data: getDateFromUnixTimestamp(project.createdTime).toLocaleString(),
-    },
-    {
-      tile: "End time",
-      data: getDateFromUnixTimestamp(project.endTime).toLocaleString(),
-    },
-  ];
-};
-
-const getLiquidDataDisplay = (project: any) => {
-  return [
-    {
-      tile: "ETH to List DEX",
-      data: getStringValueFromBigInt(project.liquidityWETHAmount) + " ETH",
-    },
-    {
-      tile: "Token to List DEX",
-      data: getStringValueFromBigInt(project.liquidityTokenAmount) + " ETH",
-    },
-    {
-      tile: "Action for List DEX",
-      data: project.liquidityPool.action,
-    },
-    ...(project.liquidityPool.action === "LOCK"
-      ? [
-          {
-            tile: "Lock Expired",
-            data: getDateFromUnixTimestamp(
-              project.liquidityPool.lockExpired
-            ).toLocaleString(),
-          },
-        ]
-      : []),
-  ];
-};
-
 const ProjectDetail = () => {
-  const isPrivateSale = false;
   const params = useLocalSearchParams();
   const { poolId } = params;
 
@@ -113,6 +34,93 @@ const ProjectDetail = () => {
   });
 
   const project = query?.idopool;
+  const { address, chainId } = useContext(AuthContext);
+
+  const [poolAddress, setPoolAddress] = useState(project?.idopool?.poolAddress);
+
+  useEffect(() => {
+    if (project !== undefined && project.idopool !== undefined){
+      setPoolAddress(poolAddress);
+    }
+  }, [project]);
+
+  const {
+    isLoading: isLoadingCheckingRegistered,
+    isError: isErrorCheckingRegistered,
+    isSuccess: isSuccessCheckingRegistered,
+    isRegistered,
+  } = useCheckRegisteredPrivatePool({
+    chainId,
+    poolAddress: poolAddress,
+    spenderAddress: address,
+    enabled: true,
+  });
+
+  console.log("Is registered: ", isRegistered);
+
+  const currentDateTstamp = getUnixTimestampFromDate(new Date());
+  const isPurelyPrivate = project?.privateSaleAmount === project?.hardCap;
+  const isPurelyPublic = project?.idoType === "PUBLIC_SALE";
+
+  
+  const [projectState, setProjectState] = useState<ProjectState | undefined>(
+    undefined
+  );
+
+  const [projectStatus, setProjectStatus] = useState<ProjectStatus | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+    if (isPurelyPublic) {
+      setProjectState(ProjectState.Public);
+    }
+    if (isPurelyPrivate) {
+      setProjectState(ProjectState.Private);
+    }
+    if (isPurelyPrivate || isPurelyPublic) {
+      if (currentDateTstamp < project?.startTime) {
+        setProjectStatus(ProjectStatus.Upcoming);
+        return;
+      }
+      if (currentDateTstamp > project?.endTime) {
+        setProjectStatus(ProjectStatus.Ended);
+        return;
+      }
+      setProjectStatus(ProjectStatus.Ongoing);
+      return;
+    }
+
+    if (currentDateTstamp < project?.startPublicSale) {
+      setProjectState(ProjectState.Private);
+
+      if (currentDateTstamp < project?.startTime) {
+        setProjectStatus(ProjectStatus.Upcoming);
+        return;
+      }
+      setProjectStatus(ProjectStatus.Ongoing);
+      return;
+    }
+    if (currentDateTstamp >= project?.startPublicSale) {
+      setProjectState(ProjectState.Public);
+      if (currentDateTstamp > project?.endTime) {
+        setProjectStatus(ProjectStatus.Ended);
+        return;
+      }
+      setProjectStatus(ProjectStatus.Ongoing);
+      return;
+    }
+  }, [loading]);
+
+  const [registered, setRegistered] = useState<boolean | undefined>(undefined);
+  useEffect(() => {
+    if (!isLoadingCheckingRegistered) {
+      setRegistered(isRegistered);
+    }
+  }, [isLoadingCheckingRegistered]);
 
   const tokenContract = {
     address: project?.tokenPool,
@@ -141,32 +149,67 @@ const ProjectDetail = () => {
       className="bg-background"
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      {!isPrivateSale &&
-      !loading &&
-      project !== undefined &&
-      token !== undefined ? (
-        <View className="py-1">
-          <View className="pt-4 flex flex-col">
-            <CustomSegmentedControl
-              screens={["Overview", "Token & Pool"]}
-              components={[
-                <Overview project={project} token={token} />,
-                <TokenNPool project={project} token={token} />,
-              ]}
-            />
-          </View>
-        </View>
-      ) : (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size={"large"} color={colors.primary} />
-        </View>
-      )}
+      {(() => {
+        // Helper conditions
+        const isLoaded =
+          !loading &&
+          !isLoadingCheckingRegistered &&
+          token !== undefined &&
+          projectState !== undefined &&
+          projectStatus !== undefined;
 
-      {isPrivateSale && (
-        <View className="p-4">
-          <PrivateSaleSegment />
-        </View>
-      )}
+        const isPrivateSaleActive =
+          isLoaded && projectState === ProjectState.Private && isRegistered === true;
+
+        const isPublicSaleActive =
+          isLoaded && projectState === ProjectState.Public;
+
+        const isPrivateSaleUnavailable =
+          isLoaded && projectState === ProjectState.Private && (isRegistered === false || isRegistered === undefined);
+
+        // Main rendering logic
+        if (isPrivateSaleActive || isPublicSaleActive) {
+          return (
+            <View className="py-1">
+              <View className="pt-4 flex flex-col">
+                <CustomSegmentedControl
+                  screens={["Overview", "Token & Pool"]}
+                  components={[
+                    <Overview
+                      project={project!}
+                      token={token!}
+                      status={projectStatus!}
+                    />,
+                    <TokenNPool project={project!} token={token!} />,
+                  ]}
+                />
+              </View>
+            </View>
+          );
+        }
+
+        if (isPrivateSaleUnavailable) {
+          return (
+            <View className="p-4">
+              <PrivateSaleSegment
+                status={projectStatus!}
+                project={project!}
+                token={token!}
+              />
+            </View>
+          );
+        }
+
+        if (loading || isLoadingCheckingRegistered || token === undefined) {
+          return (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color={colors.primary} />
+            </View>
+          );
+        }
+
+        return null; // Default fallback
+      })()}
     </ScrollView>
   );
 };
