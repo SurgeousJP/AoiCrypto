@@ -76,7 +76,7 @@ export default function TabLayout() {
         options={{
           title: "Token",
           tabBarIcon: ({ color, focused }) => (
-            <Dollar stroke={focused ? colors.primary : colors.secondary} />
+            <Dollar fill={focused ? colors.primary : colors.secondary} />
           ),
         }}
       />

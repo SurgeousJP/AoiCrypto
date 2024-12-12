@@ -1,4 +1,5 @@
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
+import DividerLine from "@/components/Displays/Divider/DividerLine";
 import NotFound from "@/components/Displays/SearchResult/NotFound";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import TokenRow from "@/components/Items/Token/TokenRow";
@@ -56,8 +57,8 @@ export default function TokenScreen() {
 
   return (
     <View className="flex-1 pb-2 bg-background">
-      <View className="bg-surface mb-4">
-        <Pressable className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
+      <View className="bg-surface mb-2">
+        <Pressable className="flex flex-row justify-between items-center bg-surface px-2 space-x-2 border-b-[0.5px] border-border py-2 pb-3">
           <Searchbar
             placeholder={"Search by name or address"}
             value={searchText}
@@ -77,33 +78,34 @@ export default function TokenScreen() {
       displayTokens !== undefined &&
       displayTokens.length > 0 ? (
         <FlatList
-          style={{ paddingHorizontal: 16 }}
+          style={{ paddingHorizontal: 0 }}
           contentContainerStyle={{
-            borderRadius: 8,
             overflow: "hidden",
-            borderColor: colors.border,
-            borderWidth: 1,
           }}
           numColumns={1}
           data={displayTokens}
           keyExtractor={(item, index) => index.toString()}
           renderItem={(item) => {
-            return (
-              <TokenRow
-                name={item.item.name}
-                symbol={item.item.symbol}
-                totalSupply={(
-                  item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR
-                ).toString()}
-                address={item.item.address}
-                initialSupply={(
-                  item.item.initialSupply / BIGINT_CONVERSION_FACTOR
-                ).toString()}
-                ownerAddress={address}
-                chainId={chainId}
-                displayMintIcon={false}
-              />
-            );
+              return (
+                <View>
+                  {item.index === 0 && <DividerLine />}
+                  <TokenRow
+                    name={item.item.name}
+                    symbol={item.item.symbol}
+                    totalSupply={(
+                      item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR
+                    ).toString()}
+                    address={item.item.address}
+                    initialSupply={(
+                      item.item.initialSupply / BIGINT_CONVERSION_FACTOR
+                    ).toString()}
+                    ownerAddress={address}
+                    chainId={chainId}
+                    displayMintIcon={false}
+                  />
+                  {item.index < displayTokens.length && <DividerLine />}
+                </View>
+              );
           }}
         />
       ) : (

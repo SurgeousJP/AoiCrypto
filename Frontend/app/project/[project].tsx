@@ -146,7 +146,7 @@ const ProjectDetail = () => {
       !loading &&
       project !== undefined &&
       token !== undefined ? (
-        <View className="px-4 py-4">
+        <View className="py-1">
           <View className="pt-4 flex flex-col">
             <CustomSegmentedControl
               screens={["Overview", "Token & Pool"]}

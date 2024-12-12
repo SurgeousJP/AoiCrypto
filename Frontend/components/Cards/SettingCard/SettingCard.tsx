@@ -41,9 +41,8 @@ function SettingCard({
 
   return (
     <View
-      className={`flex flex-row ${getCardStyle(
-        pos
-      )} items-center w-full h-[56px] justify-between p-4 bg-white border-border border-[0.5px]`}
+      className={`flex flex-row 
+      )} items-center w-full h-[56px] justify-between p-4 bg-white border-border border-[0.25px]`}
     >
       <View className="flex flex-row items-center">
         {icon}

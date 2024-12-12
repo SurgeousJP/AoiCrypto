@@ -19,8 +19,7 @@ const DisplayBox: React.FC<Props> = ({ title, values }) => {
     <View className="mt-4">
       <Container>
         <View
-          className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
-          style={{ elevation: 2 }}
+          className="bg-surface px-4 py-2 flex flex-col "
         >
           <Text className="font-readexBold text-primary text-md mb-2">
             {title}

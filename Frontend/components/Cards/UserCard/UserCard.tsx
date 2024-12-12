@@ -23,7 +23,7 @@ function UserCard() {
   
   return (
     <View
-      className="px-4 py-2 bg-white rounded-2xl shadow flex flex-row justify-between items-center border-border border-[0.5px]"
+      className="px-4 py-2 bg-white shadow flex flex-row justify-between items-center border-border border-[0.25px]"
       style={{ elevation: 2 }}
     >
       <View className="flex flex-col justify-between flex-1">

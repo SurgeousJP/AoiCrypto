@@ -245,11 +245,11 @@ const CreateStepOne = () => {
         RightComponent={<Back stroke={"#ffffff"} width={24} height={24} />}
       />
 
-      <View className="flex flex-col p-4">
+      <View className="flex flex-col mt-1">
         <View className="mt-2">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -299,7 +299,7 @@ const CreateStepOne = () => {
         <View className="mt-4">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -382,7 +382,7 @@ const CreateStepOne = () => {
         <View className="mt-4">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">

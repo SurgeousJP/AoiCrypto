@@ -59,7 +59,7 @@ export default function SellerProjectDetailScreen() {
           }
         ></ScreenHeader>
       </View>
-      <View className="px-4 py-4 flex-1">
+      <View className="flex-1">
         <View className="pt-4 flex-1">
           <CustomSegmentedControl
             screens={["Metadata", "Analytics", "Allowlist"]}

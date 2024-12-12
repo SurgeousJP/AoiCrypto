@@ -1,3 +1,4 @@
+//IMPORT
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Input from "@/components/Inputs/Input/Input";
@@ -6,15 +7,14 @@ import { colors } from "@/constants/colors";
 import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
-import { clearCache } from "@/queries/util";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
-import { router } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 import * as Progress from "react-native-progress";
 import { TransactionReceipt } from "viem";
 import { useBalance } from "wagmi";
+// IMPORT
 
 interface Props {
   project: any;
@@ -169,10 +169,10 @@ const Overview: React.FC<Props> = ({ project, token }) => {
         isVisible={investModalVisible}
         task={"Initiating investment. . ."}
       />
-      <View className="mt-2 flex flex-col w-full">
-        <View className="mb-2">
+      <View className="mt-3 flex flex-col w-full">
+        <View className="mb-3">
           <Container>
-            <View className="bg-surface rounded-lg overflow-scroll px-4 py-2 pt-0">
+            <View className="bg-surface overflow-scroll px-4 py-2 pt-0">
               <View className="w-full flex flex-col mb-2">
                 <ImageBackground
                   source={projectIllust}
@@ -195,7 +195,7 @@ const Overview: React.FC<Props> = ({ project, token }) => {
         </View>
         {
           <Container>
-            <View className="bg-surface rounded-lg p-4 flex flex-col h-fit">
+            <View className="bg-surface p-4 flex flex-col h-fit">
               <Progress.Bar
                 color={colors.primary}
                 unfilledColor={"#EDF2F7"}
@@ -205,7 +205,7 @@ const Overview: React.FC<Props> = ({ project, token }) => {
                 height={12}
                 borderRadius={6}
               />
-              <View className="flex flex-row justify-between mt-2">
+              <View className="flex flex-row justify-between mt-3">
                 <Text className="font-readexRegular">
                   {project.softCap / BIGINT_CONVERSION_FACTOR}{" "}
                   <Text className="text-secondary">ETH</Text>
@@ -216,7 +216,7 @@ const Overview: React.FC<Props> = ({ project, token }) => {
                 </Text>
               </View>
 
-              <View className="flex flex-col mt-2">
+              <View className="flex flex-col mt-3">
                 <Input
                   type="numeric"
                   label={`Amount (Max: ${maxAmountInvest} ETH)`}
@@ -233,7 +233,7 @@ const Overview: React.FC<Props> = ({ project, token }) => {
                     <Text className="font-readexSemiBold">(Estimated)</Text>
                   </Text>
                 </View>
-                <View className="mt-2">
+                <View className="mt-3">
                   <PrimaryButton
                     content={`Import $${symbol} to wallet`}
                     onPress={onTriggerInvestPool}
@@ -245,14 +245,14 @@ const Overview: React.FC<Props> = ({ project, token }) => {
           </Container>
         }
       </View>
-      <View className="mt-2 flex-1">
+      <View className="mt-3 flex-1">
         <Container>
-          <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
+          <View className="bg-surface px-4 py-2 flex flex-col">
             {projectOverview.map((p) => {
               return (
                 <View
                   key={p.label}
-                  className="flex flex-row justify-between mt-2"
+                  className="flex flex-row justify-between mt-3"
                 >
                   <Text className="font-readexRegular text-secondary">
                     {p.label}
@@ -266,9 +266,9 @@ const Overview: React.FC<Props> = ({ project, token }) => {
           </View>
         </Container>
       </View>
-      <View className="mt-2">
+      <View className="mt-3">
         <Container>
-          <View className="bg-surface rounded-lg px-4 py-2 flex flex-col">
+          <View className="bg-surface px-4 py-2 flex flex-col">
             <Text className="font-readexBold text-md text-primary">
               Highlights
             </Text>

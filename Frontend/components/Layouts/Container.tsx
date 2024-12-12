@@ -4,7 +4,7 @@ import { Shadow } from 'react-native-shadow-2'
 
 const Container = ({children}) => {
   return (
-    <View className='w-full h-fit rounded-lg' style={{elevation: 2}}>
+    <View className='w-full  border-border border-[0.25px]' style={{elevation: 0}}>
       {children}
     </View>
   )

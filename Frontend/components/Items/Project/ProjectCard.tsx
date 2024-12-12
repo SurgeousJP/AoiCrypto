@@ -75,7 +75,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     return (
       <Pressable onPress={handleNavigation}>
         <View
-          className="flex flex-col bg-surface rounded-lg overflow-hidden border-border border h-[224px]"
+          className="flex flex-col bg-surface rounded-sm overflow-hidden border-border border-[0.5px] h-[224px]"
           style={{ elevation: 1 }}
         >
           <View className="w-full relative">

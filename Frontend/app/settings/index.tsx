@@ -29,12 +29,12 @@ function Settings() {
       className="flex flex-col w-full bg-background"
       contentContainerStyle={{ flexGrow: 1 }}
     >
-      <View className="pt-8 px-4 pb-4">
+      <View className="pt-4 pb-4">
         <UserCard />
-        <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
+        <Text className="text-[#696f8c] mt-4 mb-2 ml-2  text-sm font-normal font-readexRegular leading-none">
           Role & Notifications
         </Text>
-        <View className="rounded-xl" style={{ elevation: 2 }}>
+        <View className="" style={{ elevation: 2 }}>
           <SettingCard
             icon={<Profile width={24} height={24} stroke={colors.secondary} />}
             title="Buyer"
@@ -62,7 +62,7 @@ function Settings() {
             }
           />
         </View>
-        <View className="mt-6">
+        <View className="mt-6 mx-2">
           <PrimaryButton
             onPress={openWalletModal}
             content={"Open wallet modal"}

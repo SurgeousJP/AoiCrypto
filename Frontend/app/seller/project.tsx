@@ -77,7 +77,7 @@ export default function AdminProjectScreen() {
   const [status, setStatus] = useState<string | null>(null);
   const onChangeStatus = (value: any) => {
     setStatus(value);
-  }
+  };
 
   const { address } = useContext(AuthContext);
 
@@ -101,20 +101,31 @@ export default function AdminProjectScreen() {
   const [displayData, setDisplayData] = useState<any[] | null>(null);
 
   useEffect(() => {
-    if (projectQueryData !== undefined && projectQueryData.idopools !== undefined) {
+    if (
+      projectQueryData !== undefined &&
+      projectQueryData.idopools !== undefined
+    ) {
       console.log(projectQueryData.idopools);
-      setDisplayData(projectQueryData.idopools.filter(ido => ido.tokenPool.includes(searchTerm)))
+      setDisplayData(
+        projectQueryData.idopools.filter((ido) =>
+          ido.tokenPool.includes(searchTerm)
+        )
+      );
     }
   }, [projectQueryData, searchTerm]);
 
   return (
     <View className="flex-1 bg-background">
-      <View className="bg-surface mb-4">
+      <View className="bg-surface mb-2">
         <View
-          className="flex flex-row justify-between items-center bg-surface px-4 space-x-2 border-b-[0.5px] border-border py-2 pb-3"
+          className="flex flex-row justify-between items-center bg-surface px-2 space-x-2 border-b-[0.5px] border-border py-2 pb-3"
           style={{ elevation: 2 }}
         >
-          <Searchbar placeholder={"Search by token contract address"} value={searchTerm} onChange={onChangeSearchTerm}/>
+          <Searchbar
+            placeholder={"Search by token contract address"}
+            value={searchTerm}
+            onChange={onChangeSearchTerm}
+          />
           <TouchableOpacity onPress={() => {}}>
             <Link href={"/project/createOverview"}>
               <Add width={24} height={24} stroke={colors.secondary} />
@@ -124,10 +135,10 @@ export default function AdminProjectScreen() {
       </View>
 
       <View
-        className="bg-surface flex flex-col mb-4 mx-4 py-2 border-border border-[1px] rounded-md"
+        className="bg-surface flex flex-col mb-2 py-2"
         style={{ elevation: 2 }}
       >
-        <View className="flex flex-row justify-between mx-2 items-center py-1">
+        <View className="flex flex-row justify-between mx-2 items-center py-1 pb-2">
           <Pressable
             className="flex-1"
             onPress={() => handlePress("Most recent")}
@@ -188,7 +199,7 @@ export default function AdminProjectScreen() {
             </Text>
           </Pressable>
         </View>
-        <DividerLine />
+        <DividerLine color={colors.secondary} />
         <View className="overflow-hidden px-2">
           <ScrollView
             horizontal={true}
@@ -197,7 +208,7 @@ export default function AdminProjectScreen() {
             scrollToOverflowEnabled={false}
           >
             <View className="mt-2 mx-2 flex flex-row justify-between space-x-2 items-center">
-              <View className="flex-1">
+              <View className="w-[100px]">
                 <CustomDropdown
                   placeholder="Stage"
                   width={96}
@@ -206,7 +217,7 @@ export default function AdminProjectScreen() {
                   onChange={onChangeSaleType}
                 />
               </View>
-              <View className="flex-1">
+              <View className="w-[112px]">
                 <CustomDropdown
                   placeholder="Status"
                   width={96}
@@ -221,17 +232,17 @@ export default function AdminProjectScreen() {
       </View>
       {!isProjectLoading && projectQueryData && (
         <FlatList
-          style={{ paddingHorizontal: 16 }}
-          columnWrapperStyle={{ gap: 4, marginBottom: 4, overflow: "visible" }}
-          contentContainerStyle={{ flexGrow: 1, gap: 8, overflow: "visible" }}
-          data={projectQueryData.idopools}
+          style={{ paddingHorizontal: 4 }}
+          columnWrapperStyle={{ gap: 4, marginBottom: 4 }}
+          contentContainerStyle={{ flexGrow: 1, gap: 4 }}
+          data={displayData}
           numColumns={2}
           keyExtractor={(item, index) => index.toString()}
           renderItem={(item) => {
             return (
-              <View className="basis-[50%]">
+              <View className="basis-1/2">
                 <ProjectCard
-                  tokenAddress={item.item.tokenPool}
+                  isSeller={true}
                   isInProgress={true}
                   isPrivateSale={false}
                   softCap={item.item.softCap / BIGINT_CONVERSION_FACTOR}
@@ -241,7 +252,7 @@ export default function AdminProjectScreen() {
                   raisedAmount={
                     item.item.raisedTokenAmount / BIGINT_CONVERSION_FACTOR
                   }
-                  isSeller={true}
+                  tokenAddress={item.item.tokenPool}
                   poolId={item.item.id}
                 />
               </View>

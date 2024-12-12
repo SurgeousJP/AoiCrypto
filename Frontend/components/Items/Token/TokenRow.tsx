@@ -49,7 +49,7 @@ const TokenRow: React.FC<TokenProps> = ({
 
   return (
     <View className="">
-      <View className="flex flex-col p-2 bg-surface border-border border-[0.5px] items-center">
+      <View className="flex flex-col p-2 bg-surface  items-center">
         <View className="flex flex-row justify-between w-full items-baseline">
           <View className="flex flex-row space-x-1">
             <Text className="font-readexSemiBold  text-black text-md">

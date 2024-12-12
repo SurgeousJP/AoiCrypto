@@ -143,11 +143,11 @@ function createStepTwo() {
         RightComponent={<Back stroke={"#ffffff"} width={24} height={24} />}
       />
 
-      <View className="flex flex-col p-4">
+      <View className="flex flex-col">
         <View className="mt-2">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -159,16 +159,6 @@ function createStepTwo() {
                   type="datetime"
                   value={getDateFromUnixTimestamp(poolTime.startTime)}
                   name="startTime"
-                  onChange={onDateTimeInputChange}
-                  initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
-                />
-              </View>
-              <View className="mb-3">
-                <Input
-                  label={"End time"}
-                  type="datetime"
-                  value={getDateFromUnixTimestamp(poolTime.endTime)}
-                  name="endTime"
                   onChange={onDateTimeInputChange}
                   initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
                 />
@@ -189,6 +179,16 @@ function createStepTwo() {
                     />
                   </View>
                 )}
+              <View className="mb-3">
+                <Input
+                  label={"End time"}
+                  type="datetime"
+                  value={getDateFromUnixTimestamp(poolTime.endTime)}
+                  name="endTime"
+                  onChange={onDateTimeInputChange}
+                  initialValue={getDateFromUnixTimestamp(poolTime.startTime)}
+                />
+              </View>
             </View>
           </Container>
         </View>
@@ -197,7 +197,7 @@ function createStepTwo() {
           <View className="mt-4">
             <Container>
               <View
-                className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+                className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
                 style={{ elevation: 2 }}
               >
                 <Text className="font-readexBold text-md text-primary mb-2">
@@ -236,7 +236,7 @@ function createStepTwo() {
           </View>
         )}
 
-        <View className="mt-4 flex-row justify-between">
+        <View className="mt-4 mx-2 flex-row justify-between">
           <View className="w-[48%]">
             <PrimaryButton content={"Back"} onPress={onNavigatingBack} />
           </View>

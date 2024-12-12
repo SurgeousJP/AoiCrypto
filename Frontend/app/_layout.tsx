@@ -81,7 +81,7 @@ export default function RootLayout() {
         {...props}
         style={{
           ...commonToastStyle,
-          borderLeftColor: colors.error,
+          borderLeftColor: colors.success,
         }}
         text1Style={defaultText1Style}
         text2Style={defaultText2Style}
@@ -93,7 +93,7 @@ export default function RootLayout() {
         {...props}
         style={{
           ...commonToastStyle,
-          borderLeftColor: colors.error,
+          borderLeftColor: colors.secondary,
         }}
         text1Style={defaultText1Style}
         text2Style={defaultText2Style}

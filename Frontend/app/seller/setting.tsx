@@ -31,14 +31,14 @@ const AdminSetting = () => {
       contentContainerStyle={{ flexGrow: 1 }}
     >
       <View className="border-b-[0.2px] border-border" style={{ elevation: 2 }}>
-        <View className="flex flex-row justify-between items-center bg-surface py-2 px-4">
+        <View className="flex flex-row justify-between items-center bg-surface py-2 px-2">
           <Text className="text-[20px] font-readexSemiBold text-center mx-auto">
             Settings
           </Text>
         </View>
       </View>
 
-      <View className="pt-8 px-4 pb-4">
+      <View className="pt-4 px-0 pb-4">
         <UserCard />
         <Text className="text-[#696f8c] mt-4 mb-2 ml-4 text-sm font-normal font-readexRegular leading-none">
           Role & Notifications
@@ -71,7 +71,7 @@ const AdminSetting = () => {
             }
           />
         </View>
-        <View className="mt-6">
+        <View className="mt-6 mx-2">
           <PrimaryButton
             onPress={openWalletModal}
             content={"Open wallet modal"}

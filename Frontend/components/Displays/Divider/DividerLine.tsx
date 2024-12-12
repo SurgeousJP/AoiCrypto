@@ -1,10 +1,20 @@
-import React from 'react'
-import { View } from 'react-native'
+import React from "react";
+import { View } from "react-native";
 
-const DividerLine = () => {
-  return (
-    <View className='h-[1px] flex-1 bg-secondary'></View>
-  )
+interface Props {
+  color?: string;
+  width?: number;
 }
 
-export default DividerLine
+const DividerLine:React.FC<Props> = ({color, width}) => {
+  return (
+    <View style = {{
+      borderBottomColor: "#ebe5ec", 
+      borderBottomWidth: 1, 
+      alignSelf:'stretch',
+      width: "100%",
+    }}></View>
+  );
+};
+
+export default DividerLine;

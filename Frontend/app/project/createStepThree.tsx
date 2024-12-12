@@ -400,11 +400,11 @@ function createStepThree() {
         RightComponent={<Back stroke={"#ffffff"} width={24} height={24} />}
       />
 
-      <View className="flex flex-col p-4">
+      <View className="flex flex-col">
         <View className="mt-4">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -434,7 +434,7 @@ function createStepThree() {
         <View className="mt-4">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -451,7 +451,7 @@ function createStepThree() {
         <View className="mt-4">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -468,7 +468,7 @@ function createStepThree() {
         <View className="mt-4">
           <Container>
             <View
-              className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+              className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
               style={{ elevation: 2 }}
             >
               <Text className="font-readexBold text-md text-primary mb-2">
@@ -482,11 +482,11 @@ function createStepThree() {
             </View>
           </Container>
         </View>
-        {createIDO.privateSale && whitelistData && (
+        {createIDO.privateSale && whitelistData.length > 0 && (
           <View className="mt-4">
             <Container>
               <View
-                className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+                className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
                 style={{ elevation: 2 }}
               >
                 <Text className="font-readexBold text-md text-primary ">
@@ -517,7 +517,7 @@ function createStepThree() {
           </View>
         )}
         {isWalletEnoughTokenForIDO ? (
-          <View className="mt-4">
+          <View className="mt-4 mx-2">
             <PrimaryButton
               disabled={isLoading}
               content={"Save Project"}
@@ -529,7 +529,7 @@ function createStepThree() {
             <View className="mt-4 mb-4">
               <Container>
                 <View
-                  className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
+                  className="bg-surface  px-4 py-2 flex flex-col border-border border-[0.5px]"
                   style={{ elevation: 2 }}
                 >
                   <Pressable className="flex flex-col">
@@ -571,11 +571,13 @@ function createStepThree() {
                 </View>
               </Container>
             </View>
-            <PrimaryButton
-              content={"Approve missing tokens"}
-              disabled={isLoadingApproveSender}
-              onPress={onApproveTokenTriggered}
-            />
+            <View className="mx-2">
+              <PrimaryButton
+                content={"Approve missing tokens"}
+                disabled={isLoadingApproveSender}
+                onPress={onApproveTokenTriggered}
+              />
+            </View>
           </View>
         )}
       </View>
