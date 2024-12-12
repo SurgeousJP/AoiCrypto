@@ -1,4 +1,5 @@
 import { colors } from "@/constants/colors";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import getABI from "@/contracts/utils/getAbi.util";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -15,6 +16,7 @@ interface ProjectCardProps {
   tokenAddress: `0x${string}`;
   poolId: string;
   isSeller?: boolean;
+  startTime: string;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -35,15 +37,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const handleNavigateProjectDetail = (e) => {
     router.push({
-      pathname:"/project/1",
-      params: { poolId: props.poolId }
+      pathname: "/project/1",
+      params: { poolId: props.poolId },
     });
   };
 
   const handleNavigateSellerProjectDetail = (e) => {
     router.push({
-      pathname:"/project/sellerProjectDetail",
-      params: { poolId: props.poolId }
+      pathname: "/project/sellerProjectDetail",
+      params: { poolId: props.poolId },
     });
   };
 
@@ -75,7 +77,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
     return (
       <Pressable onPress={handleNavigation}>
         <View
-          className="flex flex-col bg-surface rounded-sm overflow-hidden border-border border-[0.5px] h-[224px]"
+          className="flex flex-col bg-surface rounded-sm overflow-hidden border-border border-[0.5px] h-[256px]"
           style={{ elevation: 1 }}
         >
           <View className="w-full relative">
@@ -99,6 +101,10 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             <View className="flex flex-row gap-1 mb-2">
               <Text className="font-readexBold">${pricePerToken}</Text>
               <Text className="font-readexRegular">per token</Text>
+            </View>
+            <View className="flex flex-row gap-1 mb-2">
+              <Text className="font-readexRegular">Start from:</Text>
+              <Text className="font-readexBold">{props.startTime}</Text>
             </View>
 
             <Progress.Bar
@@ -155,7 +161,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
           </View>
 
           <View className="flex flex-row justify-between mt-2">
-            <Text className="font-readexRegular">ETH </Text>
+            <Text className="font-readexRegular">ETH</Text>
             <Text className="font-readexRegular">ETH</Text>
           </View>
         </View>

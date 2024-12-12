@@ -42,13 +42,13 @@ export const getProjectStatusAndCreatedTime = (status: ProjectStatus) => {
   return { projectStatus, projectStatusStyle };
 };
 
-const getProjectOverview = (project: any, token: any) => {
+const getProjectOverview = (project: any, token: any, status: ProjectStatus) => {
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
     "Loading...",
   ];
 
   const { projectStatus, projectStatusStyle } =
-    getProjectStatusAndCreatedTime(project);
+    getProjectStatusAndCreatedTime(status);
 
   return [
     { label: "Status", data: projectStatus, textDataStyle: projectStatusStyle },
@@ -103,7 +103,7 @@ const getProjectOverview = (project: any, token: any) => {
 };
 
 const Overview: React.FC<Props> = ({ project, token, status }) => {
-  const projectOverview = getProjectOverview(project, token);
+  const projectOverview = getProjectOverview(project, token, status);
   const projectIllust = require("@/assets/images/ProjectIllust.png");
   const projectLogo = require("@/assets/images/ProjectLogo.png");
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
@@ -188,6 +188,7 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
       );
     }
   }, [ethBalance]);
+  
   return (
     <View className="w-full flex flex-col">
       <LoadingModal

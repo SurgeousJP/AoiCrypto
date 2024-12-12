@@ -7,6 +7,7 @@ import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import { colors } from "@/constants/colors";
 import {
   BIGINT_CONVERSION_FACTOR,
+  getDateFromUnixTimestamp,
   getUnixTimestampFromDate,
 } from "@/constants/conversion";
 import { GET_PROJECTS } from "@/queries/projects";
@@ -253,10 +254,11 @@ export default function ProjectScreen() {
                     item.item.pricePerToken / BIGINT_CONVERSION_FACTOR
                   }
                   raisedAmount={
-                    item.item.raisedTokenAmount / BIGINT_CONVERSION_FACTOR
+                    item.item.raisedAmount / BIGINT_CONVERSION_FACTOR
                   }
                   tokenAddress={item.item.tokenPool}
                   poolId={item.item.id}
+                  startTime={(getDateFromUnixTimestamp(item.item.startTime)).toISOString().split('T')[0]}
                 />
               </View>
             );

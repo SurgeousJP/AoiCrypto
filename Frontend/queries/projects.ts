@@ -64,6 +64,7 @@ export const GET_PROJECTS = (status: string | null, stage: string | null) => {
         orderDirection: $orderDirection
       ) {
         tokenPool
+        startTime
         pricePerToken
         raisedTokenAmount
         raisedAmount
@@ -115,6 +116,7 @@ export const GET_PROJECTS_FROM_OWNER = (
       raisedAmount
       softCap
       whitelistedRoot
+      startTime
       id
     }
   }

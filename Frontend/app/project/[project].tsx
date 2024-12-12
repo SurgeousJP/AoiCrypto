@@ -207,7 +207,6 @@ const ProjectDetail = () => {
             </View>
           );
         }
-
         return null; // Default fallback
       })()}
     </ScrollView>
