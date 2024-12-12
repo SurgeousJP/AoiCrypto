@@ -2,7 +2,7 @@ import Illustration from "@/assets/images/illustration.svg";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { useRouter } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import { ScrollView, Text, View } from "react-native";
 
 const CreateProjectOverview = () => {
@@ -14,7 +14,7 @@ const CreateProjectOverview = () => {
 
   const router = useRouter();
   const navigateToStepOne = () => {
-    router.navigate("/project/createStepOne");
+    router.navigate("/project/sellerProjectDetail");
   };
 
   return (

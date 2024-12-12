@@ -31,7 +31,7 @@ export interface Project {
   poolAddress: string;
   tokenAddress: string;
   name: string;
-  title: string;
+  overview: string;
   description: string;
   imageBannerUrl: string;
 }
@@ -40,7 +40,7 @@ export interface CreateProjectParams {
   poolAddress: string;
   tokenAddress: string;
   name: string;
-  title: string;
+  overview: string;
   description: string;
   imageBannerUrl: string;
 }
@@ -50,7 +50,7 @@ export interface UpdateProjectParams {
   poolAddress?: string;
   tokenAddress?: string;
   name?: string;
-  title?: string;
+  overview?: string;
   description?: string;
   imageBannerUrl?: string;
 }
@@ -75,7 +75,11 @@ export interface CreateAllowlistEntryResponse {
 export interface DeleteAllowlistEntryResponse {}
 
 export interface UploadImageParams {
-  imageBase64: string;
+  image: {
+    uri: string;
+    name: string;
+    type: string;
+  };
   name?: string;
   expiration?: number;
 }

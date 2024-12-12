@@ -9,4 +9,38 @@ const http = axios.create({
   },
 });
 
+// Add a request interceptor
+http.interceptors.request.use(
+  (config) => {
+    console.log("Request:", {
+      url: config.url,
+      method: config.method,
+      headers: config.headers,
+      params: config.params,
+      data: config.data,
+    });
+    return config; // Must return config or a Promise that resolves to config
+  },
+  (error) => {
+    console.error("Request Error:", error);
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor
+http.interceptors.response.use(
+  (response) => {
+    console.log("Response:", {
+      status: response.status,
+      data: response.data,
+      headers: response.headers,
+    });
+    return response; // Must return the response or a Promise that resolves to it
+  },
+  (error) => {
+    console.error("Response Error:", error.response || error);
+    return Promise.reject(error);
+  }
+);
+
 export default http;

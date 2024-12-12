@@ -91,6 +91,18 @@ export const useGetProjectById = (id: string) => {
   });
 };
 
+export const useGetProjectByAddress = (address: string) => {
+  return useQuery<Project, Error>({
+    queryKey: ["project", address],
+    queryFn: async () => {
+      const response = await http.get<Project>(
+        `/api/project/address/${address}`
+      );
+      return response.data;
+    },
+  });
+};
+
 export const useCreateProject = () => {
   return useMutation<Project, Error, CreateProjectParams>({
     mutationFn: async (params) => {
