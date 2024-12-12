@@ -36,7 +36,6 @@ const Checkbox: React.FC<CheckboxProps> = (props) => {
           textDecorationLine: "none",
         }}
         onPress={(isChecked: boolean) => {
-          console.log(isChecked);
           setLocalChecked(!localChecked);
           if (props.onChange) {
             props.onChange(!localChecked);

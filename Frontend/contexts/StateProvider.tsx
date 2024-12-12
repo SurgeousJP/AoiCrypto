@@ -30,9 +30,9 @@ const StateProvider = ({ children }) => {
     setCreateIDO(sampleCreateIDOInput);
   }
 
-  useEffect(() => {
-    console.log("Create IDO state: ", createIDO);
-  }, [createIDO]);
+  // useEffect(() => {
+  //   console.log("Create IDO state: ", createIDO);
+  // }, [createIDO]);
 
   return (
     <StateContext.Provider

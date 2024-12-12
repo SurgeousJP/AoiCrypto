@@ -220,10 +220,10 @@ const CreateStepOne = () => {
     setTokenContract({ ...tokenContract, ["address"]: value });
   };
 
-  console.log("Pricp per token: ", createIDO.poolDetails.privateSaleAmount);
-  console.log(typeof(createIDO.poolDetails.privateSaleAmount));
-  console.log("Hard cap: ", createIDO.poolDetails.hardCap);
-  console.log("Price per token: ", createIDO.poolDetails.pricePerToken);
+  // console.log("Pricp per token: ", createIDO.poolDetails.privateSaleAmount);
+  // console.log(typeof(createIDO.poolDetails.privateSaleAmount));
+  // console.log("Hard cap: ", createIDO.poolDetails.hardCap);
+  // console.log("Price per token: ", createIDO.poolDetails.pricePerToken);
 
   return (
     <ScrollView className="flex-1 bg-background">

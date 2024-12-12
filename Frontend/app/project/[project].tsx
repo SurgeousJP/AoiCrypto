@@ -1,6 +1,5 @@
 // Import
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
-import Description from "@/components/Segments/ProjectDetail/Description";
 import Overview from "@/components/Segments/ProjectDetail/Overview";
 import PrivateSaleSegment from "@/components/Segments/ProjectDetail/PrivateSale";
 import TokenNPool from "@/components/Segments/ProjectDetail/TokenNPool";
@@ -20,7 +19,7 @@ import { useReadContracts } from "wagmi";
 // Import
 
 const getBasicDataDisplay = (project: any) => {
-  console.log("Basic data display: ", project);
+  // console.log("Basic data display: ", project);
   return [
     {
       tile: "Token address",

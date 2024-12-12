@@ -4,7 +4,10 @@ import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Input from "@/components/Inputs/Input/Input";
 import Container from "@/components/Layouts/Container";
 import { colors } from "@/constants/colors";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getUnixTimestampFromDate,
+} from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
 import { showToast } from "@/utils/toast";
@@ -21,15 +24,37 @@ interface Props {
   token: any;
 }
 
+export const getProjectStatusAndCreatedTime = (project: any) => {
+  const currentDateTstamp = getUnixTimestampFromDate(new Date());
+
+  let projectStatus = "";
+  let projectStatusStyle = "";
+  if (currentDateTstamp < project.createdTime) {
+    projectStatus = "Upcoming";
+    projectStatusStyle = "text-primary";
+  } else if (currentDateTstamp >= project.endTime) {
+    projectStatus = "Ended";
+    projectStatusStyle = "text-secondary";
+  } else {
+    projectStatus = "Sale live";
+    projectStatusStyle = "text-success";
+  }
+
+  return {projectStatus, projectStatusStyle}
+};
+
 const getProjectOverview = (project: any, token: any) => {
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
     "Loading...",
   ];
+
+  const {projectStatus, projectStatusStyle} = getProjectStatusAndCreatedTime(project);
+
   return [
-    { label: "Status", data: "Sale live", textDataStyle: "text-success" },
+    { label: "Status", data: projectStatus, textDataStyle: projectStatusStyle },
     {
       label: "Sale Type",
-      data: "Whitelist Only",
+      data: project.idoType === "PUBLIC_SALE" ? "Public" : "Private",
       textDataStyle: "text-primary",
     },
     {
@@ -78,13 +103,13 @@ const getProjectOverview = (project: any, token: any) => {
 };
 
 const Overview: React.FC<Props> = ({ project, token }) => {
-  console.log(project);
   const projectOverview = getProjectOverview(project, token);
   const projectIllust = require("@/assets/images/ProjectIllust.png");
   const projectLogo = require("@/assets/images/ProjectLogo.png");
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
     "Loading...",
   ];
+  const {projectStatus, projectStatusStyle} = getProjectStatusAndCreatedTime(project);
   const [investAmount, setInvestAmount] = useState(0);
   const onChangeInvestAmount = (name: any, value: any) => {
     setInvestAmount(value);
@@ -107,6 +132,7 @@ const Overview: React.FC<Props> = ({ project, token }) => {
       chainId: chainId,
       proof: [],
       poolAddress: project.poolAddress,
+      investETHAmount: BigInt(investAmount * BIGINT_CONVERSION_FACTOR),
       enabled: isInvestAmountValid(),
       onSuccess: (data: TransactionReceipt) => {
         if (investModalVisible) {
@@ -156,13 +182,12 @@ const Overview: React.FC<Props> = ({ project, token }) => {
   useEffect(() => {
     if (ethBalance !== undefined) {
       setMaxAmountInvest(
-        ethBalance.value > project.hardCap
-          ? project.hardCap / BIGINT_CONVERSION_FACTOR
+        ethBalance.value > project.maxInvest
+          ? project.maxInvest / BIGINT_CONVERSION_FACTOR
           : Number(ethBalance.value) / BIGINT_CONVERSION_FACTOR
       );
     }
   }, [ethBalance]);
-
   return (
     <View className="w-full flex flex-col">
       <LoadingModal
@@ -193,57 +218,56 @@ const Overview: React.FC<Props> = ({ project, token }) => {
             </View>
           </Container>
         </View>
-        {
-          <Container>
-            <View className="bg-surface p-4 flex flex-col h-fit">
-              <Progress.Bar
-                color={colors.primary}
-                unfilledColor={"#EDF2F7"}
-                progress={project.raisedAmount / project.hardCap}
-                width={null}
-                borderWidth={0}
-                height={12}
-                borderRadius={6}
-              />
-              <View className="flex flex-row justify-between mt-3">
-                <Text className="font-readexRegular">
-                  {project.softCap / BIGINT_CONVERSION_FACTOR}{" "}
-                  <Text className="text-secondary">ETH</Text>
-                </Text>
-                <Text className="font-readexRegular">
-                  {project.hardCap / BIGINT_CONVERSION_FACTOR}{" "}
-                  <Text className="text-secondary">ETH</Text>
-                </Text>
-              </View>
 
-              <View className="flex flex-col mt-3">
-                <Input
-                  type="numeric"
-                  label={`Amount (Max: ${maxAmountInvest} ETH)`}
-                  name={""}
-                  value={investAmount}
-                  onChange={onChangeInvestAmount}
-                />
-                <View>
-                  <Text className="font-readexRegular text-primary">
-                    You will receive{" "}
-                    {(investAmount / project.pricePerToken) *
-                      BIGINT_CONVERSION_FACTOR}{" "}
-                    {symbol}{" "}
-                    <Text className="font-readexSemiBold">(Estimated)</Text>
-                  </Text>
-                </View>
-                <View className="mt-3">
-                  <PrimaryButton
-                    content={`Import $${symbol} to wallet`}
-                    onPress={onTriggerInvestPool}
-                    disabled={isLoading}
-                  />
-                </View>
-              </View>
+        <Container>
+          <View className="bg-surface p-4 flex flex-col h-fit">
+            <Progress.Bar
+              color={colors.primary}
+              unfilledColor={"#EDF2F7"}
+              progress={project.raisedAmount / project.hardCap}
+              width={null}
+              borderWidth={0}
+              height={12}
+              borderRadius={6}
+            />
+            <View className="flex flex-row justify-between mt-3">
+              <Text className="font-readexRegular">
+                {project.softCap / BIGINT_CONVERSION_FACTOR}{" "}
+                <Text className="text-secondary">ETH</Text>
+              </Text>
+              <Text className="font-readexRegular">
+                {project.hardCap / BIGINT_CONVERSION_FACTOR}{" "}
+                <Text className="text-secondary">ETH</Text>
+              </Text>
             </View>
-          </Container>
-        }
+
+            {projectStatus !== "Ended" && <View className="flex flex-col mt-3">
+              <Input
+                type="numeric"
+                label={`Amount (Max: ${maxAmountInvest} ETH)`}
+                name={""}
+                value={investAmount}
+                onChange={onChangeInvestAmount}
+              />
+              <View>
+                <Text className="font-readexRegular text-primary">
+                  You will receive{" "}
+                  {(investAmount / project.pricePerToken) *
+                    BIGINT_CONVERSION_FACTOR}{" "}
+                  {symbol}{" "}
+                  <Text className="font-readexSemiBold">(Estimated)</Text>
+                </Text>
+              </View>
+              <View className="mt-3">
+                <PrimaryButton
+                  content={`Import $${symbol} to wallet`}
+                  onPress={onTriggerInvestPool}
+                  disabled={isLoading}
+                />
+              </View>
+            </View>}
+          </View>
+        </Container>
       </View>
       <View className="mt-3 flex-1">
         <Container>

@@ -53,7 +53,7 @@ function UserCard() {
         <View className="flex flex-row items-center mt-1">
           <Text className="font-readexRegular text-secondary text-sm">Balance: </Text>
           <Text className="text-slate-900 text-sm font-readexRegular leading-none mr-1">
-          {data && data.formatted.slice(0,4)}
+          {data ? data.formatted.slice(0,4) : "Loading. . ."}
             <Text className="text-secondary"> ETH</Text>
           </Text>
         </View>

@@ -31,7 +31,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const router = useRouter();
 
-  console.log(props.poolId);
+  // console.log(props.poolId);
 
   const handleNavigateProjectDetail = (e) => {
     router.push({

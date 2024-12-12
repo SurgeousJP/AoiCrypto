@@ -109,7 +109,7 @@ export default function ProjectScreen() {
       projectQueryData !== undefined &&
       projectQueryData.idopools !== undefined
     ) {
-      console.log(projectQueryData.idopools);
+      // console.log(projectQueryData.idopools);
       setDisplayData(
         projectQueryData.idopools.filter((ido) =>
           ido.tokenPool.includes(searchTerm)

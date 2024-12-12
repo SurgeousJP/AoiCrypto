@@ -1,3 +1,4 @@
+import DividerLine from "@/components/Displays/Divider/DividerLine";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
@@ -122,13 +123,13 @@ const HistorySegment = () => {
 
   return (
     <View className="flex flex-col flex-1 mt-2">
-      <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
+      <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          className="space-x-3 rounded-lg"
+          className="space-x-3"
         >
-          <View className="flex flex-row space-x-3 items-center rounded-lg">
+          <View className="flex flex-row space-x-3 items-center">
             <View className="w-[188px] h-8">
               <Searchbar placeholder={"Project search"} />
             </View>
@@ -143,17 +144,18 @@ const HistorySegment = () => {
       </View>
       <FlatList
         contentContainerStyle={{
-          borderRadius: 8,
           overflow: "hidden",
-          borderColor: colors.border,
-          borderWidth: 1,
         }}
+        showsVerticalScrollIndicator={false}
         data={[...rowData]}
         keyExtractor={(item, index) => index.toString()}
         renderItem={(item) => {
           return (
             <View key={item.index}>
+              {item.index === 0 && <DividerLine />}
+
               <Row key={item.index} contents={item.item} />
+              {item.index < rowData.length && <DividerLine />}
             </View>
           );
         }}

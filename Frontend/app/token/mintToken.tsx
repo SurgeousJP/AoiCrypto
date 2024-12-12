@@ -73,12 +73,12 @@ const MintTokenForm = ({ route }) => {
     ]);
   };
 
-  useEffect(() => {
-    console.log("Error: ", error);
-    console.log("Is loading: ", isLoading);
-    console.log("Is success: ", isSuccess);
-    console.log("Is error: ", isError);
-  });
+  // useEffect(() => {
+  //   console.log("Error: ", error);
+  //   console.log("Is loading: ", isLoading);
+  //   console.log("Is success: ", isSuccess);
+  //   console.log("Is error: ", isError);
+  // });
 
   const onTriggerMintToken = async () => {
     if (mintValue <= 0) {

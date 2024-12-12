@@ -315,7 +315,7 @@ function createStepThree() {
       showToast(
         "success",
         "Transaction success",
-        "Create new token successfully"
+        "Create new IDO successfully"
       );
 
       // clearCache(client, "GetTokens");

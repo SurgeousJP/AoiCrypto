@@ -41,7 +41,7 @@ const AdminDashboard = () => {
       </View>
     );
   }
-  console.log("Dashboard data: ", dashboardData);
+  // console.log("Dashboard data: ", dashboardData);
   const fundedProjects = dashboardData?.poolOwners.length ?? 20;
   const participants =
     dashboardData?.poolOwners.reduce(

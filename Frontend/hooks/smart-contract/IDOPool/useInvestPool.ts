@@ -16,6 +16,7 @@ type Props = {
   // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
   proof: string[];
   poolAddress: `0x${string}`;
+  investETHAmount: bigint;
   // <---! CONTRACT PROPS IN ABI ENDS HERE !---> //
   enabled?: boolean;
   onSuccess?: (data: TransactionReceipt) => void;
@@ -28,6 +29,7 @@ export const useInvestPool = ({
   // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
   proof,
   poolAddress,
+  investETHAmount,
   // <---! CONTRACT PROPS IN ABI STARTS HERE !---> //
   enabled,
   onSuccess,
@@ -55,7 +57,7 @@ export const useInvestPool = ({
     functionName: "investPool",
     // <---! FUNCTION IN ABI !---> //
     query: { enabled: enabled && !!chainId, retry: false },
-    // value: 
+    value: investETHAmount
   });
 
   const {

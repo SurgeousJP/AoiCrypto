@@ -7,7 +7,7 @@ interface RowProps {
 
 const Row: React.FC<RowProps> = ({ contents }) => {
   return (
-    <View key={Math.random()} className="flex flex-row bg-surface border-border border-[0.5px]">
+    <View key={Math.random()} className="flex flex-row bg-surface ">
       {contents.map((content, index) => {
         return (
           <View className={`flex-1 px-4 py-3 ${content.style}`}>

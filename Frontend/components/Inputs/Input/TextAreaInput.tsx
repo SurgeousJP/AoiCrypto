@@ -68,7 +68,7 @@ const TextAreaInput: React.FC<LabelInputProps> = ({
     const oldText = value;
     if (props.type !== "numeric") {
       props.onChange(props.name, text);
-      console.log("Text sent: ", text);
+      // console.log("Text sent: ", text);
       setValue(text);
     } else {
       const regex = /^[0-9]*\.?[0-9]*$/;

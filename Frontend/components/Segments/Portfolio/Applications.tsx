@@ -1,3 +1,4 @@
+import DividerLine from "@/components/Displays/Divider/DividerLine";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
@@ -80,7 +81,7 @@ const ApplicationSegment = () => {
 
   return (
     <View className="flex flex-col mt-2">
-      <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
+      <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -110,9 +111,6 @@ const ApplicationSegment = () => {
       <FlatList
         style={{
           paddingHorizontal: 0,
-          borderColor: colors.border,
-          borderWidth: 0.5,
-          elevation: 1,
         }}
         contentContainerStyle={{ flexGrow: 1, gap: 0 }}
         data={[headerData, ...rowData]}
@@ -120,7 +118,9 @@ const ApplicationSegment = () => {
         renderItem={(item) => {
           return (
             <View>
+              {item.index === 0 && <DividerLine />}
               <Row key={item.index} contents={item.item} />
+              {item.index < [headerData, ...rowData].length && <DividerLine />}
             </View>
           );
         }}
