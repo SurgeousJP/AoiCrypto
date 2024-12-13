@@ -11,7 +11,7 @@ import {
 import { GET_PROJECTS } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -23,8 +23,11 @@ import {
 } from "react-native";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import { Link } from "expo-router";
+import { AuthContext } from "@/contexts/AuthProvider";
 
 export default function ProjectScreen() {
+  const { address } = useContext(AuthContext);
+
   const projectState = [
     { label: "Public", value: "PUBLIC_SALE" },
     { label: "Private", value: "PRIVATE_SALE" },
@@ -233,7 +236,7 @@ export default function ProjectScreen() {
           </ScrollView>
         </View>
       </View>
-      {!isProjectLoading && projectQueryData && displayData && (
+      {address && !isProjectLoading && projectQueryData && displayData && (
         <FlatList
           style={{ paddingHorizontal: 4 }}
           columnWrapperStyle={{ gap: 4, marginBottom: 4 }}
@@ -256,7 +259,12 @@ export default function ProjectScreen() {
                   }
                   tokenAddress={item.item.tokenPool}
                   poolId={item.item.id}
-                  startTime={(getDateFromUnixTimestamp(item.item.startTime)).toISOString().split('T')[0]}
+                  startTime={
+                    getDateFromUnixTimestamp(item.item.startTime)
+                      .toISOString()
+                      .split("T")[0]
+                  }
+                  isSeller={item.item.poolOwner.account.address.toLowerCase() == address.toLowerCase()}
                 />
               </View>
             );

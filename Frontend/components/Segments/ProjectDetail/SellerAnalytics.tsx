@@ -1,16 +1,30 @@
 import LineChartComponent from "@/components/Displays/Chart/LineChart";
 import Container from "@/components/Layouts/Container";
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import Capital from "@/assets/icons/system-icons-svg/Capital.svg";
 import Participants from "@/assets/icons/system-icons-svg/Participants.svg";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import { FlatList } from "react-native";
 import { colors } from "@/constants/colors";
-import Row from "@/components/Items/Project/Row";
 import { Ionicons } from "@expo/vector-icons";
+import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
+import { useQuery } from "@apollo/client";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 
-const SellerAnalyticsSegment = () => {
+interface Props {
+  poolAddress: string;
+}
+
+const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
+  console.log(poolAddress);
+
   const headerData = [
     {
       value: "Address",
@@ -69,6 +83,18 @@ const SellerAnalyticsSegment = () => {
       },
     ],
   ];
+
+  const {
+    loading,
+    error,
+    data: query,
+  } = useQuery(GET_PROJECT_BY_POOL_ID, {
+    variables: {
+      poolId: poolAddress,
+    },
+  });
+
+  const project = query?.idopool;
 
   const [isAddressAscending, setAddressAscending] = useState<
     boolean | undefined
@@ -148,11 +174,15 @@ const SellerAnalyticsSegment = () => {
     const newDisplayData = displayData;
     if (isAmountAscending) {
       newDisplayData.sort((a, b) =>
-        Number(b[AMOUNT_POSITION].value) > Number(a[AMOUNT_POSITION].value) ? 1 : -1
+        Number(b[AMOUNT_POSITION].value) > Number(a[AMOUNT_POSITION].value)
+          ? 1
+          : -1
       );
     } else {
       newDisplayData.sort((a, b) =>
-        Number(a[AMOUNT_POSITION].value) >Number(b[AMOUNT_POSITION].value) ? 1 : -1
+        Number(a[AMOUNT_POSITION].value) > Number(b[AMOUNT_POSITION].value)
+          ? 1
+          : -1
       );
     }
     setDisplayData(newDisplayData);
@@ -164,17 +194,26 @@ const SellerAnalyticsSegment = () => {
     if (value === undefined) return true;
   };
 
+  if (loading || !project) {
+    return (
+      <View className="flex-1 my-auto items-center justify-center">
+        <ActivityIndicator size={"large"} color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       className="flex flex-col mt-2"
     >
       <View className="mb-3">
-        <Text className="font-readexSemiBold text-[20px] mt-2">Metrics</Text>
+        <Text className="font-readexSemiBold text-md mt-2 ml-2">Metrics</Text>
 
         <View className="">
           <View
-            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 rounded-lg items-center"
+            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 items-center"
             style={{ elevation: 2 }}
           >
             <View className="flex flex-row space-x-2 items-center">
@@ -183,11 +222,13 @@ const SellerAnalyticsSegment = () => {
                 Participants
               </Text>
             </View>
-            <Text className="font-readexSemiBold text-black text-md">2000</Text>
+            <Text className="font-readexSemiBold text-black text-md">
+              {project.investors.length}
+            </Text>
           </View>
 
           <View
-            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 rounded-lg items-center mt-2"
+            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 items-center mt-2"
             style={{ elevation: 2 }}
           >
             <View className="flex flex-row space-x-2 items-center">
@@ -197,12 +238,13 @@ const SellerAnalyticsSegment = () => {
               </Text>
             </View>
             <Text className="font-readexSemiBold text-black text-md">
-              200 <Text className="text-secondary font-readexRegular">ETH</Text>
+              {project.raisedAmount / BIGINT_CONVERSION_FACTOR}{" "}
+              <Text className="text-secondary font-readexRegular">ETH</Text>
             </Text>
           </View>
         </View>
       </View>
-      <Text className="font-readexSemiBold text-[20px] mt-2 mb-2">
+      <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">
         Analytics
       </Text>
       <View className="mb-4">
@@ -211,41 +253,17 @@ const SellerAnalyticsSegment = () => {
             <Text className="font-readexSemiBold text-md">
               Project progress
             </Text>
-            <Text className="font-readexBold text-xl">$2,760.23</Text>
-            <Text className="font-readexSemiBold text-md mb-2">+2.60%</Text>
+            <Text className="font-readexBold text-xl">{project.raisedAmount / BIGINT_CONVERSION_FACTOR}{" ETH"}</Text>
             <LineChartComponent />
           </View>
         </Container>
       </View>
-      <View className="mb-2">
-        <Container>
-          <View className="bg-surface rounded-lg p-2 flex flex-col">
-            <View className="flex flex-row justify-between mb-2">
-              <Text className="font-readexRegular text-secondary">
-                Total Pool Invested
-              </Text>
-              <Text className="font-readexRegular text-black">25</Text>
-            </View>
-            <View className="flex flex-row justify-between mb-2">
-              <Text className="font-readexRegular text-secondary">
-                Total ETH Invested
-              </Text>
-              <Text className="font-readexRegular text-black">252</Text>
-            </View>
-            <View className="flex flex-row justify-between">
-              <Text className="font-readexRegular text-secondary">
-                Total Invested
-              </Text>
-              <Text className="font-readexRegular text-black">$5,200</Text>
-            </View>
-          </View>
-        </Container>
-      </View>
-      <Text className="font-readexSemiBold text-[20px] mt-2 mb-2">
+      
+      <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">
         Contributions
       </Text>
       <View className="flex flex-col">
-        <View className="bg-surface flex flex-col border-border border-[1px] rounded-md">
+        <View className="bg-surface flex flex-col border-border border-[1px]">
           <View className="flex flex-row justify-between mx-2 items-center py-1">
             <Pressable
               className="flex-1"
@@ -334,10 +352,10 @@ const SellerAnalyticsSegment = () => {
         <View className="mt-3">
           <FlatList
             contentContainerStyle={{
-              borderRadius: 8,
               borderColor: colors.border,
               borderWidth: 1,
             }}
+            scrollEnabled={false}
             data={[headerData, ...displayData]}
             keyExtractor={(item, index) => index.toString()}
             renderItem={(item) => {

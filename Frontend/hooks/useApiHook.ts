@@ -100,6 +100,7 @@ export const useGetProjectByAddress = (address: string) => {
       );
       return response.data;
     },
+    enabled: !!address
   });
 };
 
@@ -151,6 +152,26 @@ export const useGetAllowlistEntryById = (id: string) => {
     queryKey: ["allowlist", id],
     queryFn: async () => {
       const response = await http.get<AllowlistEntry>(`/api/allowlist/${id}`);
+      return response.data;
+    },
+  });
+};
+
+export const useGetAllowlistEntryByPoolAddress = (poolAddress: string) => {
+  return useQuery<AllowlistEntry[], Error>({
+    queryKey: ["allowlist", poolAddress],
+    queryFn: async () => {
+      const response = await http.get<AllowlistEntry[]>(`/api/allowlist/pool/${poolAddress}`);
+      return response.data;
+    },
+  });
+};
+
+export const useGetAllowlistEntryByUserAddress = (userAddress: string) => {
+  return useQuery<AllowlistEntry, Error>({
+    queryKey: ["allowlist", userAddress],
+    queryFn: async () => {
+      const response = await http.get<AllowlistEntry>(`/api/allowlist/user/${userAddress}`);
       return response.data;
     },
   });

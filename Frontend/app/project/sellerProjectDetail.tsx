@@ -4,17 +4,17 @@ import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
 import ProjectMetadataSegment from "@/components/Segments/ProjectDetail/ProjectMetadata";
 import SellerAnalyticsSegment from "@/components/Segments/ProjectDetail/SellerAnalytics";
-import SellerWhitelistSegment from "@/components/Segments/ProjectDetail/SellerWhitelist";
+import SellerAllowlistSegment from "@/components/Segments/ProjectDetail/SellerWhitelist";
 import { colors } from "@/constants/colors";
-import { Link, router } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 export default function SellerProjectDetailScreen() {
+  const params = useLocalSearchParams();
+  const { poolId } = params;
+
   const [loading, setLoading] = useState(true);
-  const [poolAddress, setPoolAddress] = useState(
-    "0x66427e7d323cc58f33d3748d93885c180e530f01"
-  );
   useEffect(() => {
     setLoading((loading) => false);
   }, []);
@@ -52,18 +52,18 @@ export default function SellerProjectDetailScreen() {
           }
         ></ScreenHeader>
       </View>
-      <View className="flex-1">
+      {poolId !== undefined && <View className="flex-1">
         <View className="pt-4 flex-1">
           <CustomSegmentedControl
             screens={["Metadata", "Analytics", "Allowlist"]}
             components={[
-              <ProjectMetadataSegment poolAddress={poolAddress} />,
-              <SellerAnalyticsSegment />,
-              <SellerWhitelistSegment />,
+              <ProjectMetadataSegment poolAddress={poolId} />,
+              <SellerAnalyticsSegment poolAddress={poolId}/>,
+              <SellerAllowlistSegment />,
             ]}
           />
         </View>
-      </View>
+      </View>}
     </View>
   );
 }

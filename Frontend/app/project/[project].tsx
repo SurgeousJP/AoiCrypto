@@ -4,9 +4,7 @@ import Overview from "@/components/Segments/ProjectDetail/Overview";
 import PrivateSaleSegment from "@/components/Segments/ProjectDetail/PrivateSale";
 import TokenNPool from "@/components/Segments/ProjectDetail/TokenNPool";
 import { colors } from "@/constants/colors";
-import {
-  getUnixTimestampFromDate,
-} from "@/constants/conversion";
+import { getUnixTimestampFromDate } from "@/constants/conversion";
 import { ProjectState, ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import getABI from "@/contracts/utils/getAbi.util";
@@ -39,7 +37,7 @@ const ProjectDetail = () => {
   const [poolAddress, setPoolAddress] = useState(project?.idopool?.poolAddress);
 
   useEffect(() => {
-    if (project !== undefined && project.idopool !== undefined){
+    if (project !== undefined && project.idopool !== undefined) {
       setPoolAddress(poolAddress);
     }
   }, [project]);
@@ -62,7 +60,6 @@ const ProjectDetail = () => {
   const isPurelyPrivate = project?.privateSaleAmount === project?.hardCap;
   const isPurelyPublic = project?.idoType === "PUBLIC_SALE";
 
-  
   const [projectState, setProjectState] = useState<ProjectState | undefined>(
     undefined
   );
@@ -159,13 +156,17 @@ const ProjectDetail = () => {
           projectStatus !== undefined;
 
         const isPrivateSaleActive =
-          isLoaded && projectState === ProjectState.Private && isRegistered === true;
+          isLoaded &&
+          projectState === ProjectState.Private &&
+          isRegistered === true;
 
         const isPublicSaleActive =
           isLoaded && projectState === ProjectState.Public;
 
         const isPrivateSaleUnavailable =
-          isLoaded && projectState === ProjectState.Private && (isRegistered === false || isRegistered === undefined);
+          isLoaded &&
+          projectState === ProjectState.Private &&
+          (isRegistered === false || isRegistered === undefined);
 
         // Main rendering logic
         if (isPrivateSaleActive || isPublicSaleActive) {
@@ -190,13 +191,11 @@ const ProjectDetail = () => {
 
         if (isPrivateSaleUnavailable) {
           return (
-            <View className="p-4">
-              <PrivateSaleSegment
-                status={projectStatus!}
-                project={project!}
-                token={token!}
-              />
-            </View>
+            <PrivateSaleSegment
+              status={projectStatus!}
+              project={project!}
+              token={token!}
+            />
           );
         }
 

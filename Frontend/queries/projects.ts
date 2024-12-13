@@ -31,6 +31,11 @@ export const GET_PROJECT_BY_POOL_ID = gql`
       investors {
         id
       }
+      poolOwner {
+        account {
+          address
+        }
+      }
     }
   }
 `;
@@ -71,6 +76,11 @@ export const GET_PROJECTS = (status: string | null, stage: string | null) => {
         softCap
         whitelistedRoot
         id
+        poolOwner {
+          account {
+            address
+          }
+        }
       }
     }
   `;
@@ -118,6 +128,11 @@ export const GET_PROJECTS_FROM_OWNER = (
       whitelistedRoot
       startTime
       id
+      poolOwner {
+        account {
+          address
+        }
+      }
     }
   }
 `;

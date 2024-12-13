@@ -38,11 +38,14 @@ import {
   defaultText1Style,
   defaultText2Style,
 } from "@/utils/toast";
-import { LogBox } from 'react-native';
+import { LogBox } from "react-native";
 // Import
 
 SplashScreen.preventAutoHideAsync();
 LogBox.ignoreLogs(['Each child in a list should have a unique "key" prop']);
+LogBox.ignoreLogs([
+  'VirtualizedLists should never be nested inside plain ScrollViews with the same orientation',
+]);
 const initialScreen = path.sellerTab;
 global.Buffer = global.Buffer || Buffer;
 

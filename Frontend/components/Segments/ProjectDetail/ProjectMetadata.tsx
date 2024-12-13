@@ -1,4 +1,5 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
+import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import NoImage from "@/components/Displays/NoImage/NoImage";
 import Input from "@/components/Inputs/Input/Input";
 import TextAreaInput from "@/components/Inputs/Input/TextAreaInput";
@@ -13,7 +14,6 @@ import { useUploadImage } from "@/hooks/useUploadImage";
 import { Project } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
 import * as ImagePicker from "expo-image-picker";
-import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -24,20 +24,19 @@ import {
   View,
 } from "react-native";
 
-interface IProjectMetadataSegmentProps {
+interface Props {
   poolAddress: string;
 }
 
-const ProjectMetadataSegment = () => {
-  const params = useLocalSearchParams();
-  const { poolId } = params;
+const ProjectMetadataSegment: React.FC<Props> = ({ poolAddress }) => {
   const [metadata, setMetadata] = useState<Project | undefined>(undefined);
   const [isExistingProject, setIsExistingProject] = useState(false);
 
-  const { data: poolDetails, isLoading } = useGetProjectByAddress(poolId);
+  const { data: poolDetails, isLoading } = useGetProjectByAddress(poolAddress);
   const { mutate: createProject } = useCreateProject();
   const { mutate: updateProject } = useUpdateProject();
   const uploadImageMutation = useUploadImage();
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     if (!isLoading && poolDetails !== null) {
@@ -48,7 +47,7 @@ const ProjectMetadataSegment = () => {
     if (!isLoading && poolDetails === null) {
       setMetadata({
         id: "",
-        poolAddress: poolId,
+        poolAddress: poolAddress,
         tokenAddress: "",
         name: "",
         overview: "",
@@ -124,6 +123,8 @@ const ProjectMetadataSegment = () => {
       return;
     }
 
+    setModalVisible(true);
+
     const projectData = {
       name: metadata.name,
       overview: metadata.overview,
@@ -138,26 +139,38 @@ const ProjectMetadataSegment = () => {
         { id: poolDetails?.id, ...projectData },
         {
           onSuccess: () => {
-            console.log("Project updated successfully");
+            showToast(
+              "success",
+              "Request success",
+              "Updated project successfully"
+            );
+            setModalVisible(false);
           },
           onError: (error) => {
-            console.error("Error updating project:", error.message);
+            showToast("error", "Error updating project", error.message);
+            setModalVisible(false);
           },
         }
       );
     } else {
       createProject(projectData, {
         onSuccess: () => {
-          console.log("Project created successfully");
+          showToast(
+            "success",
+            "Request success",
+            "Created project successfully"
+          );
+          setModalVisible(false);
         },
         onError: (error) => {
-          console.error("Error creating project:", error.message);
+          showToast("error", "Error creating project", error.message);
+          setModalVisible(false);
         },
       });
     }
   };
 
-  console.log("Pool id: ", poolId);
+  console.log("Pool id: ", poolAddress);
   console.log("Image banner url:", metadata?.imageBannerUrl);
   console.log("Is loading: ", isLoading);
   console.log("Metadata:", metadata);
@@ -167,6 +180,7 @@ const ProjectMetadataSegment = () => {
       showsVerticalScrollIndicator={false}
       className="flex flex-col mt-2"
     >
+      <LoadingModal isVisible={modalVisible} task={"Configuring request"} />
       {!isLoading && metadata !== undefined && metadata !== null ? (
         <View>
           <Container>

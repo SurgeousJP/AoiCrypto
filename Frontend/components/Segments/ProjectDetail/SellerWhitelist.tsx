@@ -4,7 +4,7 @@ import { colors } from "@/constants/colors";
 import React, { useEffect, useState } from "react";
 import { FlatList, ScrollView, View, Text } from "react-native";
 
-const SellerWhitelistSegment = () => {
+const SellerAllowlistSegment = () => {
   const whitelistState = [
     { label: "Accepted", value: "Accepted" },
     { label: "Pending", value: "Pending" },
@@ -93,6 +93,41 @@ const SellerWhitelistSegment = () => {
     }
   }, [status]);
 
+  // const {
+  //   error,
+  //   errorWrite,
+  //   isLoading,
+  //   isSuccess,
+  //   isError,
+  //   onRegisterPrivatePool,
+  // } = useRegisterPrivatePool({
+  //   chainId: chainId,
+  //   poolAddress: project.poolAddress,
+  //   enabled: true,
+  //   onSuccess: (data: TransactionReceipt) => {
+  //     if (investModalVisible) {
+  //       setInvestModalVisible(false);
+  //     }
+
+  //     showToast("success", "Transaction success", "Invest successfully");
+  //   },
+  //   onError: (error?: Error) => {
+  //     if (investModalVisible) {
+  //       setInvestModalVisible(false);
+  //     }
+
+  //     showToast(
+  //       "error",
+  //       "Transaction failed",
+  //       error != undefined ? error.message : "No error"
+  //     );
+  //   },
+  //   onSettled: (data?: TransactionReceipt) => {
+  //     client.resetStore();
+  //     setInvestAmount(0);
+  //   },
+  // });
+
   return (
     <View className="flex flex-col flex-1 mt-2">
       <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
@@ -155,4 +190,4 @@ const SellerWhitelistSegment = () => {
   );
 };
 
-export default SellerWhitelistSegment;
+export default SellerAllowlistSegment;

@@ -4,12 +4,12 @@ import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Input from "@/components/Inputs/Input/Input";
 import Container from "@/components/Layouts/Container";
 import { colors } from "@/constants/colors";
-import {
-  BIGINT_CONVERSION_FACTOR,
-} from "@/constants/conversion";
+import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
+import { useGetProjectByAddress } from "@/hooks/useApiHook";
+import { Project } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
@@ -42,7 +42,11 @@ export const getProjectStatusAndCreatedTime = (status: ProjectStatus) => {
   return { projectStatus, projectStatusStyle };
 };
 
-const getProjectOverview = (project: any, token: any, status: ProjectStatus) => {
+const getProjectOverview = (
+  project: any,
+  token: any,
+  status: ProjectStatus
+) => {
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
     "Loading...",
   ];
@@ -188,7 +192,10 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
       );
     }
   }, [ethBalance]);
-  
+
+  const { data: pjMetadata, isLoading: isLoadingMetadata } =
+    useGetProjectByAddress(project.poolAddress);
+
   return (
     <View className="w-full flex flex-col">
       <LoadingModal
@@ -198,21 +205,44 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
       <View className="mt-3 flex flex-col w-full">
         <View className="mb-3">
           <Container>
-            <View className="bg-surface overflow-scroll px-4 py-2 pt-0">
+            <View className="bg-surface px-4 py-2 pt-0">
               <View className="w-full flex flex-col mb-2">
-                <ImageBackground
-                  source={projectIllust}
-                  className="w-full h-[183px]"
-                />
+                {!isLoading &&
+                pjMetadata !== undefined &&
+                pjMetadata !== null &&
+                pjMetadata.imageBannerUrl !== "" ? (
+                  <Image
+                    source={{
+                      uri: pjMetadata.imageBannerUrl,
+                    }}
+                    style={{
+                      width: "100%",
+                      aspectRatio: 3 / 2,
+                      marginTop: 10,
+                    }}
+                  />
+                ) : (
+                  <ImageBackground
+                    source={projectIllust}
+                    className="w-full h-[183px]"
+                  />
+                )}
               </View>
-              <View className="flex flex-row space-x-2">
+              <View className="flex flex-row space-x-2 w-full">
                 <Image source={projectLogo} className="w-8 h-8" />
                 <View className="flex flex-col">
                   <Text className="text-md font-readexBold mb-1">
-                    Highstreet
+                    {pjMetadata !== undefined && pjMetadata !== null
+                      ? pjMetadata.name
+                      : name}
                   </Text>
-                  <Text className="text-sm text-secondary font-readexLight mb-1">
-                    Shopify on an MMORPG
+                  <Text className="text-sm text-secondary font-readexLight mb-1 break-words">
+                    {pjMetadata !== undefined && pjMetadata !== null
+                      ? pjMetadata.overview
+                      : ""}
+                    {pjMetadata === undefined || pjMetadata === null
+                      ? "Sample overview"
+                      : ""}
                   </Text>
                 </View>
               </View>
@@ -308,15 +338,15 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
         <Container>
           <View className="bg-surface px-4 py-2 flex flex-col">
             <Text className="font-readexBold text-md text-primary">
-              Highlights
+              Description
             </Text>
             <Text className="font-readexRegular  leading-loose">
-              - Highstreet creates the Shopify experience on an MMORPG for
-              brands{"\n"}- In an ultimate metaverse experience, users can
-              easily set up shop and start interacting with products integrated
-              as in-game objects.{"\n"}- Highstreet emphasizes hybrid
-              marketplaces, where the rules of how a market should work can be
-              rewritten based on the hottest goods.
+              {pjMetadata !== undefined && pjMetadata !== null
+                ? pjMetadata.description
+                : ""}
+              {pjMetadata === undefined || pjMetadata === null
+                ? "Sample description"
+                : ""}
             </Text>
           </View>
         </Container>

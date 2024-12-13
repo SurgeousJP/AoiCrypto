@@ -46,7 +46,7 @@ export const useRegisterPrivatePool = ({
     address: poolAddress,
     abi: getABI("IDOPool"),
     // <---! PARAMS IN ABI !---> //
-    args: [ ],
+    args: [],
     // <---! PARAMS IN ABI !---> //
     // <---! FUNCTION IN ABI !---> //
     functionName: "registerPrivatePool",
