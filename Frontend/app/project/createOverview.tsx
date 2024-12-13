@@ -14,7 +14,7 @@ const CreateProjectOverview = () => {
 
   const router = useRouter();
   const navigateToStepOne = () => {
-    router.navigate("/project/sellerProjectDetail");
+    router.navigate("/project/createStepOne");
   };
 
   return (

@@ -1,4 +1,3 @@
-// axiosInstance.ts
 import axios from "axios";
 
 const http = axios.create({
@@ -38,6 +37,19 @@ http.interceptors.response.use(
     return response; // Must return the response or a Promise that resolves to it
   },
   (error) => {
+    if (error.response && error.response.status === 404) {
+      console.warn("404 Not Found:", {
+        url: error.config.url,
+        data: error.response.data,
+      });
+      // Resolve the promise with a custom message or default object
+      return Promise.resolve({
+        status: 404,
+        data: null, // or a default structure you prefer
+        message: "Resource not found",
+      });
+    }
+
     console.error("Response Error:", error.response || error);
     return Promise.reject(error);
   }

@@ -2,13 +2,11 @@ import DividerLine from "@/components/Displays/Divider/DividerLine";
 import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import ProjectCard from "@/components/Items/Project/ProjectCard";
-import SearchHeader from "@/components/Layouts/SearchHeader";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import { colors } from "@/constants/colors";
 import {
   BIGINT_CONVERSION_FACTOR,
   getDateFromUnixTimestamp,
-  getUnixTimestampFromDate,
 } from "@/constants/conversion";
 import { GET_PROJECTS } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
@@ -24,7 +22,7 @@ import {
   View,
 } from "react-native";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
-import { Link, router } from "expo-router";
+import { Link } from "expo-router";
 
 export default function ProjectScreen() {
   const projectState = [

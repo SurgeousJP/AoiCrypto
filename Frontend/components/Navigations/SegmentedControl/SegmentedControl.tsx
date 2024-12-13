@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     width: "100%",
+    backgroundColor: "#eeeeee"
   },
   loaderContainer: {
     marginTop: 16,

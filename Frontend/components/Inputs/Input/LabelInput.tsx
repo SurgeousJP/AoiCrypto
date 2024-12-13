@@ -38,9 +38,14 @@ const LabelInput: React.FC<LabelInputProps> = ({
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const textValue = props.type === "numeric" && props.initialValue !== undefined && typeof(props.initialValue) === "bigint" ? (Number(props.initialValue) / BIGINT_CONVERSION_FACTOR) : "";
+  const textValue =
+    props.type === "numeric" &&
+    props.initialValue !== undefined &&
+    typeof props.initialValue === "bigint"
+      ? Number(props.initialValue) / BIGINT_CONVERSION_FACTOR
+      : "";
 
-  const [value, setValue] = useState(textValue.toString());
+  const [value, setValue] = useState(textValue !== "" ? textValue : props.initialValue);
 
   const inputProps: Record<InputType, TextInputProps> = {
     text: { keyboardType: "default", secureTextEntry: false },
@@ -132,7 +137,9 @@ const LabelInput: React.FC<LabelInputProps> = ({
               secureTextEntry={inputProps[props.type].secureTextEntry}
               onChangeText={handleChangeText}
             />
-            {isUnitVisible && <Text className="font-readexRegular text-secondary">ETH</Text>}
+            {isUnitVisible && (
+              <Text className="font-readexRegular text-secondary">ETH</Text>
+            )}
           </View>
         )}
       </View>

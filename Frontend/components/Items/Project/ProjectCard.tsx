@@ -99,8 +99,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </Text>
             </View>
             <View className="flex flex-row gap-1 mb-2">
-              <Text className="font-readexBold">${pricePerToken}</Text>
-              <Text className="font-readexRegular">per token</Text>
+              <Text className="font-readexBold">{pricePerToken}{" ETH"}</Text>
+              <Text className="font-readexRegular">/ token</Text>
             </View>
             <View className="flex flex-row gap-1 mb-2">
               <Text className="font-readexRegular">Start from:</Text>

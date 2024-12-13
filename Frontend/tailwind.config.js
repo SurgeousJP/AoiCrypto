@@ -31,7 +31,7 @@ module.exports = {
       },
       colors: {
         border: "#DFDFDF",
-        background: "#F8F9FC",
+        background: "#FAFAFA",
         surface: "#FFFFFF",
         outline: "#D7D9E4",
         textColor: "#11183C",

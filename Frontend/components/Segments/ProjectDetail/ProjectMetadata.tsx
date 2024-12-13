@@ -1,51 +1,72 @@
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
+import NoImage from "@/components/Displays/NoImage/NoImage";
 import Input from "@/components/Inputs/Input/Input";
 import TextAreaInput from "@/components/Inputs/Input/TextAreaInput";
 import Container from "@/components/Layouts/Container";
+import { colors } from "@/constants/colors";
 import {
   useCreateProject,
   useGetProjectByAddress,
   useUpdateProject,
 } from "@/hooks/useApiHook";
 import { useUploadImage } from "@/hooks/useUploadImage";
+import { Project } from "@/model/ApiModel";
+import { showToast } from "@/utils/toast";
 import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Alert, Button, Image, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 interface IProjectMetadataSegmentProps {
   poolAddress: string;
 }
 
-const ProjectMetadataSegment = ({
-  poolAddress,
-}: IProjectMetadataSegmentProps) => {
-  const [name, setName] = useState("");
-  const [overview, setOverview] = useState("");
-  const [description, setDescription] = useState("");
-  const [imageFile, setImageFile] = useState<any>(null); // Image as a file
-  const [imageBannerUrl, setImageBannerUrl] = useState("");
+const ProjectMetadataSegment = () => {
+  const params = useLocalSearchParams();
+  const { poolId } = params;
+  const [metadata, setMetadata] = useState<Project | undefined>(undefined);
   const [isExistingProject, setIsExistingProject] = useState(false);
 
-  const { data: poolDetails, isLoading } = useGetProjectByAddress(poolAddress);
+  const { data: poolDetails, isLoading } = useGetProjectByAddress(poolId);
   const { mutate: createProject } = useCreateProject();
   const { mutate: updateProject } = useUpdateProject();
   const uploadImageMutation = useUploadImage();
 
   useEffect(() => {
-    if (poolDetails) {
+    if (!isLoading && poolDetails !== null) {
+      setMetadata(poolDetails);
       setIsExistingProject(true);
-      setName(poolDetails.name || "");
-      setOverview(poolDetails.overview || "");
-      setDescription(poolDetails.description || "");
-      setImageBannerUrl(poolDetails.imageBannerUrl || "");
-    }
-  }, [poolDetails]);
-
-  const handleUploadImage = async () => {
-    if (!imageFile) {
-      Alert.alert("Error", "Please select an image first.");
       return;
     }
+    if (!isLoading && poolDetails === null) {
+      setMetadata({
+        id: "",
+        poolAddress: poolId,
+        tokenAddress: "",
+        name: "",
+        overview: "",
+        description: "",
+        imageBannerUrl: "",
+      });
+    }
+  }, [isLoading, poolDetails]);
 
+  const onInputChange = (name: any, value: any) => {
+    setMetadata({ ...metadata, [name]: value });
+  };
+
+  const handleUploadImage = async (imageFile: any) => {
+    if (!imageFile) {
+      showToast("error", "Invalid input", "Please select an image first");
+      return;
+    }
     uploadImageMutation.mutate(
       {
         image: {
@@ -58,12 +79,11 @@ const ProjectMetadataSegment = ({
       },
       {
         onSuccess: (data) => {
-          setImageBannerUrl(data.data.url);
-          Alert.alert("Success", "Image uploaded successfully.");
+          setMetadata({ ...metadata, ["imageBannerUrl"]: data.data.url });
+          showToast("success", "Image uploaded successfully", "");
         },
         onError: (error) => {
-          Alert.alert("Error", "Failed to upload image.");
-          console.error(error);
+          showToast("error", "Failed to upload image", error.message);
         },
       }
     );
@@ -94,18 +114,23 @@ const ProjectMetadataSegment = ({
         type: "image/jpeg", // You can adjust based on the image type
       };
 
-      setImageFile(file);
+      await handleUploadImage(file);
     }
   };
 
   const handleSubmit = () => {
+    if (metadata === undefined) {
+      showToast("error", "Invalid input", "Project input is undefined");
+      return;
+    }
+
     const projectData = {
-      name,
-      overview,
-      description,
-      poolAddress,
-      tokenAddress: "",
-      imageBannerUrl,
+      name: metadata.name,
+      overview: metadata.overview,
+      description: metadata.description,
+      poolAddress: metadata.poolAddress,
+      tokenAddress: metadata.tokenAddress,
+      imageBannerUrl: metadata.imageBannerUrl,
     };
 
     if (isExistingProject) {
@@ -132,70 +157,97 @@ const ProjectMetadataSegment = ({
     }
   };
 
+  console.log("Pool id: ", poolId);
+  console.log("Image banner url:", metadata?.imageBannerUrl);
+  console.log("Is loading: ", isLoading);
+  console.log("Metadata:", metadata);
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       className="flex flex-col mt-2"
     >
-      <View>
-        <Container>
-          <View
-            className="bg-surface rounded-lg px-4 py-2 flex flex-col border-border border-[0.5px]"
-            style={{ elevation: 2 }}
-          >
-            <Text className="font-readexBold text-md text-primary mb-2">
-              Project Information
-            </Text>
-            <View className="mb-3">
-              <Input
-                label={"Project name"}
-                name={"name"}
-                value={name}
-                type="text"
-                onChange={(name, value) => setName(value)}
+      {!isLoading && metadata !== undefined && metadata !== null ? (
+        <View>
+          <Container>
+            <View
+              className="bg-surface px-4 py-2 flex flex-col border-border border-[0.5px]"
+              style={{ elevation: 2 }}
+            >
+              <Text className="font-readexBold text-md text-primary mb-2">
+                Project Information
+              </Text>
+              <View className="mb-3">
+                <Text className="font-readexSemiBold text-sm mb-1">
+                  Project banner
+                </Text>
+                <PrimaryButton
+                  content="Select image"
+                  onPress={handleImageSelection}
+                />
+                {metadata.imageBannerUrl !== "" ? (
+                  <View>
+                    <Image
+                      source={{
+                        uri: metadata.imageBannerUrl,
+                      }}
+                      style={{
+                        width: "100%",
+                        aspectRatio: 3 / 2,
+                        marginTop: 10,
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <View className="mb-3">
+                    <NoImage />
+                  </View>
+                )}
+              </View>
+              <View className="mb-3">
+                <Input
+                  label={"Project name"}
+                  name={"name"}
+                  value={metadata.name}
+                  type="text"
+                  onChange={onInputChange}
+                  initialValue={metadata.name}
+                />
+              </View>
+              <View className="mb-3">
+                <Input
+                  label={"Overview"}
+                  name={"overview"}
+                  value={metadata.overview}
+                  type="text"
+                  onChange={onInputChange}
+                  initialValue={metadata.overview}
+                />
+              </View>
+              <TextAreaInput
+                title={"Description"}
+                name={"description"}
+                type={"text"}
+                value={metadata.description}
+                onChange={onInputChange}
+                placeholder={""}
+                isUnitVisible={false}
+                initialValue={metadata.description}
               />
+              <View className="mt-3 mb-1">
+                <PrimaryButton content="Submit" onPress={handleSubmit} />
+              </View>
             </View>
-            <View className="mb-3">
-              <Input
-                label={"Overview"}
-                name={"overview"}
-                value={overview}
-                type="text"
-                onChange={(name, value) => setOverview(value)}
-              />
-            </View>
-            <TextAreaInput
-              title={"Description"}
-              type={"text"}
-              value={description}
-              onChange={(name, value) => setDescription(value)}
-              name={"description"}
-              placeholder={""}
-              isUnitVisible={false}
-            />
-          </View>
-
-          <Button title="Select Image" onPress={handleImageSelection} />
-
-          {imageFile && (
-            <View>
-              <Image
-                source={{ uri: imageFile.uri }}
-                style={{ width: 100, height: 100, marginTop: 10 }}
-              />
-              <Button title="Upload Image" onPress={handleUploadImage} />
-            </View>
-          )}
-
-          {imageBannerUrl && (
-            <Text className="text-primary mt-2">
-              Image uploaded: {imageBannerUrl}
-            </Text>
-          )}
-
-          <Button title="Submit" onPress={handleSubmit} />
-        </Container>
-      </View>
+          </Container>
+        </View>
+      ) : (
+        <View className="flex-1 my-auto items-center justify-center">
+          <ActivityIndicator size={"large"} color={colors.primary} />
+          <Text className="font-readexRegular text-primary text-md">
+            Loading
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 };

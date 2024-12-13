@@ -36,49 +36,12 @@ const TextAreaInput: React.FC<LabelInputProps> = ({
   isUnitVisible = false,
   ...props
 }) => {
-  const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const textValue =
-    props.type === "numeric" &&
-    props.initialValue !== undefined &&
-    typeof props.initialValue === "bigint"
-      ? Number(props.initialValue) / BIGINT_CONVERSION_FACTOR
-      : "";
-
-  const [value, setValue] = useState(textValue.toString());
-
-  const inputProps: Record<InputType, TextInputProps> = {
-    text: { keyboardType: "default", secureTextEntry: false },
-    email: { keyboardType: "email-address", secureTextEntry: false },
-    password: { keyboardType: "default", secureTextEntry: true },
-    numeric: { keyboardType: "numeric", secureTextEntry: false },
-    phone: { keyboardType: "phone-pad", secureTextEntry: false },
-    decimal: { keyboardType: "decimal-pad", secureTextEntry: false },
-    datetime: {}, // Placeholder for DateTime Picker handling
-  };
-
-  const handleDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(Platform.OS === "ios"); // Keep the picker open on iOS
-    if (selectedDate) {
-      props.onChange(props.name, selectedDate);
-    }
-  };
+  const [value, setValue] = useState(props.initialValue);
 
   const handleChangeText = (text) => {
-    const oldText = value;
-    if (props.type !== "numeric") {
-      props.onChange(props.name, text);
-      // console.log("Text sent: ", text);
-      setValue(text);
-    } else {
-      const regex = /^[0-9]*\.?[0-9]*$/;
-      if (regex.test(text) && text !== ".") {
-        props.onChange(props.name, +text);
-        setValue(text);
-      } else {
-        props.onChange(props.name, oldText);
-      }
-    }
+    props.onChange(props.name, text);
+    setValue(text);
+    console.log(value);
   };
 
   return (
@@ -95,58 +58,26 @@ const TextAreaInput: React.FC<LabelInputProps> = ({
           paddingVertical: 4,
         }}
       >
-        {props.type === "datetime" ? (
-          <>
-            <TouchableOpacity
-              style={{ flex: 1 }}
-              onPress={() => setShowDatePicker(true)}
-            >
-              <Text className="font-readexRegular text-gray-400">
-                {props.value
-                  ? new Date(props.value).toLocaleString()
-                  : props.placeholder}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-              <Ionicons
-                name="calendar-outline"
-                size={20}
-                color={colors.secondary}
-              />
-            </TouchableOpacity>
-            {showDatePicker && (
-              <DateTimePicker
-                value={props.value ? new Date(props.value) : new Date()}
-                mode="date" // android datetime picker is fucked up will update later https://github.com/react-native-datetimepicker/datetimepicker/pull/929
-                display={Platform.OS === "ios" ? "inline" : "default"}
-                onChange={handleDateChange}
-              />
-            )}
-          </>
-        ) : (
-          <View className="flex flex-col">
-            <TextInput
-              textAlignVertical="top"
-              multiline
-              numberOfLines={6}
-              id={props.name}
-              placeholder={props.placeholder}
-              value={value}
-              style={{
-                flex: 1,
-                fontFamily: "ReadexPro_400Regular",
-                alignSelf: "flex-start",
-                height: "100%",
-              }}
-              keyboardType={inputProps[props.type].keyboardType}
-              secureTextEntry={inputProps[props.type].secureTextEntry}
-              onChangeText={handleChangeText}
-            />
-            {isUnitVisible && (
-              <Text className="font-readexRegular text-secondary">ETH</Text>
-            )}
-          </View>
-        )}
+        <View className="flex flex-col">
+          <TextInput
+            textAlignVertical="top"
+            multiline
+            numberOfLines={6}
+            id={props.name}
+            value={value}
+            style={{
+              flex: 1,
+              fontFamily: "ReadexPro_400Regular",
+              alignSelf: "flex-start",
+              height: "100%",
+            }}
+            keyboardType={"default"}
+            onChangeText={handleChangeText}
+          />
+          {isUnitVisible && (
+            <Text className="font-readexRegular text-secondary">ETH</Text>
+          )}
+        </View>
       </View>
     </View>
   );

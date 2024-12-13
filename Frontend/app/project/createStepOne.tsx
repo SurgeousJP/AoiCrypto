@@ -70,7 +70,6 @@ const CreateStepOne = () => {
     if (isStepOneInputValid()) {
       router.push("/project/createStepTwo");
     }
-    // router.push("/project/createStepTwo");
   };
 
   const isStepOneInputValid = () => {

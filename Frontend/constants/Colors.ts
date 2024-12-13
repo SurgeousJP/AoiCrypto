@@ -37,7 +37,7 @@ export interface ColorPalette {
 
 // Create a constant object that conforms to the ColorPalette interface
 export const colors: ColorPalette = {
-  background: "#F8F9FC",
+  background: "#F1F2F4",
   surface: "#FFFFFF",
   outline: "#D7D9E4",
   textColor: "#11183C",
