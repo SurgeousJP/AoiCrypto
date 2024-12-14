@@ -8,6 +8,7 @@ import { router } from "expo-router";
 const Login = () => {
   const { open } = useAppKit();
   const handleLogin = (e) => {
+    router.push('/(tabs)')
     open();
   };
 

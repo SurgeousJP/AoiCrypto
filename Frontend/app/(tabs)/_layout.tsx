@@ -29,7 +29,7 @@ export default function TabLayout() {
       !userContext.isLoading &&
       userContext.status !== "connected"
     ) {
-      router.push("/login");
+      //router.push("/login");
     }
   }, [userContext, isRendering]);
 
