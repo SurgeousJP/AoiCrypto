@@ -9,11 +9,12 @@ import { ProjectState, ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import getABI from "@/contracts/utils/getAbi.util";
 import { useCheckRegisteredPrivatePool } from "@/hooks/smart-contract/IDOPool/useCheckRegisteredPrivatePool";
+import { useGetIsUserAllowed } from "@/hooks/useApiHook";
 import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
-import { View, ScrollView, ActivityIndicator } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import { useReadContracts } from "wagmi";
 // Import
 
@@ -32,6 +33,7 @@ const ProjectDetail = () => {
   });
 
   const project = query?.idopool;
+
   const { address, chainId } = useContext(AuthContext);
 
   const [poolAddress, setPoolAddress] = useState(project?.idopool?.poolAddress);
@@ -113,6 +115,10 @@ const ProjectDetail = () => {
   }, [loading]);
 
   const [registered, setRegistered] = useState<boolean | undefined>(undefined);
+
+  const { data: isAllowData, isLoading: isAllowedLoading } =
+    useGetIsUserAllowed(poolId, address);
+
   useEffect(() => {
     if (!isLoadingCheckingRegistered) {
       setRegistered(isRegistered);
@@ -150,6 +156,7 @@ const ProjectDetail = () => {
         // Helper conditions
         const isLoaded =
           !loading &&
+          !isAllowedLoading &&
           !isLoadingCheckingRegistered &&
           token !== undefined &&
           projectState !== undefined &&
@@ -168,8 +175,15 @@ const ProjectDetail = () => {
           projectState === ProjectState.Private &&
           (isRegistered === false || isRegistered === undefined);
 
+        console.log("Is private sale active: ", isPrivateSaleActive);
+        console.log("Is public sale active: ", isPublicSaleActive);
+        console.log("Is private sale unavailable: ", isPrivateSaleUnavailable);
+        console.log("Is user allowed: ", isAllowData?.isAllowed);
         // Main rendering logic
-        if (isPrivateSaleActive || isPublicSaleActive) {
+        if (
+          (isPrivateSaleActive && isAllowData?.isAllowed) ||
+          isPublicSaleActive
+        ) {
           return (
             <View className="py-1">
               <View className="pt-4 flex flex-col">
@@ -189,7 +203,11 @@ const ProjectDetail = () => {
           );
         }
 
-        if (isPrivateSaleUnavailable) {
+        if (
+          (isPrivateSaleActive && !isAllowData?.isAllowed) ||
+          isPrivateSaleUnavailable
+        ) {
+          // ko hieu doan isPrivateSaleUnavailable lam nen de tam
           return (
             <PrivateSaleSegment
               status={projectStatus!}

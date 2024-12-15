@@ -62,6 +62,14 @@ export interface AllowlistEntry {
   status: string;
 }
 
+export interface IsAllowedParams {
+  poolAddress: string;
+  userAddress: string;
+}
+export interface IsAllowedResponse {
+  isAllowed: boolean;
+}
+
 export interface CreateAllowlistEntryParams {
   poolAddress: string;
   userAddresses: string[];

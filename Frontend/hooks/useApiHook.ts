@@ -8,6 +8,7 @@ import {
   CreateTokenParams,
   DeleteAllowlistEntryResponse,
   DeleteTokenResponse,
+  IsAllowedResponse,
   Project,
   Token,
   UpdateProjectParams,
@@ -100,7 +101,7 @@ export const useGetProjectByAddress = (address: string) => {
       );
       return response.data;
     },
-    enabled: !!address
+    enabled: !!address,
   });
 };
 
@@ -161,7 +162,9 @@ export const useGetAllowlistEntryByPoolAddress = (poolAddress: string) => {
   return useQuery<AllowlistEntry[], Error>({
     queryKey: ["allowlist", poolAddress],
     queryFn: async () => {
-      const response = await http.get<AllowlistEntry[]>(`/api/allowlist/pool/${poolAddress}`);
+      const response = await http.get<AllowlistEntry[]>(
+        `/api/allowlist/pool/${poolAddress}`
+      );
       return response.data;
     },
   });
@@ -171,7 +174,9 @@ export const useGetAllowlistEntryByUserAddress = (userAddress: string) => {
   return useQuery<AllowlistEntry, Error>({
     queryKey: ["allowlist", userAddress],
     queryFn: async () => {
-      const response = await http.get<AllowlistEntry>(`/api/allowlist/user/${userAddress}`);
+      const response = await http.get<AllowlistEntry>(
+        `/api/allowlist/user/${userAddress}`
+      );
       return response.data;
     },
   });
@@ -191,6 +196,22 @@ export const useCreateAllowlistEntry = () => {
       );
       return response.data;
     },
+  });
+};
+
+export const useGetIsUserAllowed = (
+  poolAddress: string,
+  userAddress: string
+) => {
+  return useQuery<IsAllowedResponse, Error>({
+    queryKey: ["is-allowed", poolAddress, userAddress],
+    queryFn: async () => {
+      const response = await http.get<IsAllowedResponse>(
+        `/api/allowlist/is-allowed/${poolAddress}/${userAddress}`
+      );
+      return response.data;
+    },
+    enabled: !!poolAddress && !!userAddress,
   });
 };
 
