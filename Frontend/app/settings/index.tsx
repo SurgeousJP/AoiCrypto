@@ -6,8 +6,9 @@ import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
 import { useAppKit } from "@reown/appkit-wagmi-react-native";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useAccount } from "wagmi";
 function Settings() {
   const router = useRouter();
 
@@ -23,6 +24,13 @@ function Settings() {
   const openWalletModal = () => {
     open();
   };
+
+  const account = useAccount();
+  useEffect(() => {
+    if (account.status === "disconnected") {
+      router.push("/login");
+    }
+  }, [account]);
 
   return (
     <ScrollView

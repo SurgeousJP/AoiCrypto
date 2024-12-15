@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
-import { useAppKit } from "@reown/appkit-wagmi-react-native";
+import { ConnectButton, useAppKit } from "@reown/appkit-wagmi-react-native";
 import LoginIllustration from "@/assets/images/LoginIllustration.svg";
 import { useAccount } from "wagmi";
 import { router } from "expo-router";
