@@ -24,7 +24,7 @@ const tokens = [
   { symbol: "BTCB", name: "Binance Bitcoin" },
 ];
 
-const TradeScreen = () => {
+const SwapScreen = () => {
   const insets = useSafeAreaInsets();
   const [fromToken, setFromToken] = useState("BNB");
   const [toToken, setToToken] = useState("CAKE");
@@ -46,7 +46,7 @@ const TradeScreen = () => {
   return (
     <View className="flex-1 bg-background">
       {/* Header */}
-      <View className="border-b border-border shadow-md">
+      <View className="border-b-[0.5px] border-border  shadow-md">
         <ScreenHeader
           LeftComponent={
             <View className="opacity-0">
@@ -54,8 +54,8 @@ const TradeScreen = () => {
             </View>
           }
           CenterComponent={
-            <Text className="text-xl font-readexSemiBold text-center">
-              Trade
+            <Text className="text-[20px] font-readexSemiBold text-center">
+              Swap
             </Text>
           }
           RightComponent={
@@ -66,17 +66,17 @@ const TradeScreen = () => {
         />
       </View>
 
-      <ScrollView className="px-4 py-6">
+      <ScrollView className="py-6">
         {/* From Token Input */}
-        <View className="rounded-lg bg-white border border-gray-300 p-3">
+        <View className=" bg-white border border-gray-300 p-3">
           <View className="mb-8">
-            <Text className="text-sm text-gray-500 font-medium mb-2">From</Text>
+            <Text className="text-sm text-gray-500 font-readexSemiBold mb-2">From</Text>
             <View className="flex-row items-center border justify-between border-gray-200 rounded-lg px-2 py-1 bg-[#eeeaf4]">
               <TouchableOpacity
                 className="flex-row items-center space-x-1 "
                 onPress={openTokenPicker}
               >
-                <Text className="text-md font-medium">{fromToken}</Text>
+                <Text className="text-md font-readexSemiBold">{fromToken}</Text>
                 <Ionicons name={"chevron-down"} size={18} />
               </TouchableOpacity>
               <View className="items-end w-2/3">
@@ -85,9 +85,9 @@ const TradeScreen = () => {
                   value={amount}
                   onChangeText={setAmount}
                   keyboardType="numeric"
-                  className="flex-1 w-full text-lg p-1 text-black font-bold text-right"
+                  className="flex-1 w-full text-lg p-1 text-black font-readexBold text-right"
                 />
-                <Text className="text-xs font-medium text-gray-500">
+                <Text className="text-xs font-readexSemiBold text-gray-500">
                   ~3,818.87 USD
                 </Text>
               </View>
@@ -104,13 +104,13 @@ const TradeScreen = () => {
           </TouchableOpacity>
           {/* To Token Input */}
           <View className="mb-6">
-            <Text className="text-sm text-gray-500 font-medium mb-2">To</Text>
+            <Text className="text-sm text-gray-500 font-readexSemiBold mb-2">To</Text>
             <View className="flex-row items-center border justify-between border-gray-200 rounded-lg px-2 py-1 bg-[#eeeaf4]">
               <TouchableOpacity
                 className="flex-row items-center space-x-1"
                 onPress={openTokenPicker}
               >
-                <Text className="text-base font-medium">{toToken}</Text>
+                <Text className="text-base font-readexSemiBold">{toToken}</Text>
                 <Ionicons name={"chevron-down"} size={18} />
               </TouchableOpacity>
               <View className="items-end w-2/3">
@@ -119,9 +119,9 @@ const TradeScreen = () => {
                   value={toAmount}
                   onChangeText={setToAmount}
                   keyboardType="numeric"
-                  className="flex-1 w-full text-lg p-1 text-black font-bold text-right"
+                  className="flex-1 w-full text-lg p-1 text-black font-readexBold text-right"
                 />
-                <Text className="text-xs font-medium text-gray-500">
+                <Text className="text-xs font-readexSemiBold text-gray-500">
                   ~3,818.87 USD
                 </Text>
               </View>
@@ -157,16 +157,16 @@ const TradeScreen = () => {
               onPress={() => setIsPickerVisible(false)}
               className="mt-4 p-3 bg-primary rounded-lg"
             >
-              <Text className="text-white text-center font-medium">Close</Text>
+              <Text className="text-white text-center font-readexSemiBold">Close</Text>
             </TouchableOpacity>
           </View>
         </Modal>
-        <View className="rounded-lg bg-white border mt-4 border-gray-300 p-3">
+        <View className=" bg-white border mt-4 border-gray-300 p-3">
           <PrimaryButton
             onPress={function (): void {
               throw new Error("Function not implemented.");
             }}
-            content={"Trade"}
+            content={"Swap"}
           />
           <TouchableOpacity
             onPress={() => {
@@ -175,7 +175,7 @@ const TradeScreen = () => {
             }}
             className="flex-row items-center justify-center my-2 mr-3"
           >
-            <Text className="text-gray-600 text-xs font-medium w-full text-right">
+            <Text className="text-gray-600 text-xs font-readexRegular  w-full text-right">
               Fee 0.002499 ETH
             </Text>
             <Ionicons
@@ -187,10 +187,10 @@ const TradeScreen = () => {
           <Collapsible collapsed={isDetailsVisible}>
             {/* Wallet information content */}
             <View className="flex-row items-center justify-between">
-              <Text className="text-gray-600 text-xs font-medium">
+              <Text className="text-gray-600 text-xs font-readexSemiBold">
                 Maximum sold
               </Text>
-              <Text className="text-gray-600 text-xs font-medium">
+              <Text className="text-gray-600 text-xs font-readexSemiBold">
                 1.004 ETH
               </Text>
             </View>
@@ -201,4 +201,4 @@ const TradeScreen = () => {
   );
 };
 
-export default TradeScreen;
+export default SwapScreen;

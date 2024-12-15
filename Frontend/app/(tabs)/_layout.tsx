@@ -29,7 +29,7 @@ export default function TabLayout() {
       !userContext.isLoading &&
       userContext.status !== "connected"
     ) {
-      //router.push("/login");
+      router.push("/login");
     }
   }, [userContext, isRendering]);
 
@@ -75,7 +75,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="trade"
         options={{
-          title: "Trade",
+          title: "Swap",
           tabBarIcon: ({ color, focused }) => (
             <Trade stroke={focused ? colors.primary : colors.secondary} />
           ),

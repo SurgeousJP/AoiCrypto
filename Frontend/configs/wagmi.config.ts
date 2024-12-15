@@ -22,5 +22,5 @@ export const wagmiConfig = defaultWagmiConfig({
   chains,
   projectId: PROJECT_ID,
   metadata,
-  
+
 });
