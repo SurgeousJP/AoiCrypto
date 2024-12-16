@@ -55,9 +55,13 @@ const CreateStepOne = () => {
     .filter(([key, value]) => !isNaN(Number(value)))
     .map(([key, value]) => ({ label: key, value }));
 
-  const { createIDO, updateCreateIDO } = useContext(
+  const { createIDO, updateCreateIDO, resetCreateIDO } = useContext(
     StateContext
   ) as StateContextType;
+
+  useEffect(() => {
+    resetCreateIDO();
+  }, []);
 
   const [poolDetails, setPoolDetail] = useState<PoolDetails>({
     ...createIDO.poolDetails,
@@ -229,7 +233,7 @@ const CreateStepOne = () => {
       <ScreenHeader
         LeftComponent={
           <TouchableOpacity onPress={() => navigation.goBack()} className="p-2">
-            <Back stroke={colors.secondary} width={24} height={24} />
+            <Back stroke={colors.secondary} width={20} height={20} />
           </TouchableOpacity>
         }
         CenterComponent={
@@ -438,7 +442,7 @@ const CreateStepOne = () => {
           </Container>
         </View>
 
-        <View className="mt-4">
+        <View className="mt-4 mx-4">
           <PrimaryButton
             content={"Go to next step"}
             onPress={onNavigateToStepTwo}

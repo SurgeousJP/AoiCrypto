@@ -101,7 +101,7 @@ export default function TokenSellerScreen() {
                     ).toString()}
                     ownerAddress={address}
                     chainId={chainId}
-                    displayMintIcon={false}
+                    displayMintIcon={true}
                   />
                   {item.index < displayTokens.length && <DividerLine />}
                 </View>

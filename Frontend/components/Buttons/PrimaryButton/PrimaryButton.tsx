@@ -1,3 +1,4 @@
+import { colors } from "@/constants/colors";
 import React from "react";
 import { ActivityIndicator, Pressable, Text } from "react-native";
 
@@ -22,7 +23,7 @@ function PrimaryButton({
         outlined ? "border-2 border-blue-600 bg-transparent" : "bg-blue-600"
       }`}
     >
-      {disabled && <ActivityIndicator size={"small"} color={"white"} />}
+      {disabled && <ActivityIndicator size={"small"} color={!outlined ? "white" : colors.primary} />}
       <Text
         className={`text-center text-sm font-readexSemiBold ${
           outlined ? "text-blue-600" : "text-white"

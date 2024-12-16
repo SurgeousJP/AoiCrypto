@@ -1,9 +1,13 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Container from "@/components/Layouts/Container";
+import { getDateFromUnixTimestamp } from "@/constants/conversion";
 import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { useGetProjectByAddress } from "@/hooks/useApiHook";
+import {
+  useGetIsUserAllowed,
+  useGetProjectByAddress,
+} from "@/hooks/useApiHook";
 import { useRouter } from "expo-router";
 import React, { useContext, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
@@ -33,7 +37,10 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
   const { address, chainId } = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
 
-  
+  const { data: isAllowData, isLoading: isAllowedLoading } =
+    useGetIsUserAllowed(project.poolAddress, address);
+
+  console.log(isAllowData);
 
   return (
     <View className="w-full flex flex-col">
@@ -107,21 +114,61 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
         <View className="mt-4">
           <Container>
             <View className="bg-surface rounded-lg p-4 flex flex-col h-fit">
-              <Text className="font-readexRegular">
-                The allowlist for{" "}
-                <Text className="font-readexSemiBold text-primary">
-                  {pjMetadata !== undefined && pjMetadata !== null
-                    ? pjMetadata.name
-                    : name}{" "}
-                </Text>
-                is now available, and you can apply for it below
-              </Text>
-              <View className="mt-4">
-                <PrimaryButton
-                  content={"Apply now"}
-                  onPress={navigateToWhitelistApplication}
-                />
-              </View>
+              {status === ProjectStatus.Ended && (
+                <View>
+                  <Text className="font-readexRegular text-secondary">
+                    The project funding has ended. Thank you for your supports.
+                  </Text>
+                </View>
+              )}
+              {status === ProjectStatus.Upcoming && (
+                <View>
+                  <Text className="font-readexRegular">
+                    The allowlist for{" "}
+                    <Text className="font-readexSemiBold text-primary">
+                      {pjMetadata !== undefined && pjMetadata !== null
+                        ? pjMetadata.name
+                        : name}{" "}
+                    </Text>
+                    is currently unavailable right now, please wait until the
+                    start time (
+                    {
+                      getDateFromUnixTimestamp(project.createdTime)
+                        .toISOString()
+                        .split("T")[0]
+                    }
+                    )
+                  </Text>
+                </View>
+              )}
+              {status === ProjectStatus.Ongoing &&
+                !isAllowedLoading &&
+                isAllowData &&
+                (!isAllowData.isAllowed ? (
+                  <View>
+                    <Text className="font-readexRegular">
+                      The allowlist for{" "}
+                      <Text className="font-readexSemiBold text-primary">
+                        {pjMetadata !== undefined && pjMetadata !== null
+                          ? pjMetadata.name
+                          : name}{" "}
+                      </Text>
+                      is now available, and you can apply for it below
+                    </Text>
+                    <View className="mt-3">
+                      <PrimaryButton
+                        content={"Apply now"}
+                        onPress={navigateToWhitelistApplication}
+                      />
+                    </View>
+                  </View>
+                ) : (
+                  <View>
+                    <Text className="font-readexRegular">
+                      You have applied for this project's allowlist, please patiently wait for the response from the seller.     
+                    </Text>
+                  </View>
+                ))}
             </View>
           </Container>
         </View>

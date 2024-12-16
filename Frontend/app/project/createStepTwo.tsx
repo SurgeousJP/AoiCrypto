@@ -128,7 +128,7 @@ function createStepTwo() {
       <ScreenHeader
         LeftComponent={
           <TouchableOpacity onPress={onNavigatingBack} className="p-2">
-            <Back stroke={colors.secondary} width={24} height={24} />
+            <Back stroke={colors.secondary} width={20} height={20} />
           </TouchableOpacity>
         }
         CenterComponent={

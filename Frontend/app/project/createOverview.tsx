@@ -1,5 +1,6 @@
 import Illustration from "@/assets/images/illustration.svg";
 import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -27,7 +28,7 @@ const CreateProjectOverview = () => {
           <Illustration width={322} height={284} />
         </View>
 
-        <View className="h-[200px]">
+        <View className="h-[144px]">
           <StepIndicatorComponent
             mode={"horizontal"}
             labels={labels}
@@ -36,7 +37,7 @@ const CreateProjectOverview = () => {
         </View>
 
         <View href="/project/createStepOne" className="h-[48px]">
-          <NormalButton onClick={navigateToStepOne} content="Continue" />
+          <PrimaryButton onPress={navigateToStepOne} content="Continue" />
         </View>
       </View>
     </ScrollView>

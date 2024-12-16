@@ -7,6 +7,8 @@ import { colors } from "@/constants/colors";
 import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
+import getABI from "@/contracts/utils/getAbi.util";
+import { useCancelInvestment } from "@/hooks/smart-contract/IDOPool/useCancelInvestment";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
 import { useGetProjectByAddress } from "@/hooks/useApiHook";
 import { Project } from "@/model/ApiModel";
@@ -16,7 +18,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 import * as Progress from "react-native-progress";
 import { TransactionReceipt } from "viem";
-import { useBalance } from "wagmi";
+import { useBalance, useReadContracts } from "wagmi";
 // IMPORT
 
 interface Props {
@@ -45,9 +47,14 @@ export const getProjectStatusAndCreatedTime = (status: ProjectStatus) => {
 const getProjectOverview = (
   project: any,
   token: any,
-  status: ProjectStatus
+  status: ProjectStatus,
+  depositData: any
 ) => {
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
+    "Loading...",
+  ];
+
+  const [depositAmount] = depositData?.map((data) => data.result) || [
     "Loading...",
   ];
 
@@ -103,13 +110,50 @@ const getProjectOverview = (
       data: project.investors.length,
       textDataStyle: "text-black",
     },
+    ...(Number(depositAmount) / BIGINT_CONVERSION_FACTOR > 0
+      ? [
+          {
+            label: "You purchased",
+            data: Number(depositAmount) / BIGINT_CONVERSION_FACTOR + " ETH",
+            textDataStyle: "text-black",
+          },
+        ]
+      : []),
   ];
 };
 
 const Overview: React.FC<Props> = ({ project, token, status }) => {
-  const projectOverview = getProjectOverview(project, token, status);
+  const { address, chainId } = useContext(AuthContext);
+  const client = useApolloClient();
+
+  const userContract = {
+    address: project.poolAddress,
+    abi: getABI("IDOPool"),
+  } as const;
+
+  const { data: depositData } = useReadContracts({
+    contracts: [
+      {
+        ...userContract,
+        functionName: "getUserDepositAmount",
+        args: [address],
+      },
+    ],
+  });
+
+  const [depositAmount] = depositData?.map(
+    (data) => Number(data.result) / BIGINT_CONVERSION_FACTOR
+  ) || ["Loading..."];
+
+  const projectOverview = getProjectOverview(
+    project,
+    token,
+    status,
+    depositData
+  );
   const projectIllust = require("@/assets/images/ProjectIllust.png");
   const projectLogo = require("@/assets/images/ProjectLogo.png");
+
   const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
     "Loading...",
   ];
@@ -119,17 +163,38 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
     setInvestAmount(value);
   };
 
+  const { data: ethBalance, isLoading: isLoadingBalance } = useBalance({
+    address: address,
+  });
+
+  const [maxAmountInvest, setMaxAmountInvest] = useState(0);
+  useEffect(() => {
+    if (ethBalance !== undefined) {
+      setMaxAmountInvest(
+        ethBalance.value > project.maxInvest
+          ? project.maxInvest / BIGINT_CONVERSION_FACTOR
+          : Number(ethBalance.value) / BIGINT_CONVERSION_FACTOR
+      );
+    }
+  }, [ethBalance]);
+
+  const { data: pjMetadata, isLoading: isLoadingMetadata } =
+    useGetProjectByAddress(project.poolAddress);
+
   const isInvestAmountValid = () => {
-    if (investAmount <= 0) {
+    if (
+      investAmount <= 0 ||
+      investAmount > Math.round((maxAmountInvest - depositAmount) * 1e10)
+    ) {
       return false;
     }
 
     return true;
   };
 
-  const { address, chainId } = useContext(AuthContext);
-  const client = useApolloClient();
   const [investModalVisible, setInvestModalVisible] = useState(false);
+  const [cancelInvestModalVisible, setCancelInvestModalVisible] =
+    useState(false);
 
   const { error, errorWrite, isLoading, isSuccess, isError, onInvestPool } =
     useInvestPool({
@@ -171,6 +236,46 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
     await onInvestPool();
   };
 
+  const {
+    error: errorCancel,
+    errorWrite: errorWriteCancel,
+    isLoading: isLoadingCancel,
+    isSuccess: isSuccessCancel,
+    isError: isErrorCancel,
+    onCancelInvestment,
+  } = useCancelInvestment({
+    chainId: chainId,
+    poolAddress: project.poolAddress,
+    enabled: Number(depositAmount) > 0,
+    onSuccess: (data: TransactionReceipt) => {
+      if (cancelInvestModalVisible) {
+        setCancelInvestModalVisible(false);
+      }
+
+      showToast("success", "Transaction success", "Cancel investment successfully");
+    },
+    onError: (error?: Error) => {
+      if (cancelInvestModalVisible) {
+        setCancelInvestModalVisible(false);
+      }
+
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+      setInvestAmount(0);
+    },
+  });
+
+  const onTriggerCancelInvestment = async () => {
+    setCancelInvestModalVisible(true);
+    await onCancelInvestment();
+  }
+
   useEffect(() => {
     if (investModalVisible && errorWrite) {
       setInvestModalVisible(false);
@@ -178,29 +283,22 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
     }
   }, [errorWrite]);
 
-  const { data: ethBalance, isLoading: isLoadingBalance } = useBalance({
-    address: address,
-  });
-
-  const [maxAmountInvest, setMaxAmountInvest] = useState(0);
   useEffect(() => {
-    if (ethBalance !== undefined) {
-      setMaxAmountInvest(
-        ethBalance.value > project.maxInvest
-          ? project.maxInvest / BIGINT_CONVERSION_FACTOR
-          : Number(ethBalance.value) / BIGINT_CONVERSION_FACTOR
-      );
+    if (cancelInvestModalVisible && errorWriteCancel){
+      setCancelInvestModalVisible(false);
+      showToast("error", "Error writing transaction", errorCancel?.message ?? "N/A");
     }
-  }, [ethBalance]);
-
-  const { data: pjMetadata, isLoading: isLoadingMetadata } =
-    useGetProjectByAddress(project.poolAddress);
+  }, [errorWriteCancel]);
 
   return (
     <View className="w-full flex flex-col">
       <LoadingModal
         isVisible={investModalVisible}
         task={"Initiating investment. . ."}
+      />
+      <LoadingModal
+        isVisible={cancelInvestModalVisible}
+        task={"Initiating cancel investment. . ."}
       />
       <View className="mt-3 flex flex-col w-full">
         <View className="mb-3">
@@ -263,20 +361,25 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
             />
             <View className="flex flex-row justify-between mt-3 mb-3">
               <Text className="font-readexRegular">
-                {project.softCap / BIGINT_CONVERSION_FACTOR}{" "}
+                {project.raisedAmount / BIGINT_CONVERSION_FACTOR}{" "}
                 <Text className="text-secondary">ETH</Text>
               </Text>
               <Text className="font-readexRegular">
-                {project.hardCap / BIGINT_CONVERSION_FACTOR}{" "}
+                {project.softCap / BIGINT_CONVERSION_FACTOR}{" "}
                 <Text className="text-secondary">ETH</Text>
               </Text>
             </View>
 
-            {projectStatus === "Ongoing" && (
+            {projectStatus === "Ongoing" && depositAmount !== undefined && (
               <View className="flex flex-col mt-3">
                 <Input
                   type="numeric"
-                  label={`Amount (Max: ${maxAmountInvest} ETH)`}
+                  label={`Amount (Max: ${
+                    Number(depositAmount) <= 0
+                      ? maxAmountInvest
+                      : Math.round((maxAmountInvest - depositAmount) * 1e10) /
+                        1e10
+                  } ETH)`}
                   name={""}
                   value={investAmount}
                   onChange={onChangeInvestAmount}
@@ -297,6 +400,16 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
                     disabled={isLoading}
                   />
                 </View>
+                {depositAmount > 0 && (
+                  <View className="mt-3">
+                    <PrimaryButton
+                      disabled={isLoadingCancel}
+                      onPress={onTriggerCancelInvestment}
+                      content={"Emergency withdrawal"}
+                      outlined
+                    />
+                  </View>
+                )}
               </View>
             )}
             {projectStatus === "Upcoming" && (

@@ -38,14 +38,17 @@ const LabelInput: React.FC<LabelInputProps> = ({
 }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const textValue =
+  useEffect(() => {
+    const textValue =
     props.type === "numeric" &&
     props.initialValue !== undefined &&
     typeof props.initialValue === "bigint"
-      ? Number(props.initialValue) / BIGINT_CONVERSION_FACTOR
-      : "";
+      ? (Number(props.initialValue) / BIGINT_CONVERSION_FACTOR).toString()
+      : props.initialValue;
+    setValue(textValue);
+  }, [props.initialValue]);
 
-  const [value, setValue] = useState(textValue !== "" ? textValue : props.initialValue);
+  const [value, setValue] = useState("");
 
   const inputProps: Record<InputType, TextInputProps> = {
     text: { keyboardType: "default", secureTextEntry: false },

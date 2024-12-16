@@ -9,7 +9,6 @@ import { ProjectState, ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import getABI from "@/contracts/utils/getAbi.util";
 import { useCheckRegisteredPrivatePool } from "@/hooks/smart-contract/IDOPool/useCheckRegisteredPrivatePool";
-import { useGetIsUserAllowed } from "@/hooks/useApiHook";
 import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { useLocalSearchParams } from "expo-router";
@@ -116,8 +115,8 @@ const ProjectDetail = () => {
 
   const [registered, setRegistered] = useState<boolean | undefined>(undefined);
 
-  const { data: isAllowData, isLoading: isAllowedLoading } =
-    useGetIsUserAllowed(poolId, address);
+  // const { data: isAllowData, isLoading: isAllowedLoading } =
+  //   useGetIsUserAllowed(poolId, address);
 
   useEffect(() => {
     if (!isLoadingCheckingRegistered) {
@@ -156,7 +155,6 @@ const ProjectDetail = () => {
         // Helper conditions
         const isLoaded =
           !loading &&
-          !isAllowedLoading &&
           !isLoadingCheckingRegistered &&
           token !== undefined &&
           projectState !== undefined &&
@@ -175,15 +173,11 @@ const ProjectDetail = () => {
           projectState === ProjectState.Private &&
           (isRegistered === false || isRegistered === undefined);
 
-        console.log("Is private sale active: ", isPrivateSaleActive);
-        console.log("Is public sale active: ", isPublicSaleActive);
-        console.log("Is private sale unavailable: ", isPrivateSaleUnavailable);
-        console.log("Is user allowed: ", isAllowData?.isAllowed);
+        // console.log("Is private sale active: ", isPrivateSaleActive);
+        // console.log("Is public sale active: ", isPublicSaleActive);
+        // console.log("Is private sale unavailable: ", isPrivateSaleUnavailable);
         // Main rendering logic
-        if (
-          (isPrivateSaleActive && isAllowData?.isAllowed) ||
-          isPublicSaleActive
-        ) {
+        if (isPrivateSaleActive || isPublicSaleActive) {
           return (
             <View className="py-1">
               <View className="pt-4 flex flex-col">
@@ -203,11 +197,7 @@ const ProjectDetail = () => {
           );
         }
 
-        if (
-          (isPrivateSaleActive && !isAllowData?.isAllowed) ||
-          isPrivateSaleUnavailable
-        ) {
-          // ko hieu doan isPrivateSaleUnavailable lam nen de tam
+        if (isPrivateSaleUnavailable) {
           return (
             <PrivateSaleSegment
               status={projectStatus!}
