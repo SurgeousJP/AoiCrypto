@@ -157,6 +157,7 @@ export const useInvestPool = ({
     
   return {
     error,
+    errorPrepare,
     errorWrite,
     isLoading,
     isSuccess,

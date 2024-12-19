@@ -82,7 +82,7 @@ function createStepTwo() {
   const isStepTwoInputValid = () => {
     const currentDate = new Date();
     const currentDateAfterTenMinutes = new Date(
-      currentDate.getTime() - 60 * 10
+      currentDate.getTime() + 60 * 10
     );
     const currentDateUnixTimeStamp = getUnixTimestampFromDate(
       currentDateAfterTenMinutes

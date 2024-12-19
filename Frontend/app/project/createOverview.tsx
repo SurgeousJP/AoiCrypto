@@ -1,5 +1,4 @@
 import Illustration from "@/assets/images/illustration.svg";
-import NormalButton from "@/components/Buttons/NormalButton/NormalButton";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import StepIndicatorComponent from "@/components/Navigations/StepIndicator/StepIndicator";
 import { useRouter } from "expo-router";

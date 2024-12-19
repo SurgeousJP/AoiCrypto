@@ -99,8 +99,17 @@ const MintTokenForm = ({ route }) => {
       return;
     }
 
-    setLoadingModalVisible(true);
-    await onExecute();
+    try {
+      setLoadingModalVisible(true);
+      await onExecute();
+    } catch (error) {
+      // Handle the error
+      if (error instanceof Error) {
+        console.error("Error occurred: ", error.message);
+      } else {
+        console.error("Unknown error");
+      }
+    }
   };
 
   const resetTokenFormState = () => {

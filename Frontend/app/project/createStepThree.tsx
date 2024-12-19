@@ -255,7 +255,7 @@ function createStepThree() {
     chainId,
     tokenAddress: createIDO.poolDetails.tokenAddress,
     spenderAddress: getIDOFactoryAddress(chainId),
-    numOfTokensAllowed: numsOfTokenLacked,
+    numOfTokensAllowed: numsOfTokenLacked * BIGINT_CONVERSION_FACTOR,
     enabled: !isWalletEnoughTokenForIDO,
     onSuccess: (data: TransactionReceipt) => {
       if (isLoadingCreateIDOModalVisible) {
@@ -517,7 +517,7 @@ function createStepThree() {
           </View>
         )}
         {isWalletEnoughTokenForIDO ? (
-          <View className="mt-4 mx-2">
+          <View className="m-4">
             <PrimaryButton
               disabled={isLoading}
               content={"Save Project"}
@@ -534,28 +534,28 @@ function createStepThree() {
                 >
                   <Pressable className="flex flex-col">
                     <View className="flex flex-row justify-between">
-                      <Text className="font-readexRegular text-md text-secondary">
+                      <Text className="font-readexRegular text-sm text-secondary">
                         Allowance tokens:{" "}
                       </Text>
-                      <Text className="font-readexSemiBold text-md">
+                      <Text className="font-readexSemiBold text-sm">
                         {allowanceValue}
                       </Text>
                     </View>
                     <View className="flex flex-row justify-between">
-                      <Text className="font-readexRegular text-md text-secondary">
+                      <Text className="font-readexRegular text-sm text-secondary">
                         Required tokens:{" "}
                       </Text>
-                      <Text className="font-readexSemiBold text-md">
+                      <Text className="font-readexSemiBold text-sm">
                         {numsOfTokenRequiredForIDO}
                       </Text>
                     </View>
 
                     {numsOfTokenLacked > 0 && (
                       <View className="flex flex-row justify-between">
-                        <Text className="font-readexRegular text-md text-secondary">
+                        <Text className="font-readexRegular text-sm text-secondary">
                           Lacked tokens:
                         </Text>
-                        <Text className="font-readexSemiBold text-error text-md">
+                        <Text className="font-readexSemiBold text-error text-sm">
                           {numsOfTokenLacked}{" "}
                           <TouchableOpacity onPress={copyTokensDeficit}>
                             <Ionicons
@@ -571,7 +571,7 @@ function createStepThree() {
                 </View>
               </Container>
             </View>
-            <View className="mx-2">
+            <View className="mx-2 mb-4">
               <PrimaryButton
                 content={"Approve missing tokens"}
                 disabled={isLoadingApproveSender}

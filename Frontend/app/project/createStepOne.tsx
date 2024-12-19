@@ -442,7 +442,7 @@ const CreateStepOne = () => {
           </Container>
         </View>
 
-        <View className="mt-4 mx-4">
+        <View className="m-4">
           <PrimaryButton
             content={"Go to next step"}
             onPress={onNavigateToStepTwo}

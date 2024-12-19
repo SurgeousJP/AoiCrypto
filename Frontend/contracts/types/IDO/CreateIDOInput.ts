@@ -98,9 +98,9 @@ export const sampleCreateIDOInput: CreateIDOInput = {
     privateSaleAmount: 0n,
   },
   poolTime: {
-    startTime: BigInt(getUnixTimestampFromDate(new Date())),
-    endTime: BigInt(getUnixTimestampFromDate(new Date())),
-    startPublicSale: BigInt(getUnixTimestampFromDate(new Date())),
+    startTime: BigInt(getUnixTimestampFromDate(new Date()) + 600 + 300),
+    endTime: BigInt(getUnixTimestampFromDate(new Date()) + 1800 + 300),
+    startPublicSale: BigInt(getUnixTimestampFromDate(new Date()) + 600),
   },
   privateSale: false,
   whitelisted: EMPTY_MERKLE_ROOT,

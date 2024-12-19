@@ -9,7 +9,9 @@ import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import getABI from "@/contracts/utils/getAbi.util";
 import { useCancelInvestment } from "@/hooks/smart-contract/IDOPool/useCancelInvestment";
+import { useClaimToken } from "@/hooks/smart-contract/IDOPool/useClaimToken";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
+import { useRefundToken } from "@/hooks/smart-contract/IDOPool/useRefundToken";
 import { useGetProjectByAddress } from "@/hooks/useApiHook";
 import { Project } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
@@ -123,6 +125,8 @@ const getProjectOverview = (
 };
 
 const Overview: React.FC<Props> = ({ project, token, status }) => {
+
+  // GET DATA
   const { address, chainId } = useContext(AuthContext);
   const client = useApolloClient();
 
@@ -181,6 +185,8 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
   const { data: pjMetadata, isLoading: isLoadingMetadata } =
     useGetProjectByAddress(project.poolAddress);
 
+
+  // INVEST LOGIC
   const isInvestAmountValid = () => {
     if (
       investAmount <= 0 ||
@@ -196,46 +202,54 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
   const [cancelInvestModalVisible, setCancelInvestModalVisible] =
     useState(false);
 
-  const { error, errorWrite, isLoading, isSuccess, isError, onInvestPool } =
-    useInvestPool({
-      chainId: chainId,
-      proof: [],
-      poolAddress: project.poolAddress,
-      investETHAmount: BigInt(investAmount * BIGINT_CONVERSION_FACTOR),
-      enabled: isInvestAmountValid(),
-      onSuccess: (data: TransactionReceipt) => {
-        if (investModalVisible) {
-          setInvestModalVisible(false);
-        }
+  const {
+    error,
+    errorPrepare,
+    errorWrite,
+    isLoading,
+    isSuccess,
+    isError,
+    onInvestPool,
+  } = useInvestPool({
+    chainId: chainId,
+    proof: [],
+    poolAddress: project.poolAddress,
+    investETHAmount: BigInt(investAmount * BIGINT_CONVERSION_FACTOR),
+    enabled: isInvestAmountValid(),
+    onSuccess: (data: TransactionReceipt) => {
+      if (investModalVisible) {
+        setInvestModalVisible(false);
+      }
 
-        showToast("success", "Transaction success", "Invest successfully");
-      },
-      onError: (error?: Error) => {
-        if (investModalVisible) {
-          setInvestModalVisible(false);
-        }
+      showToast("success", "Transaction success", "Invest successfully");
+    },
+    onError: (error?: Error) => {
+      if (investModalVisible) {
+        setInvestModalVisible(false);
+      }
 
-        showToast(
-          "error",
-          "Transaction failed",
-          error != undefined ? error.message : "No error"
-        );
-      },
-      onSettled: (data?: TransactionReceipt) => {
-        client.resetStore();
-        setInvestAmount(0);
-      },
-    });
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+      setInvestAmount(0);
+    },
+  });
 
   const onTriggerInvestPool = async () => {
     if (!isInvestAmountValid()) {
-      showToast("error", "Invalid input", "The invest amount must be positive");
+      showToast("error", "Invalid input", "The invest amount is not valid");
       return;
     }
     setInvestModalVisible(true);
     await onInvestPool();
   };
 
+  // CANCEL INVEST LOGIC
   const {
     error: errorCancel,
     errorWrite: errorWriteCancel,
@@ -252,7 +266,11 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
         setCancelInvestModalVisible(false);
       }
 
-      showToast("success", "Transaction success", "Cancel investment successfully");
+      showToast(
+        "success",
+        "Transaction success",
+        "Cancel investment successfully"
+      );
     },
     onError: (error?: Error) => {
       if (cancelInvestModalVisible) {
@@ -274,21 +292,160 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
   const onTriggerCancelInvestment = async () => {
     setCancelInvestModalVisible(true);
     await onCancelInvestment();
-  }
+  };
 
   useEffect(() => {
-    if (investModalVisible && errorWrite) {
+    if (investModalVisible && (errorWrite || errorPrepare)) {
       setInvestModalVisible(false);
       showToast("error", "Error writing transaction", error?.message ?? "N/A");
     }
-  }, [errorWrite]);
+  }, [errorWrite, errorPrepare]);
 
   useEffect(() => {
-    if (cancelInvestModalVisible && errorWriteCancel){
+    if (cancelInvestModalVisible && errorWriteCancel) {
       setCancelInvestModalVisible(false);
-      showToast("error", "Error writing transaction", errorCancel?.message ?? "N/A");
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorCancel?.message ?? "N/A"
+      );
     }
   }, [errorWriteCancel]);
+
+  // CLAIM TOKEN LOGIC
+  const [isTokenClaimable, setTokenClaimable] = useState(false);
+
+  useEffect(() => {
+    if (
+      status === ProjectStatus.Ended &&
+      project.raisedAmount >= project.softCap &&
+      Number(depositAmount) > 0
+    ) {
+      setTokenClaimable(true);
+    }
+  }, [depositAmount, project, status]);
+
+  const [claimTokenModalVisible, setClaimTokenModalVisible] = useState(false);
+
+  const {
+    error: errorClaim,
+    errorWrite: errorClaimWrite,
+    isLoading: isLoadingClaim,
+    isSuccess: isSuccessClaim,
+    isError: isErrorClaim,
+    onClaimToken,
+  } = useClaimToken({
+    chainId: chainId,
+    poolAddress: project.poolAddress,
+    enabled: isTokenClaimable,
+    onSuccess: (data: TransactionReceipt) => {
+      if (claimTokenModalVisible) {
+        setClaimTokenModalVisible(false);
+      }
+      showToast("success", "Transaction success", "Claim tokens successfully");
+    },
+    onError: (error?: Error) => {
+      if (claimTokenModalVisible) {
+        setClaimTokenModalVisible(false);
+      }
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+    },
+  });
+
+  const onTriggerClaimToken = async () => {
+    if (!isTokenClaimable) {
+      showToast("error", "Can not claim token", "");
+      return;
+    }
+    try {
+      setClaimTokenModalVisible(true);
+      await onClaimToken();
+    } catch (error) {
+      setCancelInvestModalVisible(false);
+      showToast("error", "Can not claim token", error);
+    }
+  };
+
+  useEffect(() => {
+    if (claimTokenModalVisible && errorClaimWrite) {
+      setClaimTokenModalVisible(false);
+      showToast("error", "Error writing transaction", errorClaim?.message ?? "N/A");
+    }
+  }, [errorClaimWrite]);
+
+  // REFUND ETH LOGIC
+  const [isRefundable, setRefundable] = useState(false);
+  const [refundModalVisible, setRefundModalVisible] = useState(false);
+
+  useEffect(() => {
+    if (
+      status === ProjectStatus.Ended &&
+      project.raisedAmount < project.softCap &&
+      Number(depositAmount) > 0
+    ) {
+      setRefundable(true);
+    }
+  }, [depositAmount, project, status]);
+
+  const {
+    error: errorRefund,
+    errorWrite: errorRefundWrite,
+    isLoading: isLoadingRefund,
+    isSuccess: isSuccessRefund,
+    isError: isErrorRefund,
+    onRefundToken,
+  } = useRefundToken({
+    chainId: chainId,
+    poolAddress: project.poolAddress,
+    enabled: isRefundable,
+    onSuccess: (data: TransactionReceipt) => {
+      if (refundModalVisible) {
+        setRefundModalVisible(false);
+      }
+      showToast("success", "Transaction success", "Refund successfully");
+    },
+    onError: (error?: Error) => {
+      if (refundModalVisible) {
+        setRefundModalVisible(false);
+      }
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+    },
+  });
+
+  useEffect(() => {
+    if (refundModalVisible && errorRefundWrite) {
+      setClaimTokenModalVisible(false);
+      showToast("error", "Error writing transaction", errorRefund?.message ?? "N/A");
+    }
+  }, [errorRefundWrite]);
+
+  const onTriggerRefund = async () => {
+    if (!isRefundable){
+      showToast("error", "Invalid action", "You can not refund the amount");
+    }
+    try{
+      setRefundModalVisible(true);
+      await onRefundToken();
+    }
+    catch(error){
+      setRefundModalVisible(false);
+      showToast("error", "Invalid action", error);
+    }
+  }
 
   return (
     <View className="w-full flex flex-col">
@@ -299,6 +456,10 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
       <LoadingModal
         isVisible={cancelInvestModalVisible}
         task={"Initiating cancel investment. . ."}
+      />
+      <LoadingModal
+        isVisible={claimTokenModalVisible}
+        task={"Initiating claim tokens. . ."}
       />
       <View className="mt-3 flex flex-col w-full">
         <View className="mb-3">
@@ -353,7 +514,7 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
             <Progress.Bar
               color={colors.primary}
               unfilledColor={"#EDF2F7"}
-              progress={project.raisedAmount / project.hardCap}
+              progress={project.raisedAmount / project.softCap}
               width={null}
               borderWidth={0}
               height={12}
@@ -419,10 +580,12 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
               </Text>
             )}
             {projectStatus === "Ended" && (
-              <Text className="font-readexRegular text-secondary">
+              <Text className="font-readexRegular text-secondary mb-3">
                 The project funding has ended.
               </Text>
             )}
+            {isTokenClaimable && <PrimaryButton content="Claim token" onPress={onTriggerClaimToken} disabled={isLoadingClaim}/>}
+            {isRefundable && <PrimaryButton content="Refund" onPress={onTriggerRefund} disabled={isLoadingRefund}/>}
           </View>
         </Container>
       </View>

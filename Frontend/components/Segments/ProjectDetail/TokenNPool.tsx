@@ -50,17 +50,9 @@ const getSaleDataDisplay = (project: any) => {
       tile: "Hard Cap",
       data: getStringValueFromBigInt(project.hardCap) + " ETH",
     },
-    // {
-    //   tile: "Min Invest",
-    //   data: getStringValueFromBigInt(project.minInvest) + " ETH",
-    // },
-    // {
-    //   tile: "Max Invest",
-    //   data: getStringValueFromBigInt(project.maxInvest) + " ETH",
-    // },
     {
       tile: "Start time",
-      data: getDateFromUnixTimestamp(project.createdTime).toLocaleString(),
+      data: getDateFromUnixTimestamp(project.startTime).toLocaleString(),
     },
     {
       tile: "End time",
