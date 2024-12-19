@@ -1,7 +1,7 @@
 //Import//
 import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
-import NoDocument from "@/components/Displays/NoDocument/NoDocument";
+import NoDocument from "@/components/Displays/Results/NoDocument/NoDocument";
 import Input from "@/components/Inputs/Input/Input";
 import Row from "@/components/Items/Project/Row";
 import Container from "@/components/Layouts/Container";

@@ -1,6 +1,6 @@
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import DividerLine from "@/components/Displays/Divider/DividerLine";
-import NotFound from "@/components/Displays/SearchResult/NotFound";
+import NotFound from "@/components/Displays/Results/SearchResult/NotFound";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import TokenRow from "@/components/Items/Token/TokenRow";
 import { colors } from "@/constants/colors";

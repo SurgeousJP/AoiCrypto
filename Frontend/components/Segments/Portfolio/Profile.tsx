@@ -40,7 +40,7 @@ const ProfileSegment = () => {
             </Text>
             <Text className="font-readexBold text-xl">$2,760.23</Text>
             <Text className="font-readexSemiBold text-md mb-2">+2.60%</Text>
-            <LineChartComponent />
+            {/* <LineChartComponent /> */}
           </View>
         </Container>
       </View>

@@ -1,16 +1,27 @@
+import NoInbox from "@/components/Displays/Results/NoInbox/NoInbox";
+import ScreenLoadingIndicator from "@/components/Displays/ScreenLoadingIndicator/ScreenLoadingIndicator";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import { colors } from "@/constants/colors";
+import { useGetAllowlistEntryByPoolAddress } from "@/hooks/useApiHook";
 import React, { useEffect, useState } from "react";
 import { FlatList, ScrollView, View, Text } from "react-native";
 
-const SellerAllowlistSegment = () => {
+interface Props {
+  poolAddress: string;
+}
+
+const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
   const whitelistState = [
     { label: "Accepted", value: "Accepted" },
     { label: "Pending", value: "Pending" },
     { label: "Rejected", value: "Rejected" },
     { label: "None", value: null },
   ];
+
+  const { data: allowlists, isLoading } = useGetAllowlistEntryByPoolAddress(poolAddress); 
+
+  console.log(allowlists);
 
   const headerData = [
     {
@@ -92,6 +103,7 @@ const SellerAllowlistSegment = () => {
       ));
     }
   }, [status]);
+  
 
   // const {
   //   error,
@@ -127,6 +139,12 @@ const SellerAllowlistSegment = () => {
   //     setInvestAmount(0);
   //   },
   // });
+
+  if (isLoading || allowlists === undefined) return <ScreenLoadingIndicator />
+
+  if (allowlists === null) return (<View className="flex flex-1 flex-col justify-center items-center mt-[-128px]">
+    <NoInbox />
+  </View>)
 
   return (
     <View className="flex flex-col flex-1 mt-2">

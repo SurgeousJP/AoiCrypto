@@ -1,6 +1,7 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
 import LoadingModal from "@/components/Displays/Modal/LoadingModal";
-import NoImage from "@/components/Displays/NoImage/NoImage";
+import NoImage from "@/components/Displays/Results/NoImage/NoImage";
+import ScreenLoadingIndicator from "@/components/Displays/ScreenLoadingIndicator/ScreenLoadingIndicator";
 import Input from "@/components/Inputs/Input/Input";
 import TextAreaInput from "@/components/Inputs/Input/TextAreaInput";
 import Container from "@/components/Layouts/Container";
@@ -175,93 +176,87 @@ const ProjectMetadataSegment: React.FC<Props> = ({ poolAddress }) => {
   console.log("Is loading: ", isLoading);
   console.log("Metadata:", metadata);
 
+  if (!(!isLoading && metadata !== undefined && metadata !== null))
+    return <ScreenLoadingIndicator />;
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
       className="flex flex-col mt-2"
     >
       <LoadingModal isVisible={modalVisible} task={"Configuring request"} />
-      {!isLoading && metadata !== undefined && metadata !== null ? (
-        <View>
-          <Container>
-            <View
-              className="bg-surface px-4 py-2 flex flex-col border-border border-[0.5px]"
-              style={{ elevation: 2 }}
-            >
-              <Text className="font-readexBold text-md text-primary mb-2">
-                Project Information
+      <View>
+        <Container>
+          <View
+            className="bg-surface px-4 py-2 flex flex-col border-border border-[0.5px]"
+            style={{ elevation: 2 }}
+          >
+            <Text className="font-readexBold text-md text-primary mb-2">
+              Project Information
+            </Text>
+            <View className="mb-3">
+              <Text className="font-readexSemiBold text-sm mb-1">
+                Project banner
               </Text>
-              <View className="mb-3">
-                <Text className="font-readexSemiBold text-sm mb-1">
-                  Project banner
-                </Text>
-                <PrimaryButton
-                  content="Select image"
-                  onPress={handleImageSelection}
-                />
-                {metadata.imageBannerUrl !== "" ? (
-                  <View>
-                    <Image
-                      source={{
-                        uri: metadata.imageBannerUrl,
-                      }}
-                      style={{
-                        width: "100%",
-                        aspectRatio: 3 / 2,
-                        marginTop: 10,
-                      }}
-                    />
-                  </View>
-                ) : (
-                  <View className="mb-3">
-                    <NoImage />
-                  </View>
-                )}
-              </View>
-              <View className="mb-3">
-                <Input
-                  label={"Project name"}
-                  name={"name"}
-                  value={metadata.name}
-                  type="text"
-                  onChange={onInputChange}
-                  initialValue={metadata.name}
-                />
-              </View>
-              <View className="mb-3">
-                <Input
-                  label={"Overview"}
-                  name={"overview"}
-                  value={metadata.overview}
-                  type="text"
-                  onChange={onInputChange}
-                  initialValue={metadata.overview}
-                />
-              </View>
-              <TextAreaInput
-                title={"Description"}
-                name={"description"}
-                type={"text"}
-                value={metadata.description}
-                onChange={onInputChange}
-                placeholder={""}
-                isUnitVisible={false}
-                initialValue={metadata.description}
+              <PrimaryButton
+                content="Select image"
+                onPress={handleImageSelection}
               />
-              <View className="mt-3 mb-1">
-                <PrimaryButton content="Submit" onPress={handleSubmit} />
-              </View>
+              {metadata.imageBannerUrl !== "" ? (
+                <View>
+                  <Image
+                    source={{
+                      uri: metadata.imageBannerUrl,
+                    }}
+                    style={{
+                      width: "100%",
+                      aspectRatio: 3 / 2,
+                      marginTop: 10,
+                    }}
+                  />
+                </View>
+              ) : (
+                <View className="mb-3">
+                  <NoImage />
+                </View>
+              )}
             </View>
-          </Container>
-        </View>
-      ) : (
-        <View className="flex-1 my-auto items-center justify-center">
-          <ActivityIndicator size={"large"} color={colors.primary} />
-          <Text className="font-readexRegular text-primary text-md">
-            Loading
-          </Text>
-        </View>
-      )}
+            <View className="mb-3">
+              <Input
+                label={"Project name"}
+                name={"name"}
+                value={metadata.name}
+                type="text"
+                onChange={onInputChange}
+                initialValue={metadata.name}
+              />
+            </View>
+            <View className="mb-3">
+              <Input
+                label={"Overview"}
+                name={"overview"}
+                value={metadata.overview}
+                type="text"
+                onChange={onInputChange}
+                initialValue={metadata.overview}
+              />
+            </View>
+            <TextAreaInput
+              title={"Description"}
+              name={"description"}
+              type={"text"}
+              value={metadata.description}
+              onChange={onInputChange}
+              placeholder={""}
+              isUnitVisible={false}
+              initialValue={metadata.description}
+            />
+            <View className="mt-3 mb-1">
+              <PrimaryButton content="Submit" onPress={handleSubmit} />
+            </View>
+          </View>
+        </Container>
+      </View>
     </ScrollView>
   );
 };
