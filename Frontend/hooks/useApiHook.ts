@@ -182,6 +182,22 @@ export const useGetAllowlistEntryByUserAddress = (userAddress: string) => {
   });
 };
 
+export const useUpdateAllowlistEntry = () => {
+  return useMutation<
+    AllowlistEntry,
+    Error,
+    { poolAddress: string; userAddress: string; entry: AllowlistEntry }
+  >({
+    mutationFn: async ({ poolAddress, userAddress, entry }) => {
+      const response = await http.post<AllowlistEntry>(
+        `/api/allowlist/pool/${poolAddress}/user/${userAddress}`,
+        entry
+      );
+      return response.data;
+    },
+  });
+};
+
 export const useCreateAllowlistEntry = () => {
   return useMutation<
     CreateAllowlistEntryResponse,
@@ -189,10 +205,10 @@ export const useCreateAllowlistEntry = () => {
     CreateAllowlistEntryParams
   >({
     mutationFn: async (params) => {
-      const { poolAddress, userAddresses, status } = params;
+      const { poolAddress, userInfors, status } = params;
       const response = await http.post<CreateAllowlistEntryResponse>(
         "/api/allowlist/bulk",
-        { poolAddress, userAddresses, status }
+        { poolAddress, userInfors, status }
       );
       return response.data;
     },

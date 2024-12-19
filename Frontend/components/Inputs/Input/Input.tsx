@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text } from "react-native";
+import React from "react";
+import { View } from "react-native";
 
 import LabelInput, { InputType } from "./LabelInput";
 interface InputProps {
@@ -8,6 +8,7 @@ interface InputProps {
   placeholder?: string;
   name: string;
   value: any;
+  readonly?: boolean;
   onChange: (name: any, value: any) => void;
   isUnitVisible?: boolean;
   initialValue?: any;
@@ -24,6 +25,7 @@ const Input: React.FC<InputProps> = ({ isUnitVisible = false, ...props }) => {
             initialValue={props.initialValue}
             value={props.value}
             onChange={props.onChange}
+            readonly={props.readonly}
             name={props.name}
             placeholder={props.placeholder ?? ""}
             isUnitVisible={isUnitVisible}

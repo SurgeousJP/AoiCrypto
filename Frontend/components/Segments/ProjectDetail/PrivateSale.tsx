@@ -21,7 +21,7 @@ interface Props {
 const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
   const router = useRouter();
   const navigateToWhitelistApplication = () => {
-    router.navigate("/project/whitelistForm");
+    router.navigate(`/project/whitelistForm?poolId=${project.poolAddress}`);
   };
 
   const projectIllust = require("@/assets/images/ProjectIllust.png");
@@ -165,7 +165,8 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
                 ) : (
                   <View>
                     <Text className="font-readexRegular">
-                      You have applied for this project's allowlist, please patiently wait for the response from the seller.     
+                      You have applied for this project's allowlist, please
+                      patiently wait for the response from the seller.
                     </Text>
                   </View>
                 ))}

@@ -21,6 +21,7 @@ interface LabelInputProps {
   onChange: (name: any, value: any) => void;
   isUnitVisible?: boolean;
   initialValue?: any;
+  readonly?: boolean;
 }
 
 export type InputType =
@@ -40,11 +41,11 @@ const LabelInput: React.FC<LabelInputProps> = ({
 
   useEffect(() => {
     const textValue =
-    props.type === "numeric" &&
-    props.initialValue !== undefined &&
-    typeof props.initialValue === "bigint"
-      ? (Number(props.initialValue) / BIGINT_CONVERSION_FACTOR).toString()
-      : props.initialValue;
+      props.type === "numeric" &&
+      props.initialValue !== undefined &&
+      typeof props.initialValue === "bigint"
+        ? (Number(props.initialValue) / BIGINT_CONVERSION_FACTOR).toString()
+        : props.initialValue;
     setValue(textValue);
   }, [props.initialValue]);
 
@@ -136,6 +137,7 @@ const LabelInput: React.FC<LabelInputProps> = ({
                 flex: 1,
                 fontFamily: "ReadexPro_400Regular",
               }}
+              readOnly={props.readonly}
               keyboardType={inputProps[props.type].keyboardType}
               secureTextEntry={inputProps[props.type].secureTextEntry}
               onChangeText={handleChangeText}

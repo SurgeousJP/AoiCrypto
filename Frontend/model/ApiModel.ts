@@ -59,6 +59,8 @@ export interface AllowlistEntry {
   id: string;
   poolAddress: string;
   userAddress: string;
+  userFullName: string;
+  EmailAddress: string;
   status: string;
 }
 
@@ -72,8 +74,14 @@ export interface IsAllowedResponse {
 
 export interface CreateAllowlistEntryParams {
   poolAddress: string;
-  userAddresses: string[];
+  userInfors: UserInfor[];
   status: string;
+}
+
+export interface UserInfor {
+  userAddress: string;
+  userFullName: string;
+  emailAddress: string;
 }
 
 export interface CreateAllowlistEntryResponse {
