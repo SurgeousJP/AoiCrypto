@@ -6,15 +6,15 @@ import {
 import { useFonts } from "expo-font";
 import { SplashScreen } from "expo-router";
 import React, { useEffect } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, View, Text } from "react-native";
 
 import { LineChart } from "react-native-chart-kit";
 
 interface LineChartProps {
-  data: any;
+  input: number[];
 }
 
-const LineChartComponent = () => {
+const LineChartComponent:React.FC<LineChartProps> = ({input}) => {
   let [loaded, error] = useFonts({
     ReadexPro_400Regular,
     ReadexPro_700Bold,
@@ -29,17 +29,18 @@ const LineChartComponent = () => {
   if (!loaded) {
     return null;
   }
-
+  
   const data = {
-    labels: ["January", "February", "March", "April", "May", "June"],
+    labels: [],
     datasets: [
       {
-        data: [20, 45, 28, 80, 99, 43],
+        // data: [20, 45, 28, 80, 120, 43],
+        data: input,
         color: (opacity = 1) => `rgba(47, 102, 246, ${opacity})`, // optional
         strokeWidth: 2, // optional
       },
     ],
-    legend: ["Rainy Days"], // optional
+    legend: ["Total ETH raised"], // optional
   };
   const screenWidth = Dimensions.get("window").width;
   const chartConfig = {
@@ -75,6 +76,7 @@ const LineChartComponent = () => {
       stroke: colors.secondary,
       opacity: 0.3,
     },
+    decimalPlaces: 4
   };
 
   return (
@@ -85,6 +87,15 @@ const LineChartComponent = () => {
       verticalLabelRotation={30}
       chartConfig={chartConfig}
       bezier
+      fromZero={true}
+      renderDotContent={({ x, y, index, indexData }) => {
+        console.log("Index data: ", indexData);
+        return (
+          <View key={index} style={[{ position: "absolute", left: x-5, top: y+16 }]}>
+            <Text className="font-readexSemiBold text-black text-[10px]">{indexData}</Text>
+          </View>
+        );
+      }}
     />
   );
 };

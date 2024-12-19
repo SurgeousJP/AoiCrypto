@@ -14,20 +14,59 @@ import VerticalDivider from "@/components/Displays/Divider/VerticalDivider";
 import { FlatList } from "react-native";
 import { colors } from "@/constants/colors";
 import { Ionicons } from "@expo/vector-icons";
-import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
+import {
+  GET_PROJECT_BY_POOL_ID,
+  getTransactionHistory,
+} from "@/queries/projects";
 import { useQuery } from "@apollo/client";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getDateFromUnixTimestamp,
+} from "@/constants/conversion";
 
 interface Props {
   poolAddress: string;
 }
+
+// [{"__typename": "InvestorActivity", "investor": {"__typename": "Investor", "account": [Object]}, "timestamp": "1733973204", "transactionHash": "0xe60bfb19520eefdde979983bd1a7861b37671b84f5019b4d12227e5fc2a00001", "type": "INVEST", "value": "200000000000000"}]
+
+const getTransactionHistoryDisplayData = (transactions: any) => {
+  return transactions.map((transaction) => {
+    const transactionColor =
+      transaction.type === "INVEST" ? "text-success" : "text-primary";
+    return [
+      {
+        value: transaction.transactionHash,
+        style: `font-readexRegular text-sm ${transactionColor}`,
+      },
+      {
+        value: getDateFromUnixTimestamp(transaction.timestamp)
+          .toISOString()
+          .split("T")[0],
+        style: `font-readexRegular text-sm ${transactionColor}`,
+      },
+      {
+        value: Number(transaction.value) / BIGINT_CONVERSION_FACTOR + " ETH",
+        style: `font-readexRegular text-sm ${transactionColor}`,
+      },
+    ];
+  });
+};
+
+const getInvestData = (transactions: any) => {
+  return transactions
+    .filter((transaction: any) => transaction.type === "INVEST")
+    .map(
+      (transaction: any) => Number(transaction.value) / BIGINT_CONVERSION_FACTOR
+    );
+};
 
 const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   console.log(poolAddress);
 
   const headerData = [
     {
-      value: "Address",
+      value: "Transaction hash",
       style: "font-readexBold text-sm",
     },
     {
@@ -39,60 +78,21 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
       style: "font-readexBold text-sm",
     },
   ];
-  const rowData = [
-    [
-      {
-        value: "0xda64bb5e5601f3c37880272607e5909D44B09841",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "31/12/2024",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "200",
-        style: "font-readexRegular text-sm ",
-      },
-    ],
-    [
-      {
-        value: "0xda64bb5e5601f3c37880272607e5909D44B09841",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "27/12/2024",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "700",
-        style: "font-readexRegular text-sm ",
-      },
-    ],
-    [
-      {
-        value: "0xda64bb5e5601f3c37880272607e5909D44B09841",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "29/12/2024",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "600",
-        style: "font-readexRegular text-sm ",
-      },
-    ],
-  ];
 
-  const {
-    loading,
-    error,
-    data: query,
-  } = useQuery(GET_PROJECT_BY_POOL_ID, {
+  const { loading, data: query } = useQuery(GET_PROJECT_BY_POOL_ID, {
     variables: {
       poolId: poolAddress,
     },
   });
+
+  const { loading: loadingTransaction, data: queryHistory } = useQuery(
+    getTransactionHistory(),
+    {
+      variables: {
+        poolAddress: poolAddress,
+      },
+    }
+  );
 
   const project = query?.idopool;
 
@@ -106,13 +106,36 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
     undefined
   );
 
-  const [displayData, setDisplayData] = useState(rowData);
+  const [investData, setInvestData] = useState<number[]>([]);
+  const [rowData, setRowData] = useState<any[]>([]);
+  const [displayData, setDisplayData] = useState<any[]>(rowData);
+
+  useEffect(() => {
+    setDisplayData(rowData);
+  }, [rowData]);
+
+  useEffect(() => {
+    if (
+      !loadingTransaction &&
+      queryHistory !== undefined &&
+      queryHistory.idopools !== undefined
+    ) {
+      setRowData(
+        getTransactionHistoryDisplayData(
+          queryHistory.idopools[0].investorActivities
+        )
+      );
+      setInvestData(getInvestData(queryHistory.idopools[0].investorActivities));
+      console.log(getInvestData(queryHistory.idopools[0].investorActivities));
+    }
+  }, [loadingTransaction, queryHistory]);
+
   const ADDRESS_POSITION = 0;
   const DATE_POSITION = 1;
   const AMOUNT_POSITION = 2;
   const handlePress = (option: string) => {
     switch (option) {
-      case "Address":
+      case "Hash":
         setAmountAscending(undefined);
         setDateAscending(undefined);
         setAddressAscending(getNextBooleanValue(isAddressAscending));
@@ -253,28 +276,28 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
             <Text className="font-readexSemiBold text-md">
               Project progress
             </Text>
-            <Text className="font-readexBold text-xl">{project.raisedAmount / BIGINT_CONVERSION_FACTOR}{" ETH"}</Text>
-            <LineChartComponent />
+            <Text className="font-readexBold text-xl">
+              {project.raisedAmount / BIGINT_CONVERSION_FACTOR}
+              {" ETH"}
+            </Text>
+            {investData !== undefined && investData.length > 0 && <LineChartComponent input={investData}/>}
           </View>
         </Container>
       </View>
-      
+
       <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">
         Contributions
       </Text>
       <View className="flex flex-col">
         <View className="bg-surface flex flex-col border-border border-[1px]">
           <View className="flex flex-row justify-between mx-2 items-center py-1">
-            <Pressable
-              className="flex-1"
-              onPress={() => handlePress("Address")}
-            >
+            <Pressable className="flex-1" onPress={() => handlePress("Hash")}>
               <Text
                 className={`font-readexRegular text-secondary mx-auto ${
                   isAddressAscending !== undefined ? "text-primary" : ""
                 }`}
               >
-                Address{" "}
+                Hash{" "}
                 {isAddressAscending !== undefined &&
                   (isAddressAscending ? (
                     <Ionicons
@@ -350,6 +373,19 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
         </View>
 
         <View className="mt-3">
+          <View className="flex flex-row justify-center space-x-3">
+            <View className="flex flex-row space-x-1 items-center">
+              <View className="w-3 h-3 bg-primary rounded-lg"></View>
+              <Text className="font-readexRegular">Claim</Text>
+            </View>
+            <View className="flex flex-row space-x-1 items-center">
+              <View className="w-3 h-3 bg-success rounded-lg"></View>
+              <Text className="font-readexRegular">Invest</Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="mt-3">
           <FlatList
             contentContainerStyle={{
               borderColor: colors.border,
@@ -381,7 +417,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
                         >
                           {content.value}
                           <Text className="text-secondary">
-                            {item.index > 0 && index === 2 ? " ETH" : ""}
+                            {item.index > 0 && index === 2 ? "" : ""}
                           </Text>
                         </Text>
                       </View>

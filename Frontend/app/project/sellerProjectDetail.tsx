@@ -59,7 +59,7 @@ export default function SellerProjectDetailScreen() {
             components={[
               <ProjectMetadataSegment poolAddress={poolId} />,
               <SellerAnalyticsSegment poolAddress={poolId}/>,
-              <SellerAllowlistSegment />,
+              <SellerAllowlistSegment poolAddress={poolId}/>,
             ]}
           />
         </View>

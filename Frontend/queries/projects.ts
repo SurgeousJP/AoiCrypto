@@ -85,6 +85,7 @@ export const GET_PROJECTS = (status: string | null, stage: string | null) => {
     }
   `;
 };
+
 export const GET_PROJECTS_FROM_OWNER = (
   status: string | null,
   stage: string | null
@@ -136,4 +137,24 @@ export const GET_PROJECTS_FROM_OWNER = (
     }
   }
 `;
+};
+
+export const getTransactionHistory = () => {
+  return gql`
+    query GetTransactionHistoryFromPool($poolAddress: String!) {
+      idopools(where: { poolAddress: $poolAddress }) {
+        investorActivities {
+          timestamp
+          transactionHash
+          value
+          type
+          investor {
+            account {
+              address
+            }
+          }
+        }
+      }
+    }
+  `;
 };
