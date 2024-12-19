@@ -53,7 +53,10 @@ const getBasicDataDisplay = (createIDO: CreateIDOInput) => {
     {
       tile: "Price per token",
       data:
-        getStringValueFromBigInt(createIDO.poolDetails.pricePerToken) + " ETH",
+        1 /
+          (Number(createIDO.poolDetails.pricePerToken) /
+            BIGINT_CONVERSION_FACTOR) +
+        " ETH",
     },
   ];
 };

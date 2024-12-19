@@ -66,6 +66,17 @@ const CreateStepOne = () => {
   const [poolDetails, setPoolDetail] = useState<PoolDetails>({
     ...createIDO.poolDetails,
   });
+  const [pricePerToken, setPricePerToken] = useState(BigInt(0.0001 * BIGINT_CONVERSION_FACTOR));
+
+  const onChangePricePerToken = (name: string, value: any) => {
+    const setValue = value === 0 ? 0 : 1 / value;
+    setPoolDetail({
+      ...poolDetails,
+      [name]: BigInt((setValue) * BIGINT_CONVERSION_FACTOR),
+    });
+    setPricePerToken(BigInt(value * BIGINT_CONVERSION_FACTOR));
+  };
+
   const [action, setAction] = useState<LiquidityPoolAction>(createIDO.action);
   const [lockExpired, setLockExpired] = useState(createIDO.lockExpired);
   const [isPrivateSale, setPrivateSale] = useState(false);
@@ -136,12 +147,12 @@ const CreateStepOne = () => {
       return false;
     }
 
-    if (isPrivateSale && poolDetails.privateSaleAmount <= 0n){
+    if (isPrivateSale && poolDetails.privateSaleAmount <= 0n) {
       showInvalidInputToast("Private sale amount must be positive");
       return false;
     }
 
-    if (isPrivateSale && poolDetails.privateSaleAmount > poolDetails.hardCap){
+    if (isPrivateSale && poolDetails.privateSaleAmount > poolDetails.hardCap) {
       showInvalidInputToast("Private sale amount must not exceed the hard cap");
       return false;
     }
@@ -159,6 +170,7 @@ const CreateStepOne = () => {
   };
 
   useEffect(() => {
+    console.log("Pool details: ", poolDetails);
     updateCreateIDO("poolDetails", poolDetails);
   }, [poolDetails]);
 
@@ -171,7 +183,10 @@ const CreateStepOne = () => {
   }, [action]);
 
   const onNumericChange = (name: string, value: any) => {
-    setPoolDetail({ ...poolDetails, [name]: BigInt(value * BIGINT_CONVERSION_FACTOR) });
+    setPoolDetail({
+      ...poolDetails,
+      [name]: BigInt(value * BIGINT_CONVERSION_FACTOR),
+    });
   };
 
   const onLiquidityActionChange = (value: any) => {
@@ -222,11 +237,6 @@ const CreateStepOne = () => {
     setPoolDetail({ ...poolDetails, ["tokenAddress"]: value });
     setTokenContract({ ...tokenContract, ["address"]: value });
   };
-
-  // console.log("Pricp per token: ", createIDO.poolDetails.privateSaleAmount);
-  // console.log(typeof(createIDO.poolDetails.privateSaleAmount));
-  // console.log("Hard cap: ", createIDO.poolDetails.hardCap);
-  // console.log("Price per token: ", createIDO.poolDetails.pricePerToken);
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -288,11 +298,11 @@ const CreateStepOne = () => {
                 <Input
                   label={"Price per token"}
                   name={"pricePerToken"}
-                  value={poolDetails.pricePerToken}
+                  value={pricePerToken}
                   type="numeric"
-                  onChange={onNumericChange}
+                  onChange={onChangePricePerToken}
                   isUnitVisible={true}
-                  initialValue={poolDetails.pricePerToken}
+                  initialValue={pricePerToken}
                 />
               </View>
             </View>
