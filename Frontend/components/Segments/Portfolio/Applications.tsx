@@ -2,8 +2,9 @@ import DividerLine from "@/components/Displays/Divider/DividerLine";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
-import { colors } from "@/constants/colors";
-import React from "react";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { useGetAllowlistEntryByUserAddress } from "@/hooks/useApiHook";
+import React, { useContext } from "react";
 import { FlatList, ScrollView, View } from "react-native";
 
 const ApplicationSegment = () => {
@@ -17,7 +18,8 @@ const ApplicationSegment = () => {
     { label: "Waiting", value: "Waiting" },
     { label: "None", value: "None" },
   ];
-
+  const { address } = useContext(AuthContext);
+  const { data, isLoading } = useGetAllowlistEntryByUserAddress(address);
   const headerData = [
     {
       value: "Project name",
@@ -32,52 +34,24 @@ const ApplicationSegment = () => {
       style: "font-readexBold text-sm",
     },
   ];
-  const rowData = [
-    [
-      {
-        value: "Wilder World",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "31/12/2024",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "Accepted",
-        style: "font-readexRegular text-sm text-success",
-      },
-    ],
-    [
-      {
-        value: "Wilder World",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "31/12/2024",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "Accepted",
-        style: "font-readexRegular text-sm text-success",
-      },
-    ],
-    [
-      {
-        value: "Wilder World",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "31/12/2024",
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: "Accepted",
-        style: "font-readexRegular text-sm text-success",
-      },
-    ],
-  ];
 
-  const data = [1, 2, 3, 4, 5, 6];
+  const rowData =
+    data?.map((entry) => [
+      {
+        value: entry.userFullName,
+        style: "font-readexRegular text-sm",
+      },
+      {
+        value: new Date().toLocaleDateString(), // Assuming apply date is current date
+        style: "font-readexRegular text-sm",
+      },
+      {
+        value: entry.status,
+        style: `font-readexRegular text-sm ${
+          entry.status === "Accepted" ? "text-success" : ""
+        }`,
+      },
+    ]) || [];
 
   return (
     <View className="flex flex-col mt-2">

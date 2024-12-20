@@ -4,7 +4,6 @@ import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { useRegisterPrivatePool } from "@/hooks/smart-contract/IDOPool/useRegisterPrivatePool";
 import {
   useGetAllowlistEntryByPoolAddress,
   useUpdateAllowlistEntry,

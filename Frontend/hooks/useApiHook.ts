@@ -171,10 +171,10 @@ export const useGetAllowlistEntryByPoolAddress = (poolAddress: string) => {
 };
 
 export const useGetAllowlistEntryByUserAddress = (userAddress: string) => {
-  return useQuery<AllowlistEntry, Error>({
+  return useQuery<AllowlistEntry[], Error>({
     queryKey: ["allowlist", userAddress],
     queryFn: async () => {
-      const response = await http.get<AllowlistEntry>(
+      const response = await http.get<AllowlistEntry[]>(
         `/api/allowlist/user/${userAddress}`
       );
       return response.data;
