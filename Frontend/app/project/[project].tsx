@@ -163,7 +163,7 @@ const ProjectDetail = () => {
           projectState !== undefined &&
           projectStatus !== undefined;
         
-        const isAllowedToSeePrivateSale = isRegistered && isAllowData !== null && isAllowData?.isAllowed && isAllowData.isAllowed === true;
+        const isAllowedToSeePrivateSale = isAllowData !== null && isAllowData?.isAllowed && isAllowData.isAllowed === true;
 
         const isPrivateSaleActive =
           isLoaded &&
@@ -176,7 +176,7 @@ const ProjectDetail = () => {
         const isPrivateSaleUnavailable =
           isLoaded &&
           projectState === ProjectState.Private &&
-          (isRegistered === undefined || !isAllowedToSeePrivateSale);
+          !isAllowedToSeePrivateSale;
 
         if (isPrivateSaleActive || isPublicSaleActive) {
           return (

@@ -29,7 +29,7 @@ interface Props {
   status: ProjectStatus | undefined;
 }
 
-export const getProjectStatusAndCreatedTime = (status: ProjectStatus) => {
+const getProjectStatusAndCreatedTime = (status: ProjectStatus) => {
   let projectStatus = "";
   let projectStatusStyle = "";
   if (status === ProjectStatus.Upcoming) {

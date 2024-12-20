@@ -31,7 +31,7 @@ const WhitelistForm = () => {
 
   const createAllowListMutation = useCreateAllowlistEntry();
 
-  const handleSubmit = () => {
+  const handleCreateAllowlist = () => {
     console.log("poolId", poolId);
     console.log("Start createAllowListMutation");
     console.log("userInformation", userInformation);
@@ -76,7 +76,7 @@ const WhitelistForm = () => {
     poolAddress: poolId,
     enabled: isReadyForRegistered(),
     onSuccess: (data: TransactionReceipt) => {
-      handleSubmit();
+      handleCreateAllowlist();
       if (registerModalVisible) {
         setRegisterModalVisible(false);
       }

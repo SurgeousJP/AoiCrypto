@@ -146,13 +146,10 @@ export const useDepositLiquidityPool = ({
 
   const error =
     errorWrite || errorTransaction || errorPrepare || errorConfirmation;
-
-  useEffect(() => {
-    console.log("Error prepare deposit liquidity pool: ", errorPrepare)
-  }, [errorPrepare]);
     
   return {
     error,
+    errorPrepare,
     errorWrite,
     isLoading,
     isSuccess,

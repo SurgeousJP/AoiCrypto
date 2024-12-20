@@ -15,6 +15,7 @@ import {
 } from "@/constants/conversion";
 import { StateContext, StateContextType } from "@/contexts/StateProvider";
 import { PoolTime } from "@/contracts/types/IDO/CreateIDOInput";
+import { mapToUserInfor, UserInfor } from "@/model/ApiModel";
 import {
   generateMerkleTreeFromAddressList,
   getWhitelistMerkleTreeRoot,
@@ -37,7 +38,7 @@ function createStepTwo() {
     StateContext
   ) as StateContextType;
   const [poolTime, setPoolTime] = useState<PoolTime>({ ...createIDO.poolTime });
-  const [addressList, setAddressList] = useState<string[]>([]);
+  const [addressList, setAddressList] = useState<UserInfor[]>([]);
   useEffect(() => {
     updateCreateIDO("poolTime", poolTime);
   }, [poolTime]);
@@ -48,6 +49,12 @@ function createStepTwo() {
       [name]: BigInt(getUnixTimestampFromDate(value)),
     });
   };
+
+  const whitelistHeader = [
+    { value: "Address", style: "font-readexRegular text-sm text-left" },
+    { value: "Email", style: "font-readexRegular text-sm text-left" },
+    { value: "Full name", style: "font-readexRegular text-sm text-left" },
+  ];
 
   const [whitelistDisplayData, setWhitelistData] = useState<any[]>([]);
   const onLoadWhitelist = (jsonData: any[]) => {
@@ -63,7 +70,7 @@ function createStepTwo() {
       .map((item) => item[0]);
     const merkleTree = generateMerkleTreeFromAddressList(addresses);
     updateCreateIDO("whitelisted", getWhitelistMerkleTreeRoot(merkleTree));
-    setAddressList(addresses);
+    setAddressList(mapToUserInfor(jsonData));
   };
 
   const onNavigatingBack = () => {
@@ -74,7 +81,9 @@ function createStepTwo() {
     if (isStepTwoInputValid()) {
       router.push({
         pathname: "/project/createStepThree",
-        params: addressList,
+        params: {
+          addresses: JSON.stringify(addressList),
+        },
       });
     }
   };
@@ -210,6 +219,9 @@ function createStepTwo() {
                 {whitelistDisplayData && whitelistDisplayData.length > 0 ? (
                   <FlatList
                     style={{
+                      borderWidth: 0.5,
+                      borderColor: colors.border,
+                      borderRadius: 8,
                       paddingHorizontal: 0,
                       elevation: 1,
                       marginTop: 12,
@@ -217,10 +229,31 @@ function createStepTwo() {
                     }}
                     contentContainerStyle={{ flexGrow: 1, gap: 0 }}
                     scrollEnabled={false}
-                    data={whitelistDisplayData}
+                    data={[whitelistHeader, ...whitelistDisplayData]}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={(item) => {
-                      return <Row key={Math.random()} contents={item.item} />;
+                      return (
+                        <View
+                          key={Math.random()}
+                          className={`flex flex-row  ${
+                            item.index % 2 === 1 ? "bg-gray-50" : "bg-surface"
+                          }`}
+                        >
+                          {item.item.map((content, index) => {
+                            return (
+                              <View
+                                className={`flex-1 px-4 py-3 ${content.style}`}
+                              >
+                                <Text
+                                  className={`text-center ${content.style} `}
+                                >
+                                  {content.value}
+                                </Text>
+                              </View>
+                            );
+                          })}
+                        </View>
+                      );
                     }}
                   />
                 ) : (

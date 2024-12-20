@@ -1,6 +1,6 @@
 import LineChartComponent from "@/components/Displays/Chart/LineChart";
 import Container from "@/components/Layouts/Container";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -18,20 +18,26 @@ import {
   GET_PROJECT_BY_POOL_ID,
   getTransactionHistory,
 } from "@/queries/projects";
-import { useQuery } from "@apollo/client";
+import { getApolloContext, useApolloClient, useQuery } from "@apollo/client";
 import {
   BIGINT_CONVERSION_FACTOR,
   getDateFromUnixTimestamp,
+  getUnixTimestampFromDate,
 } from "@/constants/conversion";
 import NoDocument from "@/components/Displays/Results/NoDocument/NoDocument";
 import NoInbox from "@/components/Displays/Results/NoInbox/NoInbox";
 import NoInboxState from "@/assets/images/NoInboxState.svg";
+import * as Progress from "react-native-progress";
+import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
+import { useWithdrawRemainingToken } from "@/hooks/smart-contract/IDOPool/useWithdrawRemainingToken";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { showToast } from "@/utils/toast";
+import { TransactionReceipt } from "viem";
+import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
 
 interface Props {
   poolAddress: string;
 }
-
-// [{"__typename": "InvestorActivity", "investor": {"__typename": "Investor", "account": [Object]}, "timestamp": "1733973204", "transactionHash": "0xe60bfb19520eefdde979983bd1a7861b37671b84f5019b4d12227e5fc2a00001", "type": "INVEST", "value": "200000000000000"}]
 
 const getTransactionHistoryDisplayData = (transactions: any) => {
   return transactions.map((transaction) => {
@@ -57,15 +63,20 @@ const getTransactionHistoryDisplayData = (transactions: any) => {
 };
 
 const getInvestData = (transactions: any) => {
+  let sum = 0;
   return transactions
     .filter((transaction: any) => transaction.type === "INVEST")
-    .map(
-      (transaction: any) => Number(transaction.value) / BIGINT_CONVERSION_FACTOR
-    );
+    .map((transaction: any) => {
+      sum = sum + Number(transaction.value) / BIGINT_CONVERSION_FACTOR;
+      return Math.round(sum * 1e10) / 1e10;
+    });
 };
 
 const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   console.log(poolAddress);
+
+  const client = useApolloClient();
+  const { chainId } = useContext(AuthContext);
 
   const headerData = [
     {
@@ -98,6 +109,14 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   );
 
   const project = query?.idopool;
+
+  const [poolId, setPoolId] = useState();
+
+  useEffect(() => {
+    if (project !== undefined && project !== null){
+      setPoolId(project.poolId);
+    }
+  }, [project]);
 
   const [isAddressAscending, setAddressAscending] = useState<
     boolean | undefined
@@ -220,6 +239,140 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
     if (value === undefined) return true;
   };
 
+  const isTokenWithdrawable = () => {
+    if (project === undefined) return false;
+
+    return (
+      project.raisedAmount >= project.softCap &&
+      Number(project.hardCap - project.raisedAmount) /
+        BIGINT_CONVERSION_FACTOR >
+        0 &&
+      project.endTime < getUnixTimestampFromDate(new Date())
+    );
+  };
+
+  const [modalVisible, setModalVisble] = useState(false);
+
+  const {
+    error: errorWithdraw,
+    errorPrepare: errorPrepareWithdraw,
+    errorWrite: errorWriteWithdraw,
+    isLoading: isLoadingWithdraw,
+    isSuccess: isSuccessWithdraw,
+    isError: isErrorWithdraw,
+    onWithdrawRemainingToken,
+  } = useWithdrawRemainingToken({
+    chainId: chainId,
+    poolAddress: poolAddress,
+    enabled: isTokenWithdrawable(),
+    onSuccess: (data: TransactionReceipt) => {
+      if (modalVisible) {
+        setModalVisble(false);
+      }
+      showToast(
+        "success",
+        "Transaction success",
+        "Withdrawal token successfully"
+      );
+    },
+    onError: (error?: Error) => {
+      if (modalVisible) {
+        setModalVisble(false);
+      }
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+    },
+  });
+
+  useEffect(() => {
+    if (modalVisible && errorWriteWithdraw) {
+      setModalVisble(false);
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorWriteWithdraw?.message ?? "N/A"
+      );
+    }
+  }, [errorWriteWithdraw]);
+
+  const onTriggerWithdrawalToken = async () => {
+    if (!errorPrepareWithdraw) {
+      setModalVisble(true);
+      await onWithdrawRemainingToken();
+    } else {
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorPrepareWithdraw?.message ?? "N/A"
+      );
+    }
+  };
+
+  const [depositModalVisible, setDepositModalVisible] = useState(false);
+
+  const {
+    error: errorDeposit,
+    errorPrepare: errorPrepareDeposit,
+    errorWrite: errorWriteDeposit,
+    isLoading: isLoadingDeposit,
+    isSuccess: isSuccessDeposit,
+    isError: isErrorDeposit,
+    onDepositLiquidityPool,
+  } = useDepositLiquidityPool({
+    chainId: chainId,
+    poolId: poolId,
+    enabled: isTokenWithdrawable(),
+    onSuccess: (data: TransactionReceipt) => {
+      if (depositModalVisible) {
+        setDepositModalVisible(false);
+      }
+      showToast("success", "Transaction success", "Deposit pool successfully");
+    },
+    onError: (error?: Error) => {
+      if (depositModalVisible) {
+        setDepositModalVisible(false);
+      }
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+    },
+  });
+
+  useEffect(() => {
+    if (depositModalVisible && errorWriteDeposit) {
+      setDepositModalVisible(false);
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorWriteDeposit?.message ?? "N/A"
+      );
+    }
+  }, [errorWriteDeposit]);
+
+  const onTriggerDepositPool = async () => {
+    if (!errorPrepareDeposit) {
+      setDepositModalVisible(true);
+      await onDepositLiquidityPool();
+    } else {
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorPrepareDeposit?.message ?? "N/A"
+      );
+    }
+  };
+
   if (loading || !project) {
     return (
       <View className="flex-1 my-auto items-center justify-center">
@@ -270,6 +423,48 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
           </View>
         </View>
       </View>
+
+      <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">
+        Progress
+      </Text>
+      <View className="mb-3 py-4 px-2 bg-surface border-border border-[1px]">
+        <Progress.Bar
+          color={colors.primary}
+          unfilledColor={"#EDF2F7"}
+          progress={project.raisedAmount / project.softCap}
+          width={null}
+          borderWidth={0}
+          height={6}
+          borderRadius={6}
+        />
+        <View className="flex flex-row justify-between mt-2 mb-4">
+          <Text className="font-readexRegular">
+            {project.raisedAmount / BIGINT_CONVERSION_FACTOR} ETH{" "}
+          </Text>
+          <Text className="font-readexRegular">
+            {project.softCap / BIGINT_CONVERSION_FACTOR} ETH
+          </Text>
+        </View>
+        {isTokenWithdrawable() && 
+          <>
+            <View className="mb-3">
+              <PrimaryButton
+                content={"Deposit pool"}
+                disabled={isLoadingDeposit}
+                onPress={onTriggerDepositPool}
+              />
+            </View>
+            <View className="mb-3">
+              <PrimaryButton
+                content={"Withdraw remaining token"}
+                disabled={isLoadingWithdraw}
+                onPress={onTriggerWithdrawalToken}
+              />
+            </View>
+          </>
+        }
+      </View>
+
       <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">
         Analytics
       </Text>

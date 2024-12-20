@@ -8,6 +8,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useWriteContractCallbacks } from "@/hooks/smart-contract/useWriteContractCallbacks";
+import { useEffect } from "react";
 // <---! IMPORT !---> //
 
 type Props = {
@@ -46,7 +47,7 @@ export const useWithdrawRemainingToken = ({
     address: poolAddress,
     abi: getABI("IDOPool"),
     // <---! PARAMS IN ABI !---> //
-    args: [ ],
+    args: [],
     // <---! PARAMS IN ABI !---> //
     // <---! FUNCTION IN ABI !---> //
     functionName: "withdrawRemainingToken",
@@ -147,6 +148,7 @@ export const useWithdrawRemainingToken = ({
     
   return {
     error,
+    errorPrepare,
     errorWrite,
     isLoading,
     isSuccess,

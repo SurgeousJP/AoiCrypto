@@ -54,7 +54,9 @@ export const IDOFactory = [
   {
     type: "function",
     name: "checkPoolIsValid",
-    inputs: [{ name: "poolId", type: "uint256", internalType: "uint256" }],
+    inputs: [
+      { name: "poolId", type: "uint256", internalType: "uint256" },
+    ],
     outputs: [{ name: "", type: "bool", internalType: "bool" }],
     stateMutability: "view",
   },
@@ -99,12 +101,14 @@ export const IDOFactory = [
       },
       { name: "lockExpired", type: "uint256", internalType: "uint256" },
     ],
-    outputs: [{ name: "poolAddress", type: "address", internalType: "address" }],
+    outputs: [
+      { name: "poolAddress", type: "address", internalType: "address" },
+    ],
     stateMutability: "payable",
   },
   {
     type: "function",
-    name: "getAllPools",
+    name: "getPools",
     inputs: [],
     outputs: [
       {
@@ -117,34 +121,55 @@ export const IDOFactory = [
   },
   {
     type: "function",
-    name: "getPool",
-    inputs: [{ name: "poolId", type: "uint256", internalType: "uint256" }],
+    name: "withdrawPoolFunds",
+    inputs: [
+      { name: "poolId", type: "uint256", internalType: "uint256" },
+      { name: "to", type: "address", internalType: "address" },
+    ],
+    outputs: [{ name: "success", type: "bool", internalType: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "depositLiquidityPool",
+    inputs: [
+      { name: "poolId", type: "uint256", internalType: "uint256" },
+    ],
     outputs: [
       {
-        name: "",
+        name: "liquidityPoolAddress",
         type: "address",
         internalType: "address",
       },
+      { name: "lpAmount", type: "uint256", internalType: "uint256" },
     ],
-    stateMutability: "view",
+    stateMutability: "nonpayable",
   },
   {
-    type: "event",
-    name: "PoolCreated",
+    type: "function",
+    name: "updatePool",
     inputs: [
-      { name: "poolId", type: "uint256", internalType: "uint256", indexed: true },
-      { name: "creator", type: "address", internalType: "address", indexed: true },
-      { name: "poolAddress", type: "address", internalType: "address", indexed: false },
+      { name: "poolId", type: "uint256", internalType: "uint256" },
+      {
+        name: "newDetails",
+        type: "tuple",
+        internalType: "struct IIDOPool.IDOPoolDetails",
+        components: [
+          { name: "tokenAddress", type: "address", internalType: "address" },
+          { name: "pricePerToken", type: "uint256", internalType: "uint256" },
+          { name: "raisedAmount", type: "uint256", internalType: "uint256" },
+          { name: "raisedTokenAmount", type: "uint256", internalType: "uint256" },
+          { name: "softCap", type: "uint256", internalType: "uint256" },
+          { name: "hardCap", type: "uint256", internalType: "uint256" },
+          { name: "minInvest", type: "uint256", internalType: "uint256" },
+          { name: "maxInvest", type: "uint256", internalType: "uint256" },
+          { name: "liquidityWETH9", type: "uint256", internalType: "uint256" },
+          { name: "liquidityToken", type: "uint256", internalType: "uint256" },
+          { name: "privateSaleAmount", type: "uint256", internalType: "uint256" },
+        ],
+      },
     ],
-    anonymous: false,
-  },
-  {
-    type: "event",
-    name: "PoolValidated",
-    inputs: [
-      { name: "poolId", type: "uint256", internalType: "uint256", indexed: true },
-      { name: "validator", type: "address", internalType: "address", indexed: true },
-    ],
-    anonymous: false,
+    outputs: [{ name: "success", type: "bool", internalType: "bool" }],
+    stateMutability: "nonpayable",
   },
 ];

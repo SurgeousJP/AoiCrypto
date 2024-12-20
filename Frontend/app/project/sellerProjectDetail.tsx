@@ -2,6 +2,7 @@ import Back from "@/assets/icons/system-icons-svg/Back.svg";
 import Setting from "@/assets/icons/system-icons-svg/Setting.svg";
 import ScreenHeader from "@/components/Layouts/ScreenHeader";
 import CustomSegmentedControl from "@/components/Navigations/SegmentedControl/SegmentedControl";
+import ProjectInfo from "@/components/Segments/ProjectDetail/ProjectInfo";
 import ProjectMetadataSegment from "@/components/Segments/ProjectDetail/ProjectMetadata";
 import SellerAnalyticsSegment from "@/components/Segments/ProjectDetail/SellerAnalytics";
 import SellerAllowlistSegment from "@/components/Segments/ProjectDetail/SellerWhitelist";
@@ -55,8 +56,9 @@ export default function SellerProjectDetailScreen() {
       {poolId !== undefined && <View className="flex-1">
         <View className="pt-4 flex-1">
           <CustomSegmentedControl
-            screens={["Metadata", "Analytics", "Allowlist"]}
+            screens={["Info", "Metadata", "Analytics", "Allowlist"]}
             components={[
+              <ProjectInfo poolAddress={poolId}/>,
               <ProjectMetadataSegment poolAddress={poolId} />,
               <SellerAnalyticsSegment poolAddress={poolId}/>,
               <SellerAllowlistSegment poolAddress={poolId}/>,

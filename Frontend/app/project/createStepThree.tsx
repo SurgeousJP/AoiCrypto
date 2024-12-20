@@ -39,6 +39,8 @@ import {
 import { TransactionReceipt } from "viem";
 import { useBalance } from "wagmi";
 import { handleCopyToClipboard } from "@/utils/clipboard";
+import { useCreateAllowlistEntry } from "@/hooks/useApiHook";
+import { UserInfor } from "@/model/ApiModel";
 // IMPORT
 
 const getBasicDataDisplay = (createIDO: CreateIDOInput) => {
@@ -143,20 +145,29 @@ const getLiquidDataDisplay = (createIDO: CreateIDOInput) => {
   ];
 };
 
-const getAddressDataDisplay = (addressList: string[]) => {
+const getAddressDataDisplay = (addressList: UserInfor[]) => {
   return addressList.map((item) => {
     return [
       {
         style: "text-left font-readexRegular",
-        value: item,
+        value: item.userAddress,
+      },
+      {
+        style: "text-left font-readexRegular",
+        value: item.emailAddress,
+      },
+      {
+        style: "text-left font-readexRegular",
+        value: item.userFullName,
       },
     ];
   });
 };
 
 function createStepThree() {
-  const addressList = Object.values(useLocalSearchParams()) as string[];
-  // console.log(addressList);
+  const params = useLocalSearchParams<any>();
+  const addresses = JSON.parse(params.addresses);
+
   const { createIDO, resetCreateIDO } = useContext(
     StateContext
   ) as StateContextType;
@@ -185,8 +196,12 @@ function createStepThree() {
 
   const liquidData = getLiquidDataDisplay(createIDO);
 
-  const whitelistData = getAddressDataDisplay(addressList);
-  // console.log(whitelistData);
+  const whitelistHeader = [
+    { value: "Address", style: "font-readexRegular text-sm text-left" },
+    { value: "Email", style: "font-readexRegular text-sm text-left" },
+    { value: "Full name", style: "font-readexRegular text-sm text-left" },
+  ];
+  const whitelistData = getAddressDataDisplay(addresses);
 
   // READING ALLOWANCE & WALLET BALANCE
   const {
@@ -375,6 +390,27 @@ function createStepThree() {
     await handleCopyToClipboard(numsOfTokenLacked.toString());
   };
 
+  const createAllowListMutation = useCreateAllowlistEntry();
+
+  // const handleCreateAllowlist = (poolAddress: string) => {
+  //   console.log("Pool address", poolAddress);
+  //   console.log("Start createAllowListMutation");
+  //   console.log("userInformation", userInformation);
+  //   createAllowListMutation.mutate(
+  //     {
+  //       poolAddress: Array.isArray(poolId) ? poolId[0] : poolId,
+  //       userInfors: [userInformation],
+  //       status: "Pending",
+  //     },
+  //     {
+  //       onSuccess: () => {},
+  //       onError: () => {
+  //         showToast("error", "Allowlist submit failed", "Please try again");
+  //       },
+  //     }
+  //   );
+  // };
+
   return (
     <ScrollView className="flex-1 bg-background">
       <LoadingModal
@@ -497,20 +533,37 @@ function createStepThree() {
                 </Text>
                 <FlatList
                   style={{
-                    paddingHorizontal: 0,
-                    borderColor: colors.border,
                     borderWidth: 0.5,
+                    borderColor: colors.border,
+                    borderRadius: 8,
+                    paddingHorizontal: 0,
                     elevation: 1,
                     marginTop: 12,
                     marginBottom: 5,
                   }}
                   contentContainerStyle={{ flexGrow: 1, gap: 0 }}
-                  data={whitelistData}
+                  scrollEnabled={false}
+                  data={[whitelistHeader, ...whitelistData]}
                   keyExtractor={(item, index) => index.toString()}
                   renderItem={(item) => {
                     return (
-                      <View>
-                        <Row key={item.index} contents={item.item} />
+                      <View
+                        key={Math.random()}
+                        className={`flex flex-row  ${
+                          item.index % 2 === 1 ? "bg-gray-50" : "bg-surface"
+                        }`}
+                      >
+                        {item.item.map((content, index) => {
+                          return (
+                            <View
+                              className={`flex-1 px-4 py-3 ${content.style}`}
+                            >
+                              <Text className={`text-center ${content.style} `}>
+                                {content.value}
+                              </Text>
+                            </View>
+                          );
+                        })}
                       </View>
                     );
                   }}

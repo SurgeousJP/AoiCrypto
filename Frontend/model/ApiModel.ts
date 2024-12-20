@@ -84,6 +84,14 @@ export interface UserInfor {
   emailAddress: string;
 }
 
+export const mapToUserInfor = (data: any[]): UserInfor[] => {
+  return data.map(item => ({
+    userAddress: item["Wallet Address"],
+    userFullName: item["Full Name"],
+    emailAddress: item["Email Address"] || item["Email  Address"], // Handle extra space in "Email  Address"
+  }));
+};
+
 export interface CreateAllowlistEntryResponse {
   message: boolean;
 }
