@@ -9,6 +9,7 @@ import { ProjectState, ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import getABI from "@/contracts/utils/getAbi.util";
 import { useCheckRegisteredPrivatePool } from "@/hooks/smart-contract/IDOPool/useCheckRegisteredPrivatePool";
+import { useGetIsUserAllowed } from "@/hooks/useApiHook";
 import { GET_PROJECT_BY_POOL_ID } from "@/queries/projects";
 import { useQuery } from "@apollo/client";
 import { useLocalSearchParams } from "expo-router";
@@ -43,18 +44,18 @@ const ProjectDetail = () => {
     }
   }, [project]);
 
-  const {
-    isLoading: isLoadingCheckingRegistered,
-    isError: isErrorCheckingRegistered,
-    isSuccess: isSuccessCheckingRegistered,
-    isRegistered,
-  } = useCheckRegisteredPrivatePool({
-    chainId,
-    poolAddress: poolAddress,
-    spenderAddress: address,
-    enabled: true,
-  });
+  const { isLoading: isLoadingCheckingRegistered, isRegistered } =
+    useCheckRegisteredPrivatePool({
+      chainId,
+      poolAddress: poolId,
+      spenderAddress: address,
+      enabled: true,
+    });
 
+  const { data: isAllowData, isLoading: isAllowedLoading } =
+    useGetIsUserAllowed(poolId, address);
+  
+  console.log("Is allowed: ", isAllowData?.isAllowed);
   console.log("Is registered: ", isRegistered);
 
   const currentDateTstamp = getUnixTimestampFromDate(new Date());
@@ -156,14 +157,18 @@ const ProjectDetail = () => {
         const isLoaded =
           !loading &&
           !isLoadingCheckingRegistered &&
+          !isAllowedLoading &&
+          isAllowData !== undefined &&
           token !== undefined &&
           projectState !== undefined &&
           projectStatus !== undefined;
+        
+        const isAllowedToSeePrivateSale = isRegistered && isAllowData !== null && isAllowData?.isAllowed && isAllowData.isAllowed === true;
 
         const isPrivateSaleActive =
           isLoaded &&
           projectState === ProjectState.Private &&
-          isRegistered === true;
+          isAllowedToSeePrivateSale;
 
         const isPublicSaleActive =
           isLoaded && projectState === ProjectState.Public;
@@ -171,12 +176,8 @@ const ProjectDetail = () => {
         const isPrivateSaleUnavailable =
           isLoaded &&
           projectState === ProjectState.Private &&
-          (isRegistered === false || isRegistered === undefined);
+          (isRegistered === undefined || !isAllowedToSeePrivateSale);
 
-        // console.log("Is private sale active: ", isPrivateSaleActive);
-        // console.log("Is public sale active: ", isPublicSaleActive);
-        // console.log("Is private sale unavailable: ", isPrivateSaleUnavailable);
-        // Main rendering logic
         if (isPrivateSaleActive || isPublicSaleActive) {
           return (
             <View className="py-1">

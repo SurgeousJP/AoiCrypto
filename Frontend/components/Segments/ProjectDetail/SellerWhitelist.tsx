@@ -3,16 +3,20 @@ import ScreenLoadingIndicator from "@/components/Displays/ScreenLoadingIndicator
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import { colors } from "@/constants/colors";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { useRegisterPrivatePool } from "@/hooks/smart-contract/IDOPool/useRegisterPrivatePool";
 import {
   useGetAllowlistEntryByPoolAddress,
   useUpdateAllowlistEntry,
 } from "@/hooks/useApiHook";
 import { AllowlistEntry } from "@/model/ApiModel";
+import { showToast } from "@/utils/toast";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   FlatList,
   Modal,
+  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
@@ -33,7 +37,7 @@ const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
   const { mutate: updateAllowlistEntry, isSuccess } = useUpdateAllowlistEntry();
 
   const openModal = (id: string) => {
-    setSelectedEntry(allowlists.find((entry) => entry.id === id) || null);
+    setSelectedEntry(allowlists?.find((entry) => entry.id === id) || null);
     setModalVisible(true);
   };
 
@@ -55,14 +59,22 @@ const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
         },
         {
           onSuccess: () => {
-            alert("Status updated successfully!");
+            showToast(
+              "success",
+              "Successful mutation",
+              "Allowlist status updated successfully"
+            );
             queryClient.invalidateQueries({
               queryKey: ["allowlist", poolAddress],
             });
             closeModal();
           },
           onError: (error) => {
-            alert(`Error updating status: ${error.message}`);
+            showToast(
+              "error",
+              "Error mutation",
+              `Error updating status: ${error.message}`
+            );
           },
         }
       );
@@ -91,31 +103,48 @@ const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
     },
   ];
 
-  const dynamicRowData = allowlists.map((item) => [
-    {
-      id: item.id,
-      value: item.userAddress || "N/A",
-      style: "font-readexRegular text-sm text-left",
-    },
-    {
-      id: item.id,
-      value: item.status || "N/A",
-      style: `font-readexRegular text-sm text-right ${
-        item.status === "Pending"
-          ? "text-pending"
-          : item.status === "Accepted"
-          ? "text-success"
-          : item.status === "Rejected"
-          ? "text-error"
-          : ""
-      }`,
-    },
-  ]);
+  const [dynamicRowData, setDynamicRowData] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (allowlists !== undefined && allowlists !== null) {
+      setDynamicRowData(
+        allowlists?.map((item) => [
+          {
+            id: item.id,
+            value: item.userAddress || "N/A",
+            style: "font-readexRegular text-sm text-left",
+          },
+          {
+            id: item.id,
+            value: item.status || "N/A",
+            style: `font-readexRegular text-sm text-right ${
+              item.status === "Pending"
+                ? "text-pending"
+                : item.status === "Accepted"
+                ? "text-success"
+                : item.status === "Rejected"
+                ? "text-error"
+                : ""
+            }`,
+          },
+        ])
+      );
+    }
+  }, [allowlists]);
 
   // Combine header and rows
-  const rowData = [headerData, ...dynamicRowData];
-
+  const [rowData, setRowData] = useState<any[]>([]);
+  useEffect(() => {
+    setRowData([headerData, ...dynamicRowData]);
+  }, [dynamicRowData]);
   const [displayData, setDisplayData] = useState(rowData);
+
+  useEffect(() => {
+    if (rowData.length > 0) {
+      setDisplayData(rowData);
+    }
+  }, [rowData]);
+
   const [searchText, setSearchText] = useState("");
   const [status, setStatus] = useState<string | null>(null);
   // Search filter logic
@@ -170,6 +199,8 @@ const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
     }
   }, [status]);
 
+  const { chainId } = useContext(AuthContext);
+
   if (isLoading || allowlists === undefined) return <ScreenLoadingIndicator />;
 
   if (allowlists === null)
@@ -181,13 +212,13 @@ const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
 
   return (
     <View className="flex flex-col flex-1 mt-2">
-      <View className="overflow-hidden py-4 px-2 border-border border-[1px] rounded-lg mb-4 bg-surface">
+      <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          className="space-x-3 rounded-lg"
+          className="space-x-3"
         >
-          <View className="flex flex-row space-x-3 items-center rounded-lg">
+          <View className="flex flex-row space-x-3 items-center">
             <View className="w-[176px] h-8">
               <Searchbar
                 placeholder={"User search"}
@@ -206,68 +237,83 @@ const SellerAllowlistSegment: React.FC<Props> = ({ poolAddress }) => {
           </View>
         </ScrollView>
       </View>
-      {rowData && displayData && (
-        <FlatList
-          contentContainerStyle={{
-            borderRadius: 8,
-            overflow: "hidden",
-            borderColor: colors.border,
-            borderWidth: 1,
-          }}
-          data={displayData}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={(item) => {
-            const borderStyle = "border-b-[0.5px] border-border";
-            const colorStyle = "bg-gray-50";
-            return (
-              <View key={item.index} className="flex flex-row bg-surface">
-                {item.item.map((content, index) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => openModal(content.id)}
-                      className={`flex-1 px-4 py-3 ${
-                        item.index % 2 === 1 ? colorStyle : ""
-                      } ${content.style} ${
-                        item.index < rowData.length - 1 ? "" : ""
-                      } ${index === 0 ? "basis-8/12" : "basis-4/12"}`}
-                    >
-                      <Text className={`${content.style} `}>
-                        {content.value}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            );
-          }}
-        />
-      )}
+      {!isLoading &&
+        rowData &&
+        displayData &&
+        (rowData.length > 0 || displayData.length > 0) && (
+          <FlatList
+            contentContainerStyle={{
+              overflow: "hidden",
+              borderColor: colors.border,
+              borderWidth: 0.5,
+            }}
+            data={displayData}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={(item) => {
+              const colorStyle = "bg-gray-50";
+              return (
+                <View key={item.index} className="flex flex-row bg-surface">
+                  {item.item.map((content, index) => {
+                    return (
+                      <Pressable
+                        onPress={() => openModal(content.id)}
+                        className={`flex-1 px-4 py-3 ${
+                          item.index % 2 === 1 ? colorStyle : ""
+                        } ${content.style} ${
+                          item.index < rowData.length - 1 ? "" : ""
+                        } ${index === 0 ? "basis-8/12" : "basis-4/12"}`}
+                      >
+                        <Text className={`${content.style} `}>
+                          {content.value}
+                        </Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              );
+            }}
+          />
+        )}
       {isModalVisible && selectedEntry && (
-        <Modal transparent visible={isModalVisible} animationType="slide">
-          <View className="flex-1 justify-center items-center border border-gray-950 bg-opacity-50">
+        <Modal
+          visible={isModalVisible}
+          animationType="fade"
+          transparent={true}
+          statusBarTranslucent={true}
+        >
+          <View className="flex-1 justify-center items-center border border-gray-950 bg-opacity-50  bg-[#0008]">
             <View className="w-4/5 bg-white rounded-lg p-4">
-              <Text className="font-readexBold text-lg mb-4">
-                Update Status for {selectedEntry.userAddress}
+              <Text className="font-readexRegular text-md mb-4">
+                Update allowlist status for user:{"\n"}
+                <Text className="text-primary">
+                  {selectedEntry.userAddress}
+                </Text>
               </Text>
-              <View className="flex-row justify-around">
+              <View className="flex-row justify-between">
                 <TouchableOpacity
                   onPress={() => handleUpdateStatus("Accepted")}
-                  className="px-4 py-2 bg-success rounded-lg"
+                  className="px-4 py-2 bg-success rounded-lg basis-[48%]"
                 >
-                  <Text className="text-white">Approve</Text>
+                  <Text className="text-white font-readexBold text-center">
+                    Approve
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => handleUpdateStatus("Rejected")}
-                  className="px-4 py-2 bg-error rounded-lg"
+                  className="px-4 py-2 bg-error rounded-lg basis-[48%]"
                 >
-                  <Text className="text-white">Reject</Text>
+                  <Text className="text-white font-readexBold text-center">
+                    Reject
+                  </Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={closeModal}
                 className="mt-4 px-4 py-2 bg-gray-300 rounded-lg"
               >
-                <Text className="text-center">Cancel</Text>
+                <Text className="text-textColor font-readexBold text-center">
+                  Cancel
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

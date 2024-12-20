@@ -23,6 +23,9 @@ import {
   BIGINT_CONVERSION_FACTOR,
   getDateFromUnixTimestamp,
 } from "@/constants/conversion";
+import NoDocument from "@/components/Displays/Results/NoDocument/NoDocument";
+import NoInbox from "@/components/Displays/Results/NoInbox/NoInbox";
+import NoInboxState from "@/assets/images/NoInboxState.svg";
 
 interface Props {
   poolAddress: string;
@@ -280,155 +283,169 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
               {project.raisedAmount / BIGINT_CONVERSION_FACTOR}
               {" ETH"}
             </Text>
-            {investData !== undefined && investData.length > 0 && <LineChartComponent input={investData}/>}
+            {investData !== undefined && investData.length > 0 && (
+              <LineChartComponent input={investData} />
+            )}
           </View>
         </Container>
       </View>
-
       <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">
         Contributions
       </Text>
-      <View className="flex flex-col">
-        <View className="bg-surface flex flex-col border-border border-[1px]">
-          <View className="flex flex-row justify-between mx-2 items-center py-1">
-            <Pressable className="flex-1" onPress={() => handlePress("Hash")}>
-              <Text
-                className={`font-readexRegular text-secondary mx-auto ${
-                  isAddressAscending !== undefined ? "text-primary" : ""
-                }`}
+      {displayData !== undefined &&
+      displayData !== null &&
+      displayData.length > 0 ? (
+        <View className="flex flex-col">
+          <View className="bg-surface flex flex-col border-border border-[1px]">
+            <View className="flex flex-row justify-between mx-2 items-center py-1">
+              <Pressable className="flex-1" onPress={() => handlePress("Hash")}>
+                <Text
+                  className={`font-readexRegular text-secondary mx-auto ${
+                    isAddressAscending !== undefined ? "text-primary" : ""
+                  }`}
+                >
+                  Hash{" "}
+                  {isAddressAscending !== undefined &&
+                    (isAddressAscending ? (
+                      <Ionicons
+                        name="arrow-up-outline"
+                        size={12}
+                        color={colors.primary}
+                      />
+                    ) : (
+                      <Ionicons
+                        name="arrow-down-outline"
+                        size={12}
+                        color={colors.primary}
+                      />
+                    ))}
+                </Text>
+              </Pressable>
+
+              <VerticalDivider />
+
+              <Pressable className="flex-1" onPress={() => handlePress("Date")}>
+                <Text
+                  className={`font-readexRegular text-secondary mx-auto ${
+                    isDateAscending !== undefined ? "text-primary" : ""
+                  }`}
+                >
+                  Recent{" "}
+                  {isDateAscending !== undefined &&
+                    (isDateAscending ? (
+                      <Ionicons
+                        name="arrow-up-outline"
+                        size={12}
+                        color={colors.primary}
+                      />
+                    ) : (
+                      <Ionicons
+                        name="arrow-down-outline"
+                        size={12}
+                        color={colors.primary}
+                      />
+                    ))}
+                </Text>
+              </Pressable>
+
+              <VerticalDivider />
+
+              <Pressable
+                className="flex flex-row space-x-1 items-center flex-1"
+                onPress={() => handlePress("Amount")}
               >
-                Hash{" "}
-                {isAddressAscending !== undefined &&
-                  (isAddressAscending ? (
-                    <Ionicons
-                      name="arrow-up-outline"
-                      size={12}
-                      color={colors.primary}
-                    />
-                  ) : (
-                    <Ionicons
-                      name="arrow-down-outline"
-                      size={12}
-                      color={colors.primary}
-                    />
-                  ))}
-              </Text>
-            </Pressable>
-
-            <VerticalDivider />
-
-            <Pressable className="flex-1" onPress={() => handlePress("Date")}>
-              <Text
-                className={`font-readexRegular text-secondary mx-auto ${
-                  isDateAscending !== undefined ? "text-primary" : ""
-                }`}
-              >
-                Recent{" "}
-                {isDateAscending !== undefined &&
-                  (isDateAscending ? (
-                    <Ionicons
-                      name="arrow-up-outline"
-                      size={12}
-                      color={colors.primary}
-                    />
-                  ) : (
-                    <Ionicons
-                      name="arrow-down-outline"
-                      size={12}
-                      color={colors.primary}
-                    />
-                  ))}
-              </Text>
-            </Pressable>
-
-            <VerticalDivider />
-
-            <Pressable
-              className="flex flex-row space-x-1 items-center flex-1"
-              onPress={() => handlePress("Amount")}
-            >
-              <Text
-                className={`font-readexRegular text-secondary mx-auto ${
-                  isAmountAscending !== undefined ? "text-primary" : ""
-                }`}
-              >
-                Amount{" "}
-                {isAmountAscending !== undefined &&
-                  (isAmountAscending ? (
-                    <Ionicons
-                      name="arrow-up-outline"
-                      size={12}
-                      color={colors.primary}
-                    />
-                  ) : (
-                    <Ionicons
-                      name="arrow-down-outline"
-                      size={12}
-                      color={colors.primary}
-                    />
-                  ))}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-
-        <View className="mt-3">
-          <View className="flex flex-row justify-center space-x-3">
-            <View className="flex flex-row space-x-1 items-center">
-              <View className="w-3 h-3 bg-primary rounded-lg"></View>
-              <Text className="font-readexRegular">Claim</Text>
-            </View>
-            <View className="flex flex-row space-x-1 items-center">
-              <View className="w-3 h-3 bg-success rounded-lg"></View>
-              <Text className="font-readexRegular">Invest</Text>
+                <Text
+                  className={`font-readexRegular text-secondary mx-auto ${
+                    isAmountAscending !== undefined ? "text-primary" : ""
+                  }`}
+                >
+                  Amount{" "}
+                  {isAmountAscending !== undefined &&
+                    (isAmountAscending ? (
+                      <Ionicons
+                        name="arrow-up-outline"
+                        size={12}
+                        color={colors.primary}
+                      />
+                    ) : (
+                      <Ionicons
+                        name="arrow-down-outline"
+                        size={12}
+                        color={colors.primary}
+                      />
+                    ))}
+                </Text>
+              </Pressable>
             </View>
           </View>
-        </View>
 
-        <View className="mt-3">
-          <FlatList
-            contentContainerStyle={{
-              borderColor: colors.border,
-              borderWidth: 1,
-            }}
-            scrollEnabled={false}
-            data={[headerData, ...displayData]}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={(item) => {
-              const borderStyle = "border-b-[0.5px] border-border";
-              const colorStyle = "bg-gray-50";
-              return (
-                <View key={item.index} className="flex flex-row bg-surface">
-                  {item.item.map((content, index) => {
-                    return (
-                      <View
-                        className={`flex-1 px-4 py-3 ${
-                          item.index % 2 === 1 ? colorStyle : ""
-                        } ${content.style} ${
-                          item.index < rowData.length - 1 ? borderStyle : ""
-                        } ${index === 0 ? "basis-1/4" : ""}
+          <View className="mt-3">
+            <View className="flex flex-row justify-center space-x-3">
+              <View className="flex flex-row space-x-1 items-center">
+                <View className="w-3 h-3 bg-primary rounded-lg"></View>
+                <Text className="font-readexRegular">Claim</Text>
+              </View>
+              <View className="flex flex-row space-x-1 items-center">
+                <View className="w-3 h-3 bg-success rounded-lg"></View>
+                <Text className="font-readexRegular">Invest</Text>
+              </View>
+            </View>
+          </View>
+
+          <View className="mt-3">
+            <FlatList
+              contentContainerStyle={{
+                borderColor: colors.border,
+                borderWidth: 1,
+              }}
+              scrollEnabled={false}
+              data={[headerData, ...displayData]}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={(item) => {
+                const borderStyle = "border-b-[0.5px] border-border";
+                const colorStyle = "bg-gray-50";
+                return (
+                  <View key={item.index} className="flex flex-row bg-surface">
+                    {item.item.map((content, index) => {
+                      return (
+                        <View
+                          className={`flex-1 px-4 py-3 ${
+                            item.index % 2 === 1 ? colorStyle : ""
+                          } ${content.style} ${
+                            item.index < rowData.length - 1 ? borderStyle : ""
+                          } ${index === 0 ? "basis-1/4" : ""}
                         ${index === 1 ? "basis-1/4" : ""}
                         ${index === 2 ? "basis-1/6  text-right" : ""}`}
-                      >
-                        <Text
-                          className={`${content.style} ${
-                            index === 1 ? "text-center" : ""
-                          } ${index === 2 ? "text-right" : ""} `}
                         >
-                          {content.value}
-                          <Text className="text-secondary">
-                            {item.index > 0 && index === 2 ? "" : ""}
+                          <Text
+                            className={`${content.style} ${
+                              index === 1 ? "text-center" : ""
+                            } ${index === 2 ? "text-right" : ""} `}
+                          >
+                            {content.value}
+                            <Text className="text-secondary">
+                              {item.index > 0 && index === 2 ? "" : ""}
+                            </Text>
                           </Text>
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              );
-            }}
-          ></FlatList>
+                        </View>
+                      );
+                    })}
+                  </View>
+                );
+              }}
+            ></FlatList>
+          </View>
         </View>
-      </View>
+      ) : (
+        <View className=" mt-[-16px] bg-background flex items-center">
+          <View className="m-0 p-0">
+            <NoInboxState />
+          </View>
+          <Text className="font-readexSemiBold text-md mt-[-30px] text-center">
+            {"No contributions found"}
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 };

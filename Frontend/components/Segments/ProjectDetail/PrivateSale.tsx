@@ -1,5 +1,4 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
-import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Container from "@/components/Layouts/Container";
 import { getDateFromUnixTimestamp } from "@/constants/conversion";
 import { ProjectStatus } from "@/constants/enum";
@@ -35,7 +34,6 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
     useGetProjectByAddress(project.poolAddress);
 
   const { address, chainId } = useContext(AuthContext);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const { data: isAllowData, isLoading: isAllowedLoading } =
     useGetIsUserAllowed(project.poolAddress, address);
@@ -44,7 +42,6 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
 
   return (
     <View className="w-full flex flex-col">
-      <LoadingModal isVisible={modalVisible} task={"Registering pool. . ."} />
       <View className="mt-4 flex flex-col w-full">
         <View className="mb-2">
           <Container>

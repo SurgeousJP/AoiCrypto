@@ -12,7 +12,7 @@ const NoInbox: React.FC<NoInboxProps> = (props) => {
     <View className=" bg-background flex items-center">
       <View className="m-0 p-0"><NoInboxState /></View>
       <Text className="font-readexSemiBold text-[20px] mt-[-30px] text-center">
-        {props.heading ?? "No whitelist applications found"}
+        {props.heading ?? "No allowlist applications found"}
       </Text>
     </View>
   );
