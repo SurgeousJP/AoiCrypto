@@ -8,7 +8,7 @@ import { useCreateAllowlistEntry } from "@/hooks/useApiHook";
 import { UserInfor } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
@@ -98,6 +98,7 @@ const WhitelistForm = () => {
     },
     onSettled: (data?: TransactionReceipt) => {
       client.resetStore();
+      router.back();
     },
   });
 

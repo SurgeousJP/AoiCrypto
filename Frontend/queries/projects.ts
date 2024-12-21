@@ -158,3 +158,15 @@ export const getTransactionHistory = () => {
     }
   `;
 };
+
+export const getClaimedStatus = () => {
+  return gql`
+    query GetClaimedStatus($poolAddress: String!, $userAddress: String!) {
+      idopools(where: { poolAddress: $poolAddress }) {
+        investors(where: { account_: { address: $userAddress } }) {
+          claimed
+        }
+      }
+    }
+  `;
+};

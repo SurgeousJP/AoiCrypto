@@ -13,6 +13,7 @@ export const GET_INVESTED_PROJECT = gql`
         }
         claimed
         activities {
+          timestamp
           value
           type
         }

@@ -1,15 +1,19 @@
 import PrimaryButton from "@/components/Buttons/PrimaryButton/PrimaryButton";
+import LoadingModal from "@/components/Displays/Modal/LoadingModal";
 import Container from "@/components/Layouts/Container";
-import { getDateFromUnixTimestamp } from "@/constants/conversion";
 import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
+import { useCancelRegisterPrivatePool } from "@/hooks/smart-contract/IDOPool/useCancelRegisterPrivatePool";
 import {
   useGetIsUserAllowed,
   useGetProjectByAddress,
 } from "@/hooks/useApiHook";
+import { showToast } from "@/utils/toast";
+import { useApolloClient } from "@apollo/client";
 import { useRouter } from "expo-router";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
+import { TransactionReceipt } from "viem";
 
 interface Props {
   project: any;
@@ -19,6 +23,7 @@ interface Props {
 
 const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
   const router = useRouter();
+  const client = useApolloClient();
   const navigateToWhitelistApplication = () => {
     router.navigate(`/project/whitelistForm?poolId=${project.poolAddress}`);
   };
@@ -40,8 +45,71 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
 
   console.log(isAllowData);
 
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
+
+  const {
+    error: errorCancel,
+    errorPrepare: errorPrepareCancel,
+    errorWrite: errorWriteCancel,
+    isLoading: isLoadingCancel,
+    onCancelRegisterPrivatePool,
+  } = useCancelRegisterPrivatePool({
+    chainId: chainId,
+    poolAddress: project.poolAddress,
+    enabled: true,
+    onSuccess: (data: TransactionReceipt) => {
+      // handleCreateAllowlist();
+      if (cancelModalVisible) {
+        setCancelModalVisible(false);
+      }
+      showToast(
+        "success",
+        "Allowlist submitted",
+        "Your application has been submitted successfully"
+      );
+    },
+    onError: (error?: Error) => {
+      if (cancelModalVisible) {
+        setCancelModalVisible(false);
+      }
+      showToast(
+        "error",
+        "Transaction failed",
+        error != undefined ? error.message : "No error"
+      );
+    },
+    onSettled: (data?: TransactionReceipt) => {
+      client.resetStore();
+      router.back();
+    },
+  });
+
+  useEffect(() => {
+    if (cancelModalVisible && errorWriteCancel) {
+      setCancelModalVisible(false);
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorWriteCancel?.message ?? "N/A"
+      );
+    }
+  }, [errorWriteCancel]);
+
+  const onTriggerCancelRegisterPrivatePool = async () => {
+    try {
+      setCancelModalVisible(true);
+      await onCancelRegisterPrivatePool();
+    } catch (error) {
+      console.error("An unexpected error occurred: ", error);
+    }
+  };
+
   return (
     <View className="w-full flex flex-col">
+      <LoadingModal
+        isVisible={cancelModalVisible}
+        task={"Cancelling the register..."}
+      />
       <View className="mt-4 flex flex-col w-full">
         <View className="mb-2">
           <Container>
@@ -118,27 +186,7 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
                   </Text>
                 </View>
               )}
-              {status === ProjectStatus.Upcoming && (
-                <View>
-                  <Text className="font-readexRegular">
-                    The allowlist for{" "}
-                    <Text className="font-readexSemiBold text-primary">
-                      {pjMetadata !== undefined && pjMetadata !== null
-                        ? pjMetadata.name
-                        : name}{" "}
-                    </Text>
-                    is currently unavailable right now, please wait until the
-                    start time (
-                    {
-                      getDateFromUnixTimestamp(project.createdTime)
-                        .toISOString()
-                        .split("T")[0]
-                    }
-                    )
-                  </Text>
-                </View>
-              )}
-              {status === ProjectStatus.Ongoing &&
+              {status === ProjectStatus.Upcoming &&
                 !isAllowedLoading &&
                 isAllowData &&
                 (!isAllowData.isAllowed ? (
@@ -161,12 +209,31 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
                   </View>
                 ) : (
                   <View>
-                    <Text className="font-readexRegular">
-                      You have applied for this project's allowlist, please
-                      patiently wait for the response from the seller.
+                    <Text className="font-readexRegular mb-3">
+                      You have applied successfully for this project's
+                      allowlist, please patiently wait the start time, or you
+                      can cancel the register by click the button
                     </Text>
+                    <PrimaryButton
+                      content="Cancel register"
+                      disabled={isLoadingCancel}
+                      onPress={onTriggerCancelRegisterPrivatePool}
+                    />
                   </View>
                 ))}
+              {status === ProjectStatus.Ongoing && (
+                <View>
+                  <Text className="font-readexRegular">
+                    The allowlist for{" "}
+                    <Text className="font-readexSemiBold text-primary">
+                      {pjMetadata !== undefined && pjMetadata !== null
+                        ? pjMetadata.name
+                        : name}{" "}
+                    </Text>
+                    is not available to you since you are not in the allowlist.
+                  </Text>
+                </View>
+              )}
             </View>
           </Container>
         </View>

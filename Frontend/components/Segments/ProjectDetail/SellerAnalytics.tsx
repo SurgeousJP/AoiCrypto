@@ -113,7 +113,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   const [poolId, setPoolId] = useState();
 
   useEffect(() => {
-    if (project !== undefined && project !== null){
+    if (project !== undefined && project !== null) {
       setPoolId(project.poolId);
     }
   }, [project]);
@@ -244,10 +244,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
 
     return (
       project.raisedAmount >= project.softCap &&
-      Number(project.hardCap - project.raisedAmount) /
-        BIGINT_CONVERSION_FACTOR >
-        0 &&
-      project.endTime < getUnixTimestampFromDate(new Date())
+      project.endTime <= getUnixTimestampFromDate(new Date())
     );
   };
 
@@ -445,15 +442,8 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
             {project.softCap / BIGINT_CONVERSION_FACTOR} ETH
           </Text>
         </View>
-        {isTokenWithdrawable() && 
+        {isTokenWithdrawable() && (
           <>
-            <View className="mb-3">
-              <PrimaryButton
-                content={"Deposit pool"}
-                disabled={isLoadingDeposit}
-                onPress={onTriggerDepositPool}
-              />
-            </View>
             <View className="mb-3">
               <PrimaryButton
                 content={"Withdraw remaining token"}
@@ -461,8 +451,15 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
                 onPress={onTriggerWithdrawalToken}
               />
             </View>
+            <View className="mb-3">
+              <PrimaryButton
+                content={"Deposit pool"}
+                disabled={isLoadingDeposit}
+                onPress={onTriggerDepositPool}
+              />
+            </View>
           </>
-        }
+        )}
       </View>
 
       <Text className="font-readexSemiBold text-md mt-2 mb-2 ml-2">

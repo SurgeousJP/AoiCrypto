@@ -14,8 +14,9 @@ import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
 import { useRefundToken } from "@/hooks/smart-contract/IDOPool/useRefundToken";
 import { useGetProjectByAddress } from "@/hooks/useApiHook";
 import { Project } from "@/model/ApiModel";
+import { getClaimedStatus } from "@/queries/projects";
 import { showToast } from "@/utils/toast";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
 import * as Progress from "react-native-progress";
@@ -125,7 +126,6 @@ const getProjectOverview = (
 };
 
 const Overview: React.FC<Props> = ({ project, token, status }) => {
-
   // GET DATA
   const { address, chainId } = useContext(AuthContext);
   const client = useApolloClient();
@@ -148,6 +148,29 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
   const [depositAmount] = depositData?.map(
     (data) => Number(data.result) / BIGINT_CONVERSION_FACTOR
   ) || ["Loading..."];
+
+  const {
+    loading: loadingClaimed,
+    error: errorClaimed,
+    data: query,
+  } = useQuery(getClaimedStatus(), {
+    variables: {
+      poolAddress: project.poolAddress,
+      userAddress: address,
+    },
+  });
+
+  const [isClaimedToken, setClaimedToken] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!loadingClaimed && query !== undefined && query !== null) {
+      // console.log("Claimed status:");
+      // console.log(query.idopools[0].investors[0].claimed);
+      if (query.idopools[0].investors[0] !== undefined) {
+        setClaimedToken(query.idopools[0].investors[0].claimed);
+      }
+    }
+  }, [loadingClaimed, query]);
 
   const projectOverview = getProjectOverview(
     project,
@@ -184,7 +207,6 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
 
   const { data: pjMetadata, isLoading: isLoadingMetadata } =
     useGetProjectByAddress(project.poolAddress);
-
 
   // INVEST LOGIC
   const isInvestAmountValid = () => {
@@ -319,11 +341,12 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
     if (
       status === ProjectStatus.Ended &&
       project.raisedAmount >= project.softCap &&
-      Number(depositAmount) > 0
+      Number(depositAmount) / BIGINT_CONVERSION_FACTOR > 0 &&
+      !isClaimedToken
     ) {
       setTokenClaimable(true);
     }
-  }, [depositAmount, project, status]);
+  }, [isClaimedToken, project, status]);
 
   const [claimTokenModalVisible, setClaimTokenModalVisible] = useState(false);
 
@@ -376,7 +399,11 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
   useEffect(() => {
     if (claimTokenModalVisible && errorClaimWrite) {
       setClaimTokenModalVisible(false);
-      showToast("error", "Error writing transaction", errorClaim?.message ?? "N/A");
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorClaim?.message ?? "N/A"
+      );
     }
   }, [errorClaimWrite]);
 
@@ -388,11 +415,12 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
     if (
       status === ProjectStatus.Ended &&
       project.raisedAmount < project.softCap &&
-      Number(depositAmount) > 0
+      Number(depositAmount) / BIGINT_CONVERSION_FACTOR > 0 &&
+      !isClaimedToken
     ) {
       setRefundable(true);
     }
-  }, [depositAmount, project, status]);
+  }, [isClaimedToken, project, status]);
 
   const {
     error: errorRefund,
@@ -429,23 +457,26 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
   useEffect(() => {
     if (refundModalVisible && errorRefundWrite) {
       setClaimTokenModalVisible(false);
-      showToast("error", "Error writing transaction", errorRefund?.message ?? "N/A");
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorRefund?.message ?? "N/A"
+      );
     }
   }, [errorRefundWrite]);
 
   const onTriggerRefund = async () => {
-    if (!isRefundable){
+    if (!isRefundable) {
       showToast("error", "Invalid action", "You can not refund the amount");
     }
-    try{
+    try {
       setRefundModalVisible(true);
       await onRefundToken();
-    }
-    catch(error){
+    } catch (error) {
       setRefundModalVisible(false);
       showToast("error", "Invalid action", error);
     }
-  }
+  };
 
   return (
     <View className="w-full flex flex-col">
@@ -584,8 +615,20 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
                 The project funding has ended.
               </Text>
             )}
-            {isTokenClaimable && <PrimaryButton content="Claim token" onPress={onTriggerClaimToken} disabled={isLoadingClaim}/>}
-            {isRefundable && <PrimaryButton content="Refund" onPress={onTriggerRefund} disabled={isLoadingRefund}/>}
+            {isTokenClaimable && (
+              <PrimaryButton
+                content="Claim token"
+                onPress={onTriggerClaimToken}
+                disabled={isLoadingClaim}
+              />
+            )}
+            {isRefundable && (
+              <PrimaryButton
+                content="Refund"
+                onPress={onTriggerRefund}
+                disabled={isLoadingRefund}
+              />
+            )}
           </View>
         </Container>
       </View>

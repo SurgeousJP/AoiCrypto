@@ -7,7 +7,7 @@ import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { GET_INVESTED_PROJECT, GET_INVESTED_TOKEN } from "@/queries/portfolio";
 import { useQuery } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -20,14 +20,9 @@ const HistorySegment = () => {
   const { address } = useContext(AuthContext);
 
   const projectState = [
-    { label: "Public", value: "Public" },
-    { label: "Presale", value: "Presale" },
-    { label: "Private", value: "Private" },
-  ];
-  const whitelistState = [
-    { label: "Approved", value: "Approved" },
-    { label: "Waiting", value: "Waiting" },
-    { label: "None", value: "None" },
+    { label: "Ongoing", value: "Ongoing" },
+    { label: "Ended", value: "Ended" },
+    { label: "Reset", value: null },
   ];
 
   const {
@@ -55,11 +50,11 @@ const HistorySegment = () => {
       style: "font-readexBold text-sm",
     },
     {
-      value: "Invested",
+      value: "Total invested",
       style: "font-readexBold text-sm",
     },
     {
-      value: "Stage",
+      value: "Project status",
       style: "font-readexBold text-sm",
     },
   ];
@@ -82,22 +77,18 @@ const HistorySegment = () => {
           0
         );
 
-      let status = "Ongoing";
+      let status = "";
       if (
-        currentTime > investor.idoPool.startPublicSale &&
-        investor.idoPool.startPublicSale !== 0 &&
-        investor.idoPool.endTime > currentTime
-      ) {
-        status = "Public";
-      } else if (currentTime < investor.idoPool.startTime) {
-        status = "Presale";
-      } else if (
         currentTime > investor.idoPool.startTime &&
-        currentTime < investor.idoPool.startPublicSale &&
         investor.idoPool.endTime > currentTime
       ) {
-        status = "Private";
+        status = "Ongoing";
+      } else if (currentTime < investor.idoPool.startTime) {
+        status = "Upcoming";
+      } else {
+        status = "Ended";
       }
+
       console.log("Status", status);
       return [
         {
@@ -111,16 +102,74 @@ const HistorySegment = () => {
         {
           value: status,
           style: `font-readexRegular text-sm text-success ${
-            status === "Ongoing" || status === "Public"
-              ? "text-success"
-              : "text-warning"
-          }`,
+            status === "Ongoing" ? "text-success" : ""
+          } ${status === "Ended" ? "text-secondary" : ""}
+          `,
         },
       ];
     });
   };
 
   const isLoading = isProjectLoading || isTokenLoading;
+
+  const [rowData, setRowData] = useState<any[]>([]);
+  const [displayData, setDisplayData] = useState<any[]>([]);
+
+  useEffect(() => {
+    setDisplayData(rowData);
+  }, [rowData]);
+
+  useEffect(() => {
+    if (investedProject !== undefined && tokensData !== undefined) {
+      setRowData(getMappedData(investedProject, tokensData, Date.now()));
+    }
+  }, [investedProject, tokensData]);
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [status, setStatus] = useState<string | null>(null);
+
+  const onChangeSearchTerm = (value: string) => {
+    setSearchTerm(value);
+    setDisplayData(
+      rowData.filter((row: any, index: number) =>
+        row[0].value.toLowerCase().includes(value.toLowerCase())
+      )
+    );
+  };
+
+  // Status filter logic
+  useEffect(() => {
+    let filteredData = rowData;
+    if (status) {
+      filteredData = rowData.filter((row, index) => row[2].value === status);
+    }
+    if (searchTerm) {
+      filteredData = filteredData.filter((row, index) =>
+        row[0].value.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    setDisplayData(filteredData);
+  }, [status, searchTerm]);
+
+  const onChangeStatus = (value: string) => {
+    setStatus(value);
+    console.log(status);
+  };
+
+  useEffect(() => {
+    if (status === null) {
+      setDisplayData(
+        rowData.filter((value, index) => value[0].value.includes(searchTerm))
+      );
+    } else {
+      setDisplayData(
+        rowData.filter(
+          (value, index) =>
+            value[0].value.includes(searchTerm) && value[2].value === status
+        )
+      );
+    }
+  }, [status]);
 
   if (isLoading) {
     return (
@@ -131,8 +180,6 @@ const HistorySegment = () => {
     );
   }
 
-  const mappedData = getMappedData(investedProject, tokensData, Date.now());
-
   return (
     <View className="flex flex-col flex-1 mt-2">
       <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
@@ -142,33 +189,44 @@ const HistorySegment = () => {
           className="space-x-3"
         >
           <View className="flex flex-row space-x-3 items-center">
-            <View className="w-[188px] h-8">
-              <Searchbar placeholder={"Project search"} />
+            <View className="w-[230px] h-8">
+              <Searchbar
+                placeholder={"Project search"}
+                value={searchTerm}
+                onChange={onChangeSearchTerm}
+              />
             </View>
             <View className="h-8 w-24">
-              <CustomDropdown placeholder="Stage" data={projectState} />
-            </View>
-            <View className="h-8 w-28">
-              <CustomDropdown placeholder="Status" data={whitelistState} />
+              <CustomDropdown
+                placeholder="Stage"
+                data={projectState}
+                value={status}
+                onChange={onChangeStatus}
+              />
             </View>
           </View>
         </ScrollView>
       </View>
-      <FlatList
-        contentContainerStyle={{ overflow: "hidden" }}
-        showsVerticalScrollIndicator={false}
-        data={[headerData, ...mappedData]}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View key={index}>
-            {index === 0 && <DividerLine />}
-            <Row key={index} contents={item} />
-            {index < investedProject?.account?.investors.length && (
-              <DividerLine />
+      {!isLoading &&
+        rowData &&
+        displayData &&
+        (rowData.length > 0 || displayData.length > 0) && (
+          <FlatList
+            contentContainerStyle={{ overflow: "hidden" }}
+            showsVerticalScrollIndicator={false}
+            data={[headerData, ...displayData]}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <View key={index}>
+                {index === 0 && <DividerLine />}
+                <Row key={index} contents={item} />
+                {index <= investedProject?.account?.investors.length && (
+                  <DividerLine />
+                )}
+              </View>
             )}
-          </View>
+          />
         )}
-      />
     </View>
   );
 };

@@ -153,9 +153,11 @@ export const useCreateIDO = ({
 
   useEffect(() => {
     console.log("Error simulating contract create IDO: ", errorPrepare);
-  }, [errorPrepare]);
+    if (config) console.log("Data: ", config);
+  }, [errorPrepare, config]);
     
   return {
+    config,
     error,
     errorWrite,
     isLoading,

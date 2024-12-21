@@ -147,6 +147,7 @@ export const useCancelRegisterPrivatePool = ({
     
   return {
     error,
+    errorPrepare,
     errorWrite,
     isLoading,
     isSuccess,

@@ -41,6 +41,7 @@ import { useBalance } from "wagmi";
 import { handleCopyToClipboard } from "@/utils/clipboard";
 import { useCreateAllowlistEntry } from "@/hooks/useApiHook";
 import { UserInfor } from "@/model/ApiModel";
+import { EMPTY_MERKLE_ROOT } from "@/utils/merkleTree";
 // IMPORT
 
 const getBasicDataDisplay = (createIDO: CreateIDOInput) => {
@@ -321,7 +322,7 @@ function createStepThree() {
   };
 
   // CREATE IDO HOOK & HANDLER
-  const { error, errorWrite, isLoading, onCreateIDO } = useCreateIDO({
+  const { config, error, errorWrite, isLoading, onCreateIDO } = useCreateIDO({
     chainId: chainId,
     idoInput: createIDO,
     enabled: isWalletEnoughTokenForIDO,
@@ -330,13 +331,15 @@ function createStepThree() {
         setLoadingCreateIDOModalVisible(false);
       }
 
+      if (createIDO.whitelisted !== EMPTY_MERKLE_ROOT){
+        handleCreateAllowlist();
+      }
+
       showToast(
         "success",
         "Transaction success",
         "Create new IDO successfully"
       );
-
-      // clearCache(client, "GetTokens");
     },
     onError: (error?: Error) => {
       if (isLoadingCreateIDOModalVisible) {
@@ -392,24 +395,25 @@ function createStepThree() {
 
   const createAllowListMutation = useCreateAllowlistEntry();
 
-  // const handleCreateAllowlist = (poolAddress: string) => {
-  //   console.log("Pool address", poolAddress);
-  //   console.log("Start createAllowListMutation");
-  //   console.log("userInformation", userInformation);
-  //   createAllowListMutation.mutate(
-  //     {
-  //       poolAddress: Array.isArray(poolId) ? poolId[0] : poolId,
-  //       userInfors: [userInformation],
-  //       status: "Pending",
-  //     },
-  //     {
-  //       onSuccess: () => {},
-  //       onError: () => {
-  //         showToast("error", "Allowlist submit failed", "Please try again");
-  //       },
-  //     }
-  //   );
-  // };
+  const handleCreateAllowlist = () => {
+    if (config === undefined || config.result === undefined){
+      showToast("error", "Invalid operation", "The pool address is not available for whitelisting.");
+      return;
+    }
+    createAllowListMutation.mutate(
+      {
+        poolAddress: config.result, 
+        userInfors: addresses,
+        status: "Accepted",
+      },
+      {
+        onSuccess: () => {},
+        onError: () => {
+          showToast("error", "Allowlist submit failed", "Please try again");
+        },
+      }
+    );
+  };
 
   return (
     <ScrollView className="flex-1 bg-background">
