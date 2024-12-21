@@ -3,10 +3,11 @@ import DividerLine from "@/components/Displays/Divider/DividerLine";
 import NotFound from "@/components/Displays/Results/SearchResult/NotFound";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import TokenRow from "@/components/Items/Token/TokenRow";
+import UserTokenRow from "@/components/Items/Token/UserTokenRow";
 import { colors } from "@/constants/colors";
 import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { GET_TOKENS } from "@/queries/token";
+import { GET_ALL_TOKENS, GET_TOKENS } from "@/queries/token";
 import { useQuery } from "@apollo/client";
 import { Link } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
@@ -27,14 +28,19 @@ export default function TokenScreen() {
 
   const { chainId, address } = useContext(AuthContext);
 
+  // const {
+  //   loading: isTokenLoading,
+  //   error,
+  //   data: tokenQueryData,
+  // } = useQuery(GET_TOKENS, {
+  //   variables: { address: address },
+  //   skip: !address,
+  // });
   const {
     loading: isTokenLoading,
     error,
     data: tokenQueryData,
-  } = useQuery(GET_TOKENS, {
-    variables: { address: address },
-    skip: !address,
-  });
+  } = useQuery(GET_ALL_TOKENS);
 
   const [searchText, setSearchText] = useState("");
   const tokens = tokenQueryData?.tokens;
@@ -86,26 +92,24 @@ export default function TokenScreen() {
           data={displayTokens}
           keyExtractor={(item, index) => index.toString()}
           renderItem={(item) => {
-              return (
-                <View>
-                  {item.index === 0 && <DividerLine />}
-                  <TokenRow
-                    name={item.item.name}
-                    symbol={item.item.symbol}
-                    totalSupply={(
-                      item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR
-                    ).toString()}
-                    address={item.item.address}
-                    initialSupply={(
-                      item.item.initialSupply / BIGINT_CONVERSION_FACTOR
-                    ).toString()}
-                    ownerAddress={address}
-                    chainId={chainId}
-                    displayMintIcon={false}
-                  />
-                  {item.index < displayTokens.length && <DividerLine />}
-                </View>
-              );
+            return (
+              <View>
+                <UserTokenRow
+                  name={item.item.name}
+                  symbol={item.item.symbol}
+                  totalSupply={(
+                    item.item.maxTotalSupply / BIGINT_CONVERSION_FACTOR
+                  ).toString()}
+                  address={item.item.address}
+                  initialSupply={(
+                    item.item.initialSupply / BIGINT_CONVERSION_FACTOR
+                  ).toString()}
+                  ownerAddress={address}
+                  chainId={chainId}
+                  displayMintIcon={false}
+                />
+              </View>
+            );
           }}
         />
       ) : (
