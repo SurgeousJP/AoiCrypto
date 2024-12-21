@@ -40,6 +40,7 @@ type Investor @entity {
   idoPool: IDOPool!
   activities: [InvestorActivity!] @derivedFrom(field: "investor")
 
+  investedAmount: BigInt!
   registered: Boolean!
   claimed: Boolean! # Track if investor claimed
 }
@@ -102,6 +103,7 @@ type IDOPool @entity {
   endTime: BigInt!
   raisedAmount: BigInt! # ETH
   raisedTokenAmount: BigInt!
+  privateSaleAmount: BigInt!
   softCap: BigInt!
   hardCap: BigInt!
   minInvest: BigInt!
@@ -114,6 +116,8 @@ type IDOPool @entity {
   analysisDaily: [AnalysisIDODaily!] @derivedFrom(field: "idoPool")
   investorActivities: [InvestorActivity!] @derivedFrom(field: "idoPool")
 
+  listed: Boolean!
+  withdrawn: Boolean!
   # Search props to support filter
   searchPoolOwner: Bytes!
 }

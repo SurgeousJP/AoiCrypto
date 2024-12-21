@@ -1,5 +1,5 @@
-import { Address, log } from "@graphprotocol/graph-ts";
-import { IDOPool, Investor, PoolOwner } from "../../generated/schema";
+import { Address, BigInt, log } from "@graphprotocol/graph-ts";
+import { Account, IDOPool, Investor, PoolOwner } from "../../generated/schema";
 import {
   CanceledPrivatePoolRegistration as CanceledPrivatePoolRegistrationEvent,
   IDOPoolClaimed as IDOPoolClaimedEvent,
@@ -17,6 +17,7 @@ import * as activityTypes from "../module/activity/type";
 import * as idoPoolTypes from "../module/ido/type";
 import { trackActivity } from "../module/analytics";
 import { buildLiquidityPoolFromIDOPool } from "../module/liquidityPool";
+import { createOrLoadAccount } from "../module/account";
 
 export function handleIDOPoolInvested(event: IDOPoolInvestedEvent): void {
   const amount = event.params.amount;
@@ -46,14 +47,24 @@ export function handleIDOPoolInvested(event: IDOPoolInvestedEvent): void {
   idoPool.raisedTokenAmount = idoPoolDetail.raisedTokenAmount;
   idoPool.save();
 
+  let account = createOrLoadAccount(investorAddress);
+  let investor = createOrLoadInvestor(investorAddress, idoPoolAddress);
+  if (investor.investedAmount.equals(BigInt.zero())) {
+    account.investedTotal = account.investedTotal.plus(BigInt.fromI32(1));
+  }
+  investor.investedAmount = investor.investedAmount.plus(amount);
+  investor.save();
+
+  account.investedTotalAmount = account.investedTotalAmount.plus(amount);
+  account.save();
   // Build Count metric
-  const investor = createOrLoadInvestor(investorAddress, idoPoolAddress);
   let investorActivity = createInvestorActivity(
     investor,
     activityTypes.ActivityType.INVEST,
     amount,
     event.block.timestamp
   );
+  investorActivity.timestamp = event.block.timestamp;
   investorActivity.transactionHash = event.transaction.hash;
   investorActivity.investor = investor.id;
   investorActivity.idoPool = idoPool.id;
@@ -82,14 +93,22 @@ export function handleIDOPooInvestmentCanceled(
   idoPool.raisedTokenAmount = idoPoolDetail.raisedTokenAmount;
   idoPool.save();
 
+  let investor = createOrLoadInvestor(investorAddress, idoPoolAddress);
+  let account = createOrLoadAccount(investorAddress);
+  account.investedTotal = account.investedTotal.minus(BigInt.fromI32(1));
+  account.investedTotalAmount = account.investedTotalAmount.minus(amount);
+  account.save();
+  investor.investedAmount = BigInt.zero();
+  investor.save();
+
   // Build count metric
-  const investor = createOrLoadInvestor(investorAddress, idoPoolAddress);
   let investorActivity = createInvestorActivity(
     investor,
     activityTypes.ActivityType.CANCEL_INVESTMENT,
     amount,
     event.block.timestamp
   );
+  investorActivity.timestamp = event.block.timestamp;
   investorActivity.transactionHash = event.transaction.hash;
   investorActivity.investor = investor.id;
   investorActivity.idoPool = idoPool.id;
@@ -118,6 +137,8 @@ export function handleIDOPoolWithdrawn(event: IDOPoolWithdrawnEvent): void {
     ]);
     return;
   }
+  idoPool.withdrawn = true;
+  idoPool.save();
   poolOwner.raised = ethAmount;
   poolOwner.save();
 }
@@ -143,10 +164,14 @@ export function handleIDOPoolClaimed(event: IDOPoolClaimedEvent): void {
     claimAmount,
     event.block.timestamp
   );
+  investorActivity.timestamp = event.block.timestamp;
   investorActivity.transactionHash = event.transaction.hash;
   investorActivity.investor = investor.id;
   investorActivity.idoPool = idoPool.id;
   investorActivity.save();
+
+  investor.claimed = true;
+  investor.save();
 }
 
 export function handleIDOPoolListed(event: IDOPoolListedEvent): void {
@@ -174,6 +199,16 @@ export function handleIDOPoolListed(event: IDOPoolListedEvent): void {
   poolOwner.listingTransactionHash = event.transaction.hash;
   poolOwner.raised = idoPool.raisedAmount;
   poolOwner.save();
+
+  let account = createOrLoadAccount(Address.fromBytes(idoPool.searchPoolOwner));
+  account.raisedTotal = account.raisedTotal.plus(BigInt.fromI32(1));
+  account.raisedTotalAmount = account.raisedTotalAmount.plus(
+    idoPool.raisedAmount
+  );
+  account.save();
+
+  idoPool.listed = true;
+  idoPool.save();
 
   // Track successfully
 }
@@ -206,6 +241,11 @@ export function handleIDOPoolRefunded(event: IDOPoolRefundedEvent): void {
     amount,
     event.block.timestamp
   );
+  investorActivity.timestamp = event.block.timestamp;
+  investorActivity.transactionHash = event.transaction.hash;
+  investorActivity.investor = investor.id;
+  investorActivity.idoPool = idoPool.id;
+  investorActivity.save();
 
   // Track
   trackActivity(investorActivity, idoPool.id, event.block.timestamp);
