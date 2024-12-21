@@ -1,7 +1,6 @@
 import { colors } from "@/constants/colors";
 import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import getABI from "@/contracts/utils/getAbi.util";
-import { useReadTokenBalance } from "@/hooks/smart-contract/AoiERC20/useReadTokenBalance";
 import { handleCopyToClipboard } from "@/utils/clipboard";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -66,7 +65,7 @@ const UserTokenRow: React.FC<TokenProps> = ({
   };
 
   return (
-    <View className={`${balance !== undefined && balance === 0n ? "hidden" : ""}`}>
+    <View className={`${balance === undefined || balance === 0n ? "hidden" : ""}`}>
       <View className="flex flex-col p-2 bg-surface  items-center border-border border-[0.5px]">
         <View className="flex flex-row justify-between w-full items-baseline">
           <View className="flex flex-row space-x-1">

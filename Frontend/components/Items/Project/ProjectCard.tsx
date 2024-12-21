@@ -99,12 +99,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </Text>
             </View>
             <View className="flex flex-row gap-1 mb-2">
-              <Text className="font-readexBold">{pricePerToken}{" ETH"}</Text>
+              <Text className="font-readexBold text-primary">{pricePerToken}{" ETH"}</Text>
               <Text className="font-readexRegular">/ token</Text>
             </View>
             <View className="flex flex-row gap-1 mb-2">
-              <Text className="font-readexRegular">Start from:</Text>
-              <Text className="font-readexBold">{props.startTime}</Text>
+              <Text className="font-readexRegular text-secondary">Start from:</Text>
+              <Text className="font-readexRegular">{props.startTime}</Text>
             </View>
 
             <Progress.Bar

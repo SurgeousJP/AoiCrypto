@@ -196,7 +196,7 @@ const HistorySegment = () => {
                 onChange={onChangeSearchTerm}
               />
             </View>
-            <View className="h-8 w-24">
+            <View className="h-8 w-26">
               <CustomDropdown
                 placeholder="Stage"
                 data={projectState}

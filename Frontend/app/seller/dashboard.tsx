@@ -5,35 +5,121 @@ import AoiCryptoLogo from "@/assets/logos/AoiCryptoLogo.svg";
 import PieChartComponent from "@/components/Displays/Chart/PieChart";
 import XProject from "@/components/Items/Project/XProject";
 import { colors } from "@/constants/colors";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getUnixTimestampFromDate,
+} from "@/constants/conversion";
+import { PieChartDataItem } from "@/constants/display";
 import { AuthContext } from "@/contexts/AuthProvider";
-import { useDepositLiquidityPool } from "@/hooks/smart-contract/IDOFactory/useDepositLiquidityPool";
 import { GET_SELLER_DASHBOARD } from "@/queries/seller_dashboard";
 import { useQuery } from "@apollo/client";
 import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  FlatList,
   ScrollView,
   Text,
   View,
 } from "react-native";
 
+const getProjectStatusItems = (poolData: any[]) => {
+  let upcoming = 0;
+  let ongoing = 0;
+  let ended = 0;
+  const currentTimestamp = getUnixTimestampFromDate(new Date());
+  poolData.forEach((pool) => {
+    if (currentTimestamp < pool.startTime) {
+      upcoming = upcoming + 1;
+    }
+    if (currentTimestamp >= pool.endTime) {
+      ended = ended + 1;
+    }
+    if (currentTimestamp >= pool.startTime && currentTimestamp < pool.endTime) {
+      ongoing = ongoing + 1;
+    }
+  });
+  const upcomingItem: PieChartDataItem = {
+    name: "Upcoming",
+    population: upcoming,
+    color: colors.primary, // Yellow color for upcoming projects
+    legendFontColor: "#000000", // Black text for legend
+    legendFontSize: 16, // Standard font size for legend
+    legendFontFamily: "ReadexPro_400Regular",
+  };
+
+  const ongoingItem: PieChartDataItem = {
+    name: "Ongoing",
+    population: ongoing,
+    color: "#47B39C", // Blue color for ongoing projects
+    legendFontColor: "#000000", // White text for legend
+    legendFontSize: 16, // Standard font size for legend
+    legendFontFamily: "ReadexPro_400Regular",
+  };
+
+  const endedItem: PieChartDataItem = {
+    name: "Ended",
+    population: ended,
+    color: "#FFC154", // Red color for ended projects
+    legendFontColor: "#000000", // White text for legend
+    legendFontSize: 16, // Standard font size for legend
+    legendFontFamily: "ReadexPro_400Regular",
+  };
+
+  return [upcomingItem, ongoingItem, endedItem];
+};
+
+const getTotalContributors = (poolData: any[]) => {
+  const contributors = new Set<string>();
+  poolData.forEach((pool) => {
+    pool.investors.forEach((investor: any) => {
+      contributors.add(investor.account.address);
+    });
+  });
+  return contributors.size;
+};
+
+const getRaisedCapital = (poolData: any[]) => {
+  return poolData.reduce((sum, pool) => sum + Number(pool.raisedAmount), 0);
+};
+
+const getSortPools = (poolData: any[]) => {
+  return [...poolData]
+    .sort((a, b) => b.raisedAmount - a.raisedAmount)
+    .slice(0, 3);
+};
+
 const AdminDashboard = () => {
-  const { chainId, address, isConnected } = useContext(AuthContext);
+  const { address } = useContext(AuthContext);
   const {
     loading: isDashboardLoading,
     error,
     data: dashboardData,
   } = useQuery(GET_SELLER_DASHBOARD, {
-    variables: { id: address },
+    variables: { sellerAddress: address },
     skip: !address,
-    // fetchPolicy: "no-cache"
   });
+
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setLoading(false);
   }, []);
 
-  if (loading || isDashboardLoading) {
+  const [poolData, setPoolData] = useState<any[] | undefined>(undefined);
+
+  useEffect(() => {
+    if (!isDashboardLoading && dashboardData !== undefined) {
+      setPoolData(dashboardData?.idopools);
+    }
+  }, [isDashboardLoading, dashboardData]);
+
+  const [sortedPools, setSortedPools] = useState<any[]>();
+  useEffect(() => {
+    if (poolData !== undefined) {
+      setSortedPools(getSortPools(poolData));
+    }
+  }, [poolData]);
+
+  if (loading || isDashboardLoading || poolData === undefined) {
     return (
       <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background ">
         <ActivityIndicator size="large" color={colors.primary} />
@@ -41,18 +127,6 @@ const AdminDashboard = () => {
       </View>
     );
   }
-  // console.log("Dashboard data: ", dashboardData);
-  const fundedProjects = dashboardData?.poolOwners.length ?? 20;
-  const participants =
-    dashboardData?.poolOwners.reduce(
-      (sum: number, item: any) => sum + item.idoPool.investors.length,
-      0
-    ) ?? 200;
-  const raised =
-    dashboardData?.poolOwners.reduce(
-      (sum: number, item: any) => sum + item.idoPool.raised,
-      0
-    ) ?? 2000;
 
   return (
     <ScrollView className="bg-background flex-1">
@@ -62,81 +136,84 @@ const AdminDashboard = () => {
       >
         <AoiCryptoLogo />
       </View>
-      <View className="p-4">
-        <Text className="font-readexSemiBold text-md mb-2">Overview</Text>
+      <View className="mt-4 ">
+        <Text className="font-readexSemiBold text-md mb-2 ml-2">Overview</Text>
         <View className="">
-          <View
-            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 rounded-lg items-center"
-            style={{ elevation: 2 }}
-          >
+          <View className="flex flex-row justify-between bg-surface p-4 items-center border-border border-[0.5px]">
             <View className="flex flex-row space-x-2 items-center">
               <Funded />
-              <Text className="font-readexRegular text-black text-md">
-                Funded Projects
+              <Text className="font-readexSemiBold text-black text-md">
+                Total projects
               </Text>
             </View>
             <Text className="font-readexSemiBold text-black text-md">
-              {fundedProjects}
+              {poolData.length}
             </Text>
           </View>
 
-          <View
-            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 rounded-lg items-center mt-2"
-            style={{ elevation: 2 }}
-          >
+          <View className="flex flex-row justify-between bg-surface p-4  items-center">
             <View className="flex flex-row space-x-2 items-center">
               <Participants />
-              <Text className="font-readexRegular text-black text-md">
+              <Text className="font-readexSemiBold text-black text-md">
                 Participants
               </Text>
             </View>
             <Text className="font-readexSemiBold text-black text-md">
-              {participants}
+              {getTotalContributors(poolData)}
             </Text>
           </View>
 
-          <View
-            className="flex flex-row justify-between bg-surface border-border border-[0.5px] p-4 rounded-lg items-center mt-2"
-            style={{ elevation: 2 }}
-          >
+          <View className="flex flex-row justify-between bg-surface p-4 items-center border-border border-[0.5px]">
             <View className="flex flex-row space-x-2 items-center">
               <Capital />
-              <Text className="font-readexRegular text-black text-md">
-                Raised Capital
+              <Text className="font-readexSemiBold text-black text-md">
+                Raised capital
               </Text>
             </View>
             <Text className="font-readexSemiBold text-black text-md">
-              ${raised}
+              {Number(getRaisedCapital(poolData)) / BIGINT_CONVERSION_FACTOR}{" "}
+              <Text className=" text-secondary">ETH</Text>
             </Text>
           </View>
         </View>
       </View>
 
-      <View className="p-4">
-        <Text className="font-readexSemiBold text-md mb-2">Funding Trends</Text>
+      <View className="mt-10">
+        <Text className="font-readexSemiBold text-md mb-2 ml-2">
+          Funding States
+        </Text>
         <View
-          className="bg-surface p-4 border-border border-[1px] rounded-lg"
-          style={{ elevation: 2 }}
+          className="bg-surface mx-auto p-4 border-border border-[0.5px] w-full"
+          style={{ elevation: 1 }}
         >
-          <PieChartComponent />
+          <PieChartComponent data={getProjectStatusItems(poolData)} />
         </View>
       </View>
 
-      <View className="p-4">
-        <View className="flex flex-row justify-between">
+      <View className="mt-10 mb-3">
+        <View className="ml-2 flex flex-row justify-between">
           <Text className="font-readexSemiBold text-md">
-            Top 3 Funded Projects
+            Top 3 funded projects
           </Text>
         </View>
-        <View className="mt-2">
-          <XProject />
-        </View>
-        <View className="mt-2">
-          <XProject />
-        </View>
-        <View className="mt-2">
-          <XProject />
-        </View>
+        {sortedPools && (
+          <FlatList
+            style={{ paddingHorizontal: 4 }}
+            contentContainerStyle={{ flexGrow: 1, gap: 4 }}
+            data={sortedPools}
+            keyExtractor={(item) => item.id}
+            renderItem={(item) => {
+              return (
+                <View key={item.index} className="mt-2">
+                  <XProject
+                    project={item.item}
+                    tokenAddress={item.item.tokenPool}
+                  />
+                </View>
+              );
+            }}
+          />
+        )}
       </View>
     </ScrollView>
   );

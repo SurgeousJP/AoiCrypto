@@ -8,11 +8,6 @@ import React, { useContext } from "react";
 import { FlatList, ScrollView, View } from "react-native";
 
 const ApplicationSegment = () => {
-  const projectState = [
-    { label: "Public", value: "Public" },
-    { label: "Presale", value: "Presale" },
-    { label: "Private", value: "Private" },
-  ];
   const whitelistState = [
     { label: "Approved", value: "Approved" },
     { label: "Waiting", value: "Waiting" },
@@ -62,15 +57,8 @@ const ApplicationSegment = () => {
           className="space-x-3 overflow-hidden"
         >
           <View className="flex flex-row space-x-3 items-center">
-            <View className="w-[188px] h-8">
+            <View className="w-[224px] h-8">
               <Searchbar placeholder={"Application search"} />
-            </View>
-            <View className="h-8 w-24">
-              <CustomDropdown
-                placeholder="Stage"
-                width={null}
-                data={projectState}
-              />
             </View>
             <View className="h-8 w-28">
               <CustomDropdown
