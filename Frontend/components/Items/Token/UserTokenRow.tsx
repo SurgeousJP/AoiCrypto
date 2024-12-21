@@ -65,7 +65,9 @@ const UserTokenRow: React.FC<TokenProps> = ({
   };
 
   return (
-    <View className={`${balance === undefined || balance === 0n ? "hidden" : ""}`}>
+    <View
+      className={`${balance === undefined || balance === 0n ? "hidden" : ""}`}
+    >
       <View className="flex flex-col p-2 bg-surface  items-center border-border border-[0.5px]">
         <View className="flex flex-row justify-between w-full items-baseline">
           <View className="flex flex-row space-x-1">
@@ -86,7 +88,9 @@ const UserTokenRow: React.FC<TokenProps> = ({
           <Text className="font-readexRegular text-sm">Token balance: </Text>
           {balance !== undefined ? (
             <Text className="font-readexSemiBold text-sm">
-              {Number(balance) / BIGINT_CONVERSION_FACTOR}
+              {Number(balance) / BIGINT_CONVERSION_FACTOR >= 1
+                ? Math.ceil(Number(balance) / BIGINT_CONVERSION_FACTOR)
+                : Number(balance) / BIGINT_CONVERSION_FACTOR}
             </Text>
           ) : (
             <ActivityIndicator
