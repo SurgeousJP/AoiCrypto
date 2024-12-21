@@ -18,6 +18,8 @@ export const GET_INVESTED_PROJECT = gql`
           type
         }
       }
+      investedTotal
+      investedTotalAmount
     }
   }
 `;
