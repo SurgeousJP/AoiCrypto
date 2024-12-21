@@ -2,10 +2,20 @@ import DividerLine from "@/components/Displays/Divider/DividerLine";
 import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
+import { colors } from "@/constants/colors";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useGetAllowlistEntryByUserAddress } from "@/hooks/useApiHook";
+import http from "@/http/http";
+import { Project } from "@/model/ApiModel";
+import { useQueries } from "@tanstack/react-query";
 import React, { useContext } from "react";
-import { FlatList, ScrollView, View } from "react-native";
+import {
+  ActivityIndicator,
+  FlatList,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 
 const ApplicationSegment = () => {
   const whitelistState = [
@@ -14,7 +24,23 @@ const ApplicationSegment = () => {
     { label: "None", value: "None" },
   ];
   const { address } = useContext(AuthContext);
-  const { data, isLoading } = useGetAllowlistEntryByUserAddress(address);
+  const { data, isLoading: isAllowListLoading } =
+    useGetAllowlistEntryByUserAddress(address);
+
+  const projectAddress = data?.map((entry) => entry.poolAddress);
+
+  const results = useQueries({
+    queries:
+      projectAddress?.map((address) => ({
+        queryKey: ["project", address],
+        queryFn: async () => {
+          const response = await http.get<Project>(
+            `/api/project/address/${address}`
+          );
+          return response.data;
+        },
+      })) ?? [],
+  });
   const headerData = [
     {
       value: "Project name",
@@ -31,23 +57,42 @@ const ApplicationSegment = () => {
   ];
 
   const rowData =
-    data?.map((entry) => [
-      {
-        value: entry.userFullName,
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: new Date().toLocaleDateString(), // Assuming apply date is current date
-        style: "font-readexRegular text-sm",
-      },
-      {
-        value: entry.status,
-        style: `font-readexRegular text-sm ${
-          entry.status === "Accepted" ? "text-success" : ""
-        }`,
-      },
-    ]) || [];
+    data?.map((entry) => {
+      const project = results.find(
+        (result) => result.data?.poolAddress === entry.poolAddress
+      )?.data;
 
+      return [
+        {
+          value: project?.name || "Unknown Project", // Use project name
+          style: "font-readexRegular text-sm",
+        },
+        {
+          value: entry.createdAt
+            ? new Date(entry.createdAt).toLocaleDateString("en-GB")
+            : null,
+          style: "font-readexRegular text-sm",
+        },
+        {
+          value: entry.status,
+          style: `font-readexRegular text-sm ${
+            entry.status === "Accepted" ? "text-success" : ""
+          }`,
+        },
+      ];
+    }) || [];
+
+  const isLoading =
+    isAllowListLoading || results.some((result) => result.isLoading);
+
+  if (isLoading) {
+    return (
+      <View className="flex flex-col flex-1 items-center justify-center my-auto bg-background">
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text className="font-readexRegular text-primary text-md">Loading</Text>
+      </View>
+    );
+  }
   return (
     <View className="flex flex-col mt-2">
       <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
