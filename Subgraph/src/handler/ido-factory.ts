@@ -63,6 +63,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   idoPool.pricePerToken = idoPoolDetail.pricePerToken;
   idoPool.raisedAmount = idoPoolDetail.raisedAmount;
   idoPool.raisedTokenAmount = idoPoolDetail.raisedTokenAmount;
+  idoPool.privateSaleAmount = idoPoolDetail.privateSaleAmount;
   idoPool.softCap = idoPoolDetail.softCap;
   idoPool.hardCap = idoPoolDetail.hardCap;
   idoPool.minInvest = idoPoolDetail.minInvest;
@@ -95,6 +96,8 @@ export function handlePoolCreated(event: PoolCreated): void {
   let poolOwner = createOrLoadPoolOwner(owner, idoPoolAddress);
   poolOwner.save();
   idoPool.poolOwner = poolOwner.id;
+  idoPool.listed = false;
+  idoPool.withdrawn = false;
   idoPool.searchPoolOwner = changetype<Bytes>(owner);
   idoPool.save();
 

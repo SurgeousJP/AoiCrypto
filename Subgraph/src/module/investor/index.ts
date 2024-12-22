@@ -24,6 +24,7 @@ export function createOrLoadInvestor(
     let account = createOrLoadAccount(investorAddress);
     investor.account = account.id;
     investor.idoPool = getIDOPoolId(idoPoolAddress);
+    investor.investedAmount = BigInt.zero();
     investor.registered = false;
     investor.claimed = false;
     investor.save();

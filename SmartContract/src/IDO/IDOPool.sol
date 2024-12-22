@@ -1,6 +1,8 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {console, console2} from "@forge-std/Test.sol";
+
 import {IIDOPool} from "../interfaces/IIDOPool.sol";
 import {IIDOFactory} from "../interfaces/IIDOFactory.sol";
 import {IAoiFactory} from "../interfaces/DEX/IAoiFactory.sol";
@@ -436,6 +438,8 @@ contract IDOPool is IDOPoolState, IIDOPool, Ownable, ReentrancyGuard {
     ) internal {
         IDOPoolDetails memory _poolDetail = poolDetail;
         uint256 amountToken = poolDetail.pricePerToken.mulWad(amountInvestment);
+        // TODO:
+        console.log(amountToken);
         require(amountToken > 0);
 
         // Save state

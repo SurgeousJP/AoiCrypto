@@ -19,7 +19,6 @@ contract ERC20FactoryTest is Test {
     }
 
     function test_createERC20Successfully(
-        address sender,
         string memory name,
         string memory symbol,
         uint256 maxTotalSupply,
@@ -27,6 +26,7 @@ contract ERC20FactoryTest is Test {
     ) public {
         maxTotalSupply = bound(maxTotalSupply, 1, type(uint256).max);
         initialSupply = bound(initialSupply, 1, maxTotalSupply);
+        address sender = makeAddr("sender");
         vm.prank(sender);
         address tokenAddress = erc20Factory.createNewERC20(name, symbol, maxTotalSupply, initialSupply);
 

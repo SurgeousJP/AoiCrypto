@@ -1,7 +1,7 @@
-export const INVEST = "Invest";
-export const CANCEL_INVESTMENT = "Cancel investment";
-export const REFUND = "Refund";
-export const CLAIM = "Claim";
+export const INVEST = "INVEST";
+export const CANCEL_INVESTMENT = "CANCEL_INVESTMENT";
+export const REFUND = "REFUND";
+export const CLAIM = "CLAIM";
 
 export enum ActivityType {
   INVEST,

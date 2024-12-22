@@ -4,11 +4,21 @@
 
 - The deployed address demo consists of:
 
-  - WETH: `0xa948F1ADA2a714F359035307B05Dd2CCbFbEef89`
+  - WETH:
 
-  - AoiFactory: `0xd75E353e4541DDeFE159eD59488953e8f0AfE928`
+    - V1: `0xa948F1ADA2a714F359035307B05Dd2CCbFbEef89`
 
-  - AoiRouter: `0x1808061a4b4d7ceF8712b55D756D8Dd147aecFf0`
+  - AoiFactory:
+
+    - V1: `0xd75E353e4541DDeFE159eD59488953e8f0AfE928` (deprecated)
+
+    - V2: `0x4B35AeeeEe8D33b64619eFE51C3151f478F95e44`
+
+  - AoiRouter:
+
+    - V1: `0x1808061a4b4d7ceF8712b55D756D8Dd147aecFf0` (deprecated)
+
+    - V2: `0xac5f071284a515878D7420E60a2f8a82EaedDcDc`
 
   - IDOFactory:
 
@@ -18,7 +28,9 @@
 
     - V3: `0x0Fa043F95487c58d1883A1A1965edaaD004Dc063` (deprecated)
 
-    - V4: `0x12De8e7C39EE62282Af548F1a1E4128101567837` (latest)
+    - V4: `0x12De8e7C39EE62282Af548F1a1E4128101567837` (deprecated)
+
+    - V5: `0x287240Be56BDb74A9fb6a6507db3152e69e620F8`
 
   - ERC20Factory: `0xBB64692b13dE29e0f5370FBF476E471E6084d080`
 
@@ -33,6 +45,12 @@
   - [ERC20Factory](/abis/ERC20Factory.json)
 
   - [AoiERC20](/abis/AoiERC20.json)
+
+  - [AoiFactory](/abis/AoiFactory.json)
+
+  - [AoiRouter](/abis/AoiRouter.json)
+
+  - [AoiPair](/abis/AoiPair.json)
 
 ## Contract Detail
 
@@ -61,6 +79,69 @@
 - ERC20Factory: Enables users to create ERC20 token by themselves.
 
   - createNewERC20(): Create ERC20 token
+
+- AoiFactory: Factory is used to manage the Liquidity Pair (pool).
+
+  - getPair(address token0, address token1):address
+
+    Get the pair address for the pair tokens. If it returns address(0), the pair address have not existed yet.
+
+- AoiRouter: This router allows user to trade their token.
+
+  - WETH(): address
+
+    Get the address of token WETH
+
+  - getAmountOut(uint256 amountIn, uint256 reserve0 ,uint256 reserve1): uint256
+
+    Get the amountOut based on the amountIn, reserve0 (tokenIn). reserve1 (tokenOut).
+
+  - swapExactETHForTokens(
+    uint256 amountOutMin,
+    address[] path,
+    address to,
+    uint256 deadline
+    ): uint256[]
+
+    Swap from `ETH` to `tokens`. The `path` is the path of addresses for moving from `ETH` to final `token`. For example: Swap from ETH -> USDT but there are no direct pair between them, then need the immediate token => ETH -> USDC -> USDT => `path = [address(WETH, address(USDC), address(USDT)]`. If there is a direct path, just push the address of final token to it, such as `path = [address(USDT)]`. The first element is always `address(WETH)` and the last element is always ``address(tokenOut)` as well.
+
+    Note: The `amountOutMin` is computed by `getAmountOut()` and the `slippage` (in the front end). For example, the `slippage` is set to `10`, `amountOutMin = getAmountOut() * slippage / 100` => `amountOutMin = getAmountOut() * 10 / 100`. The deadline is the executing duration, `deadlineInFrontEnd` will be set in the frontend and `deadline = currentTime + deadlineInFrontEnd`. If the `token` is `WETH`, we don't have to use this methods. We should use the `deposit()` in the WETH abi to wrap the `ETH` to the `WETH`.
+
+  - swapExactTokensForETH(
+    uint256 amountIn,
+    uint256 amountOutMin,
+    address[] path,
+    address to,
+    uint256 deadline
+    )
+
+    Swap from `token` to `ETH`. This methods does same way with the `swapExactETHForTokens()`
+
+    Note: if the `token` is `WETH`, we don't have to use this methods. We should use the `withdraw()` in the WETH abi to unwrap the `WETH` to the `ETH. Last element in path is `address(WETH)`
+
+  - swapExactTokensForTokens(
+    uint256 amountIn,
+    uint256 amountOutMin,
+    address[] path,
+    address to,
+    uint256 deadline
+    )
+
+    Swap from `token` to `token`.
+
+- AoiPair: Storing the amount of 2 tokens.
+
+  - token0(): address
+
+    Get the address of token0
+
+  - token1(): address
+
+    Get the address of token1
+
+  - getReserves(): (uint256 reserve0, uint256 reserve1, uint32 blockTimestampLast)
+
+    Get the reserve value for both token0 and token1 in the specific pair
 
 ## Foundry
 
