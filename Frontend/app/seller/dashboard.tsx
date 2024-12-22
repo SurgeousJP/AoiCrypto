@@ -198,7 +198,7 @@ const AdminDashboard = () => {
         </View>
         {sortedPools && (
           <FlatList
-            style={{ paddingHorizontal: 4 }}
+            style={{ paddingHorizontal: 0 }}
             contentContainerStyle={{ flexGrow: 1, gap: 4 }}
             data={sortedPools}
             keyExtractor={(item) => item.id}
