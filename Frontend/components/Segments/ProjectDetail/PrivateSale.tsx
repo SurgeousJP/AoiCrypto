@@ -5,11 +5,16 @@ import { ProjectStatus } from "@/constants/enum";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useCancelRegisterPrivatePool } from "@/hooks/smart-contract/IDOPool/useCancelRegisterPrivatePool";
 import {
+  useGetAllowlistEntryByPoolAddress,
+  useGetAllowlistEntryByUserAddress,
   useGetIsUserAllowed,
   useGetProjectByAddress,
+  useUpdateAllowlistEntry,
 } from "@/hooks/useApiHook";
+import { AllowlistEntry } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { Image, ImageBackground, Text, View } from "react-native";
@@ -28,6 +33,7 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
     router.navigate(`/project/whitelistForm?poolId=${project.poolAddress}`);
   };
 
+  const queryClient = useQueryClient();
   const projectIllust = require("@/assets/images/ProjectIllust.png");
   const projectLogo = require("@/assets/images/ProjectLogo.png");
 
@@ -47,6 +53,49 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
 
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
 
+  const { data, isLoading: isAllowListLoading } =
+    useGetAllowlistEntryByPoolAddress(address);
+
+  const { mutate: updateAllowlistEntry, isSuccess } = useUpdateAllowlistEntry();
+
+  const handleUpdateStatus = (newStatus: string) => {
+    const selectedEntry =
+      data !== undefined && data !== null && data.length > 0
+        ? data.filter((data) => data.userAddress === address)[0]
+        : null;
+    if (selectedEntry) {
+      updateAllowlistEntry(
+        {
+          poolAddress: project.poolAddress,
+          userAddress: selectedEntry.userAddress,
+          entry: {
+            ...selectedEntry,
+            status: newStatus,
+          },
+        },
+        {
+          onSuccess: () => {
+            showToast(
+              "success",
+              "Successful mutation",
+              "Allowlist status updated successfully"
+            );
+            queryClient.invalidateQueries({
+              queryKey: ["allowlist", project.poolAddress],
+            });
+          },
+          onError: (error) => {
+            showToast(
+              "error",
+              "Error mutation",
+              `Error updating status: ${error.message}`
+            );
+          },
+        }
+      );
+    }
+  };
+
   const {
     error: errorCancel,
     errorPrepare: errorPrepareCancel,
@@ -58,7 +107,7 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
     poolAddress: project.poolAddress,
     enabled: true,
     onSuccess: (data: TransactionReceipt) => {
-      // handleCreateAllowlist();
+      handleUpdateStatus("Rejected");
       if (cancelModalVisible) {
         setCancelModalVisible(false);
       }
@@ -80,7 +129,6 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
     },
     onSettled: (data?: TransactionReceipt) => {
       client.resetStore();
-      router.back();
     },
   });
 
@@ -96,13 +144,18 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
   }, [errorWriteCancel]);
 
   const onTriggerCancelRegisterPrivatePool = async () => {
-    try {
-      setCancelModalVisible(true);
-      await onCancelRegisterPrivatePool();
-    } catch (error) {
-      console.error("An unexpected error occurred: ", error);
+    if (errorPrepareCancel) {
+      showToast(
+        "error",
+        "Error writing transaction",
+        errorPrepareCancel?.message ?? "N/A"
+      );
     }
+    setCancelModalVisible(true);
+    await onCancelRegisterPrivatePool();
   };
+
+  // [{"createdAt": "2024-12-21T10:37:45.123Z", "emailAddress": "tienanhnguyen996@gmail.com", "id": "6764442195425156b3c25615", "poolAddress": "0xff1b09c00382e3fc50b1443b6a1c3123c40e7f86", "status": "Accepted", "userAddress": "0xa388bf04d83610ad2aF009f27e9b3A592Ba1ce10", "userFullName": "Nguyen Tien Anh"}]
 
   return (
     <View className="w-full flex flex-col">

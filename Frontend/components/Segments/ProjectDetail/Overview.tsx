@@ -12,7 +12,7 @@ import { useCancelInvestment } from "@/hooks/smart-contract/IDOPool/useCancelInv
 import { useClaimToken } from "@/hooks/smart-contract/IDOPool/useClaimToken";
 import { useInvestPool } from "@/hooks/smart-contract/IDOPool/useInvestPool";
 import { useRefundToken } from "@/hooks/smart-contract/IDOPool/useRefundToken";
-import { useGetProjectByAddress } from "@/hooks/useApiHook";
+import { useGetAllowlistEntryByUserAddress, useGetProjectByAddress } from "@/hooks/useApiHook";
 import { Project } from "@/model/ApiModel";
 import { getClaimedStatus } from "@/queries/projects";
 import { showToast } from "@/utils/toast";
@@ -125,7 +125,27 @@ const getProjectOverview = (
   ];
 };
 
-const Overview: React.FC<Props> = ({ project, token, status }) => {
+const Overview: React.FC<Props> = ({
+  project: initialProject,
+  token: initialToken,
+  status: initialStatus,
+}) => {
+  const [project, setProject] = useState(initialProject);
+  const [token, setToken] = useState(initialToken);
+  const [status, setStatus] = useState(initialStatus);
+
+  useEffect(() => {
+    setProject(initialProject);
+  }, [initialProject]);
+
+  useEffect(() => {
+    setToken(initialToken);
+  }, [initialToken]);
+
+  useEffect(() => {
+    setStatus(initialStatus);
+  }, [initialStatus]);
+
   // GET DATA
   const { address, chainId } = useContext(AuthContext);
   const client = useApolloClient();
@@ -477,6 +497,11 @@ const Overview: React.FC<Props> = ({ project, token, status }) => {
       showToast("error", "Invalid action", error);
     }
   };
+
+  const { data, isLoading: isAllowListLoading } =
+    useGetAllowlistEntryByUserAddress(address);
+
+  console.log("Allowlist for user: ", data);
 
   return (
     <View className="w-full flex flex-col">
