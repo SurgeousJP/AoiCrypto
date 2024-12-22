@@ -4,7 +4,8 @@ pragma solidity ^0.8.0;
 import {console, console2} from "@forge-std/Test.sol";
 
 import "./utils/BaseTest.sol";
-import {IDOPool} from "../src/IDO/IDOPool.sol";import {IIDOPoolState} from "../src/interfaces/IIDOPoolState.sol";
+import {IDOPool} from "../src/IDO/IDOPool.sol";
+import {IIDOPoolState} from "../src/interfaces/IIDOPoolState.sol";
 import {IIDOPool} from "../src/interfaces/IIDOPool.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
 
@@ -25,7 +26,7 @@ contract IDOPoolTest is BaseTest {
         vm.prank(owner);
         mockERC20 = new MockERC20();
         // Similating investment
-        for (uint256 i = 0; i < 100; i++) {
+        for (uint256 i = 0; i < 1000; i++) {
             address investor = makeAddr(string(abi.encode("investor", i)));
             vm.deal(investor, 10 ether);
             investors.push(investor);
@@ -48,7 +49,7 @@ contract IDOPoolTest is BaseTest {
         uint256 liquidityWETH9 = bound(_liquidityWETH9, MIN_WETH, 100 ether);
         vm.deal(owner, liquidityWETH9);
         uint256 maxHardCap = 100 ether;
-        uint256 softCap = bound(_softCap, 1, maxHardCap - 1);
+        uint256 softCap = bound(_softCap, MIN_PRICE_TOKEN, maxHardCap - 1);
         uint256 hardCap = bound(_hardCap, softCap + 1, maxHardCap);
         uint256 pricePerToken = bound(_pricePerToken, MIN_PRICE_TOKEN, 1 ether);
         uint256 tokenAmountInHardCap = hardCap.mulWad(pricePerToken);
@@ -57,9 +58,23 @@ contract IDOPoolTest is BaseTest {
             0,
             tokenAmountInHardCap * 2
         );
-        uint256 minInvest = bound(_minInvest, 1, hardCap - 1);
-        assert((hardCap / minInvest) * minInvest >= softCap);
+        uint256 minInvest = bound(_minInvest, MIN_PRICE_TOKEN, hardCap - 1);
+        vm.assume((hardCap / minInvest) * minInvest >= softCap);
         uint256 maxInvest = bound(_maxInvest, minInvest, hardCap - 1);
+
+        // uint256 maxInvestValue = 100 ether;
+        // uint256 minInvest = bound(_minInvest, 1, maxInvestValue - 1);
+        // uint256 maxInvest = bound(_maxInvest, minInvest + 1, maxInvestValue);
+        // uint256 hardCap = bound(_hardCap, maxInvest, 100 ether);
+        // uint256 softCap = bound(_softCap, 1, (hardCap / minInvest) * minInvest);
+        // uint256 pricePerToken = bound(_pricePerToken, MIN_PRICE_TOKEN, 1 ether);
+        // uint256 tokenAmountInHardCap = hardCap.mulWad(pricePerToken);
+        // uint256 liquidityToken = bound(
+        //     _liquidityToken,
+        //     0,
+        //     tokenAmountInHardCap * 2
+        // );
+
         bool _PRIVATE_SALE = false;
         bytes32 _WHITELISTED = EMPTY_ROOT;
         uint256 privateSaleAmount = 0;
@@ -185,7 +200,7 @@ contract IDOPoolTest is BaseTest {
         uint256 liquidityWETH9 = bound(_liquidityWETH9, MIN_WETH, 100 ether);
         vm.deal(owner, liquidityWETH9);
         uint256 maxHardCap = 100 ether;
-        uint256 softCap = bound(_softCap, 1, maxHardCap - 1);
+        uint256 softCap = bound(_softCap, MIN_PRICE_TOKEN, maxHardCap - 1);
         uint256 hardCap = bound(_hardCap, softCap + 1, maxHardCap);
         uint256 pricePerToken = bound(_pricePerToken, MIN_PRICE_TOKEN, 1 ether);
         uint256 tokenAmountInHardCap = hardCap.mulWad(pricePerToken);
@@ -194,9 +209,24 @@ contract IDOPoolTest is BaseTest {
             0,
             tokenAmountInHardCap * 2
         );
-        uint256 minInvest = bound(_minInvest, 1, hardCap - 1);
-        require((hardCap / minInvest) * minInvest >= softCap);
+        uint256 minInvest = bound(_minInvest, MIN_PRICE_TOKEN, hardCap / 2);
+        // require((hardCap / minInvest) * minInvest >= softCap);
+        vm.assume((hardCap / minInvest) * minInvest >= softCap);
         uint256 maxInvest = bound(_maxInvest, minInvest, hardCap - 1);
+
+        // uint256 maxInvestValue = 100 ether;
+        // uint256 minInvest = bound(_minInvest, 1, maxInvestValue - 1);
+        // uint256 maxInvest = bound(_maxInvest, minInvest + 1, maxInvestValue);
+        // uint256 hardCap = bound(_hardCap, maxInvest, 100 ether);
+        // uint256 softCap = bound(_softCap, 1, (hardCap / minInvest) * minInvest);
+        // uint256 pricePerToken = bound(_pricePerToken, MIN_PRICE_TOKEN, 1 ether);
+        // uint256 tokenAmountInHardCap = hardCap.mulWad(pricePerToken);
+        // uint256 liquidityToken = bound(
+        //     _liquidityToken,
+        //     0,
+        //     tokenAmountInHardCap * 2
+        // );
+
         bool _PRIVATE_SALE = false;
         bytes32 _WHITELISTED = EMPTY_ROOT;
         uint256 privateSaleAmount = 0;
@@ -292,13 +322,15 @@ contract IDOPoolTest is BaseTest {
         bytes32[] memory proof;
         uint256 investAmount = idoPool.getPoolSoftCap();
         // Invest just reached soft cap 
-        for (uint256 i = 0; i < 100; i++) {
+        uint256 timeToInvest = idoPool.getPoolSoftCap() / idoPool.getPoolMaxInvest();
+        for (uint256 i = 0; i < timeToInvest + 1; i++) {
             // investAmount = bound(investAmount, idoPool.getPoolSoftCap(), idoPool.getPoolHardCap());
             if (idoPool.getPoolRaisedAmount() + investAmount > idoPool.getPoolHardCap()) {
                 continue;
             }
-            vm.deal(investors[i], investAmount);
-            vm.prank(investors[i]);
+            address sender = makeAddr(string(abi.encode("sender", i)));
+            vm.deal(sender, investAmount);
+            vm.prank(sender);
             idoPool.investPool{value: idoPool.getPoolMaxInvest()}(proof);
         }
 
@@ -333,7 +365,7 @@ contract IDOPoolTest is BaseTest {
         uint256 liquidityWETH9 = bound(_liquidityWETH9, MIN_WETH, 100 ether);
         vm.deal(owner, liquidityWETH9);
         uint256 maxHardCap = 100 ether;
-        uint256 softCap = bound(_softCap, 1, maxHardCap - 1);
+        uint256 softCap = bound(_softCap, MIN_PRICE_TOKEN, maxHardCap - 1);
         uint256 hardCap = bound(_hardCap, softCap + 1, maxHardCap);
         uint256 pricePerToken = bound(_pricePerToken, MIN_PRICE_TOKEN, 1 ether);
         uint256 tokenAmountInHardCap = hardCap.mulWad(pricePerToken);
@@ -342,7 +374,7 @@ contract IDOPoolTest is BaseTest {
             0,
             tokenAmountInHardCap * 2
         );
-        uint256 minInvest = bound(_minInvest, 1, hardCap - 1);
+        uint256 minInvest = bound(_minInvest, MIN_PRICE_TOKEN, hardCap - 1);
         // assert((hardCap / minInvest) * minInvest >= softCap);
         vm.assume((hardCap / minInvest) * minInvest >= softCap);
         uint256 maxInvest = bound(_maxInvest, minInvest, hardCap - 1);

@@ -10,11 +10,11 @@ contract IDOFactoryState is IIDOFactoryState {
 
     bytes32 public constant EMPTY_MERKLE_ROOT = bytes32(0);
 
-    address public immutable AOI_DEX_FACTORY;
+    address public AOI_DEX_FACTORY;
 
-    address public immutable AOI_DEX_ROUTER;
+    address public AOI_DEX_ROUTER;
 
-    address public immutable WETH;
+    address public WETH;
 
     uint256 internal totalPool = 1;
 

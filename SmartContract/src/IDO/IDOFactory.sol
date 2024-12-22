@@ -163,6 +163,18 @@ contract IDOFactory is IDOFactoryState, IIDOFactory, Ownable {
         );
     }
 
+    function setDexFactory(address _aoiFactory) external onlyOwner {
+        AOI_DEX_FACTORY = _aoiFactory;
+    }
+
+    function setDexRouter(address _aoiRouter) external onlyOwner {
+        AOI_DEX_ROUTER = _aoiRouter;
+    }
+
+    function setWETH(address _WETH) external onlyOwner {
+        WETH = _WETH;
+    }
+
     // VIEW FUNTIONS
 
     function getIdoPoolAddress(uint256 poolId) external view returns (address) {

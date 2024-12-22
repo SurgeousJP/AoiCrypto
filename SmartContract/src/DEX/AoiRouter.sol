@@ -104,8 +104,8 @@ contract AoiRouter is IAoiRouter {
             amountBMin
         );
         address pair = AoiLibrary.pairFor(factory, tokenA, tokenB);
-        // IERC20(tokenA).safeTransferFrom(msg.sender, pair, amountA);
-        // IERC20(tokenB).safeTransferFrom(msg.sender, pair, amountB);
+        IERC20(tokenA).safeTransferFrom(msg.sender, pair, amountA);
+        IERC20(tokenB).safeTransferFrom(msg.sender, pair, amountB);
         liquidity = IAoiPair(pair).mint(to);
     }
     function addLiquidityETH(
