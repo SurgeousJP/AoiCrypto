@@ -239,26 +239,43 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
     if (value === undefined) return true;
   };
 
-  const isTokenWithdrawable = () => {
-    if (project === undefined) return false;
+  const [isProjectSuccess, setProjectSuccess] = useState<boolean | undefined>(
+    undefined
+  );
+  const [isProjectEnded, setProjectEnded] = useState<boolean | undefined>(
+    undefined
+  );
+  const [isProjectUpcoming, setProjectUpcoming] = useState<boolean | undefined>(
+    undefined
+  );
 
-    return (
-      project.raisedAmount >= project.softCap &&
-      project.endTime <= getUnixTimestampFromDate(new Date()) &&
-      project.listed &&
-      !project.withdrawn
-    );
-  };
+  const [isTokenWithdrawable, setTokenWithdrawable] = useState<
+    boolean | undefined
+  >(undefined);
 
-  const isPoolDepositable = () => {
-    if (project === undefined) return false;
+  const [isPoolDepositable, setPoolDepositable] = useState<boolean | undefined>(
+    undefined
+  );
 
-    return (
-      project.raisedAmount >= project.softCap &&
-      project.endTime <= getUnixTimestampFromDate(new Date()) &&
-      !project.listed
-    );
-  };
+  useEffect(() => {
+    if (project !== undefined) {
+      const currentTimestamp = getUnixTimestampFromDate(new Date());
+      const projectSuccess = project.raisedAmount >= project.softCap;
+      const projectEnded = project.endTime <= currentTimestamp;
+
+      setProjectSuccess(projectSuccess);
+
+      setProjectEnded(projectEnded);
+
+      setTokenWithdrawable(
+        projectSuccess && projectEnded && project.listed && !project.withdrawn
+      );
+
+      setPoolDepositable(projectSuccess && projectEnded && !project.listed);
+
+      setProjectUpcoming(currentTimestamp < project.startTime);
+    }
+  }, [project]);
 
   const [modalVisible, setModalVisble] = useState(false);
 
@@ -273,7 +290,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   } = useWithdrawRemainingToken({
     chainId: chainId,
     poolAddress: poolAddress,
-    enabled: isTokenWithdrawable(),
+    enabled: isTokenWithdrawable,
     onSuccess: (data: TransactionReceipt) => {
       if (modalVisible) {
         setModalVisble(false);
@@ -336,7 +353,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   } = useDepositLiquidityPool({
     chainId: chainId,
     poolId: poolId,
-    enabled: isPoolDepositable(),
+    enabled: isPoolDepositable,
     onSuccess: (data: TransactionReceipt) => {
       if (depositModalVisible) {
         setDepositModalVisible(false);
@@ -454,8 +471,28 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
             {project.softCap / BIGINT_CONVERSION_FACTOR} ETH
           </Text>
         </View>
-        {isTokenWithdrawable() && (
-          <View className="mb-3">
+        {project !== undefined && isProjectUpcoming && (
+          <Text className="font-readexRegular text-primary">
+            The IDO is upcoming.
+          </Text>
+        )}
+        {project !== undefined && !isProjectEnded && (
+          <Text className="font-readexRegular text-primary">
+            The IDO is ongoing.
+          </Text>
+        )}
+        {project !== undefined && isProjectEnded && !isProjectSuccess && (
+          <Text className="font-readexRegular text-error">
+            The IDO has failed to raised
+          </Text>
+        )}
+        {project !== undefined && isProjectEnded && isProjectSuccess && (
+          <Text className="font-readexRegular text-success">
+            The IDO raised successfully.
+          </Text>
+        )}
+        {project !== undefined && isTokenWithdrawable && (
+          <View className="mt-2 mb-3">
             <PrimaryButton
               content={"Withdraw remaining token"}
               disabled={isLoadingWithdraw}
@@ -463,8 +500,8 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
             />
           </View>
         )}
-        {isPoolDepositable() && (
-          <View className="mb-3">
+        {project !== undefined && isPoolDepositable && (
+          <View className="mt-2 mb-3">
             <PrimaryButton
               content={"Deposit pool"}
               disabled={isLoadingDeposit}
