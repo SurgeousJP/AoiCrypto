@@ -12,9 +12,10 @@ import { LineChart } from "react-native-chart-kit";
 
 interface LineChartProps {
   input: number[];
+  legendString: string
 }
 
-const LineChartComponent:React.FC<LineChartProps> = ({input}) => {
+const LineChartComponent:React.FC<LineChartProps> = ({input, legendString}) => {
   let [loaded, error] = useFonts({
     ReadexPro_400Regular,
     ReadexPro_700Bold,
@@ -40,7 +41,7 @@ const LineChartComponent:React.FC<LineChartProps> = ({input}) => {
         strokeWidth: 2, // optional
       },
     ],
-    legend: ["Total ETH raised"], // optional
+    legend: [legendString], // optional
   };
   const screenWidth = Dimensions.get("window").width;
   const chartConfig = {

@@ -244,7 +244,19 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
 
     return (
       project.raisedAmount >= project.softCap &&
-      project.endTime <= getUnixTimestampFromDate(new Date())
+      project.endTime <= getUnixTimestampFromDate(new Date()) &&
+      project.listed &&
+      !project.withdrawn
+    );
+  };
+
+  const isPoolDepositable = () => {
+    if (project === undefined) return false;
+
+    return (
+      project.raisedAmount >= project.softCap &&
+      project.endTime <= getUnixTimestampFromDate(new Date()) &&
+      !project.listed
     );
   };
 
@@ -324,7 +336,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
   } = useDepositLiquidityPool({
     chainId: chainId,
     poolId: poolId,
-    enabled: isTokenWithdrawable(),
+    enabled: isPoolDepositable(),
     onSuccess: (data: TransactionReceipt) => {
       if (depositModalVisible) {
         setDepositModalVisible(false);
@@ -443,22 +455,22 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
           </Text>
         </View>
         {isTokenWithdrawable() && (
-          <>
-            <View className="mb-3">
-              <PrimaryButton
-                content={"Withdraw remaining token"}
-                disabled={isLoadingWithdraw}
-                onPress={onTriggerWithdrawalToken}
-              />
-            </View>
-            <View className="mb-3">
-              <PrimaryButton
-                content={"Deposit pool"}
-                disabled={isLoadingDeposit}
-                onPress={onTriggerDepositPool}
-              />
-            </View>
-          </>
+          <View className="mb-3">
+            <PrimaryButton
+              content={"Withdraw remaining token"}
+              disabled={isLoadingWithdraw}
+              onPress={onTriggerWithdrawalToken}
+            />
+          </View>
+        )}
+        {isPoolDepositable() && (
+          <View className="mb-3">
+            <PrimaryButton
+              content={"Deposit pool"}
+              disabled={isLoadingDeposit}
+              onPress={onTriggerDepositPool}
+            />
+          </View>
         )}
       </View>
 
@@ -476,7 +488,10 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
               {" ETH"}
             </Text>
             {investData !== undefined && investData.length > 0 && (
-              <LineChartComponent input={investData} />
+              <LineChartComponent
+                legendString="Total ETH raised"
+                input={investData}
+              />
             )}
           </View>
         </Container>

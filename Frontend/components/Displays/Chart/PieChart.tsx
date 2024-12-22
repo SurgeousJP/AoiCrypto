@@ -49,12 +49,12 @@ const PieChartComponent:React.FC<Props> = ({data}) => {
   return (
     <PieChart
       data={data}
-      width={400}
+      width={340}
       height={256}
       chartConfig={chartConfig}
       accessor="population"
       backgroundColor="transparent"
-      paddingLeft="15"
+      paddingLeft="16"
     />
   );
 };

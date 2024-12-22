@@ -24,6 +24,8 @@ export const GET_PROJECT_BY_POOL_ID = gql`
       id
       endTime
       createdTime
+      listed
+      withdrawn
       liquidityPool {
         action
         lockExpired
