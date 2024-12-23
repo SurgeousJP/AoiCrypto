@@ -152,10 +152,10 @@ const ProfileSegment = () => {
               {totalInvestedAmount}
               {" ETH"}
             </Text>
-            <LineChartComponent
+            {investHistory !== undefined && getInvestData(investHistory) > 0 && <LineChartComponent
               legendString="Total ETH invested"
               input={getInvestData(investHistory)}
-            />
+            />}
           </View>
         </Container>
       </View>
