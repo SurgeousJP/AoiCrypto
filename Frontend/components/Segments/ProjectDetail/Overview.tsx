@@ -77,7 +77,7 @@ const getProjectOverview = (
         (project.minInvest / BIGINT_CONVERSION_FACTOR).toString() +
         " ETH " +
         "(" +
-        (project.minInvest / project.pricePerToken).toString() +
+        (project.minInvest * project.pricePerToken).toString() +
         " " +
         symbol +
         ")",
@@ -89,7 +89,7 @@ const getProjectOverview = (
         (project.maxInvest / BIGINT_CONVERSION_FACTOR).toString() +
         " ETH " +
         "(" +
-        (project.maxInvest / project.pricePerToken).toString() +
+        (project.maxInvest * project.pricePerToken).toString() +
         " " +
         symbol +
         ")",
@@ -98,7 +98,7 @@ const getProjectOverview = (
     {
       label: "Current Rate",
       data: `1 ETH = ${
-        1 / (project.pricePerToken / BIGINT_CONVERSION_FACTOR)
+        (project.pricePerToken / BIGINT_CONVERSION_FACTOR)
       } ${symbol}`,
       textDataStyle: "text-black",
     },
@@ -604,7 +604,7 @@ const Overview: React.FC<Props> = ({
                 <View>
                   <Text className="font-readexRegular text-primary">
                     You will receive{" "}
-                    {(investAmount / project.pricePerToken) *
+                    {(investAmount * project.pricePerToken) *
                       BIGINT_CONVERSION_FACTOR}{" "}
                     {symbol}{" "}
                     <Text className="font-readexSemiBold">(Estimated)</Text>

@@ -248,7 +248,7 @@ function createStepThree() {
       setIsWalletEnoughWETH9(walletEnoughWETH9);
 
       const requiredTokens =
-        Number(hardCap / pricePerToken) +
+        Number(hardCap * pricePerToken) +
         Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
 
       setNumsOfTokenRequiredForIDO(requiredTokens);

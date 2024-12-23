@@ -1,6 +1,10 @@
 import DisplayBox from "@/components/Displays/DisplayBox/DisplayBox";
 import { colors } from "@/constants/colors";
-import { BIGINT_CONVERSION_FACTOR, getStringValueFromBigInt, getDateFromUnixTimestamp } from "@/constants/conversion";
+import {
+  BIGINT_CONVERSION_FACTOR,
+  getStringValueFromBigInt,
+  getDateFromUnixTimestamp,
+} from "@/constants/conversion";
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
 
@@ -10,7 +14,9 @@ interface Props {
 }
 
 const getTokenDataDisplay = (project: any, token: any) => {
-  const [name, symbol, maxSupply] = token?.map((token) => token.result) || ["Loading..."];
+  const [name, symbol, maxSupply] = token?.map((token) => token.result) || [
+    "Loading...",
+  ];
   return [
     {
       tile: "Address",
@@ -18,7 +24,7 @@ const getTokenDataDisplay = (project: any, token: any) => {
     },
     {
       tile: "Name",
-      data: name
+      data: name,
     },
     {
       tile: "Symbol",
@@ -26,12 +32,14 @@ const getTokenDataDisplay = (project: any, token: any) => {
     },
     {
       tile: "Max total supply",
-      data:  Intl.NumberFormat("en-US").format(
-        Number(maxSupply) / BIGINT_CONVERSION_FACTOR)
+      data: Intl.NumberFormat("en-US").format(
+        Number(maxSupply) / BIGINT_CONVERSION_FACTOR
+      ),
     },
     {
       tile: "Price per token",
-      data: project.pricePerToken / BIGINT_CONVERSION_FACTOR + " ETH",
+      data:
+        1 / (Number(project.pricePerToken) / BIGINT_CONVERSION_FACTOR) + " ETH",
     },
   ];
 };
@@ -65,7 +73,7 @@ const getLiquidDataDisplay = (project: any) => {
   return [
     {
       tile: "Pool address",
-      data: project.id
+      data: project.id,
     },
     {
       tile: "ETH to List DEX",
@@ -92,12 +100,19 @@ const getLiquidDataDisplay = (project: any) => {
   ];
 };
 
-const TokenNPool:React.FC<Props> = ({project, token}) => {
+const TokenNPool: React.FC<Props> = ({ project, token }) => {
   return (
     <View className="w-full">
-      {token ? <DisplayBox values={getTokenDataDisplay(project, token)} title={"Token"}  /> : <ActivityIndicator size={"large"} color={colors.primary} />}
-      <DisplayBox values={getSaleDataDisplay(project)} title={"Sale info"}  />
-      <DisplayBox values={getLiquidDataDisplay(project)} title={"Pool info"}  />
+      {token ? (
+        <DisplayBox
+          values={getTokenDataDisplay(project, token)}
+          title={"Token"}
+        />
+      ) : (
+        <ActivityIndicator size={"large"} color={colors.primary} />
+      )}
+      <DisplayBox values={getSaleDataDisplay(project)} title={"Sale info"} />
+      <DisplayBox values={getLiquidDataDisplay(project)} title={"Pool info"} />
     </View>
   );
 };

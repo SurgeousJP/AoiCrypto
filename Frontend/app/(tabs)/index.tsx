@@ -51,7 +51,7 @@ export default function ProjectScreen() {
       case "Popular":
         return { orderBy: "raisedAmount", orderDirection: "desc" };
       case "Token price":
-        let setOrderDirection = isPriceAscending ? "asc" : "desc";
+        let setOrderDirection = isPriceAscending ? "desc" : "asc";
         let setOrderBy = "pricePerToken";
         return { orderBy: setOrderBy, orderDirection: setOrderDirection };
       default: // "Most recent"
@@ -252,7 +252,8 @@ export default function ProjectScreen() {
                   isPrivateSale={false}
                   softCap={item.item.softCap / BIGINT_CONVERSION_FACTOR}
                   pricePerToken={
-                    item.item.pricePerToken / BIGINT_CONVERSION_FACTOR
+                    1 /
+                    (Number(item.item.pricePerToken) / BIGINT_CONVERSION_FACTOR)
                   }
                   raisedAmount={
                     item.item.raisedAmount / BIGINT_CONVERSION_FACTOR
@@ -264,7 +265,10 @@ export default function ProjectScreen() {
                       .toISOString()
                       .split("T")[0]
                   }
-                  isSeller={item.item.poolOwner.account.address.toLowerCase() == address.toLowerCase()}
+                  isSeller={
+                    item.item.poolOwner.account.address.toLowerCase() ==
+                    address.toLowerCase()
+                  }
                 />
               </View>
             );

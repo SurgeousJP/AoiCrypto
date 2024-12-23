@@ -50,7 +50,7 @@ export default function AdminProjectScreen() {
       case "Popular":
         return { orderBy: "raisedAmount", orderDirection: "desc" };
       case "Token price":
-        let setOrderDirection = isPriceAscending ? "asc" : "desc";
+        let setOrderDirection = isPriceAscending ? "desc" : "asc";
         let setOrderBy = "pricePerToken";
         return { orderBy: setOrderBy, orderDirection: setOrderDirection };
       default: // "Most recent"
@@ -248,7 +248,8 @@ export default function AdminProjectScreen() {
                   isPrivateSale={false}
                   softCap={item.item.softCap / BIGINT_CONVERSION_FACTOR}
                   pricePerToken={
-                    item.item.pricePerToken / BIGINT_CONVERSION_FACTOR
+                    1 /
+                    (Number(item.item.pricePerToken) / BIGINT_CONVERSION_FACTOR)
                   }
                   raisedAmount={
                     item.item.raisedAmount / BIGINT_CONVERSION_FACTOR
