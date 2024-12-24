@@ -5,6 +5,7 @@ jobs:
   build:
     name: Install, Build, and Upload
     runs-on: ubuntu-latest
+    environment: AoiCrypto
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
