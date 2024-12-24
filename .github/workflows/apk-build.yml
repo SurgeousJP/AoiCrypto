@@ -1,0 +1,25 @@
+name: EAS Build
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Install, Build, and Upload
+    runs-on: ubuntu-latest
+    environment: AoiCrypto
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: npm ci
+      - name: Build on EAS
+        working-directory: ./Frontend
+        run: eas build --profile ci --platform android --non-interactive --wait
