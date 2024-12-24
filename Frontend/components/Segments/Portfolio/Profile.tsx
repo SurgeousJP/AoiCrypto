@@ -9,7 +9,7 @@ import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { GET_INVESTED_PROJECT } from "@/queries/portfolio";
 import { useQuery } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -29,10 +29,16 @@ interface SummaryItem {
 }
 
 const getInvestData = (transactions: any) => {
+  if (transactions === undefined) return undefined;
   let sum = 0;
   return transactions
     .map((arr) => arr[0])
-    .filter((transaction: any) => transaction.type === "INVEST")
+    .filter(
+      (transaction: any) =>
+        transaction !== undefined &&
+        transaction.type !== undefined &&
+        transaction.type === "INVEST"
+    )
     .map((transaction: any) => {
       sum = sum + Number(transaction.value) / BIGINT_CONVERSION_FACTOR;
       return Math.round(sum * 1e10) / 1e10;
@@ -58,9 +64,6 @@ const ProfileSegment = () => {
     .map((pool) => pool.activities)
     .sort((a, b) => a.timestamp - b.timestamp);
 
-  console.log(investHistory);
-  console.log(getInvestData(investHistory));
-
   const summaryItems: SummaryItem[] = [
     {
       icon: Wallet,
@@ -74,6 +77,14 @@ const ProfileSegment = () => {
       value: `${investHistory.length}`,
     },
   ];
+
+  console.log("Invest history: ", investHistory);
+
+  useEffect(() => {
+    if (investHistory !== undefined){
+      console.log("Get invest data: ", getInvestData(investHistory))
+    }
+  }, [investHistory]);
 
   const copyAddressToClipboard = async () => {
     try {
@@ -152,10 +163,12 @@ const ProfileSegment = () => {
               {totalInvestedAmount}
               {" ETH"}
             </Text>
-            {investHistory !== undefined && getInvestData(investHistory) > 0 && <LineChartComponent
-              legendString="Total ETH invested"
-              input={getInvestData(investHistory)}
-            />}
+            {investHistory !== undefined && getInvestData(investHistory).length > 0 && (
+              <LineChartComponent
+                legendString="Total ETH invested"
+                input={getInvestData(investHistory)}
+              />
+            )}
           </View>
         </Container>
       </View>

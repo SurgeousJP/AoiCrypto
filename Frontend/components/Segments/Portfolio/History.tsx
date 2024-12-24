@@ -3,7 +3,7 @@ import CustomDropdown from "@/components/Inputs/Dropdown/CustomDropdown";
 import Searchbar from "@/components/Inputs/Searchbar/Searchbar";
 import Row from "@/components/Items/Project/Row";
 import { colors } from "@/constants/colors";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
+import { BIGINT_CONVERSION_FACTOR, getUnixTimestampFromDate } from "@/constants/conversion";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { GET_INVESTED_PROJECT, GET_INVESTED_TOKEN } from "@/queries/portfolio";
 import { useQuery } from "@apollo/client";
@@ -61,7 +61,6 @@ const HistorySegment = () => {
   const getMappedData = (
     investedProject: any,
     tokensData: any,
-    currentTime: number
   ) => {
     console.log("TokensData", tokensData);
     if (!investedProject?.account?.investors || !tokensData?.tokens) return [];
@@ -78,6 +77,7 @@ const HistorySegment = () => {
         );
 
       let status = "";
+      const currentTime = getUnixTimestampFromDate(new Date());
       if (
         currentTime > investor.idoPool.startTime &&
         investor.idoPool.endTime > currentTime
@@ -117,11 +117,12 @@ const HistorySegment = () => {
 
   useEffect(() => {
     setDisplayData(rowData);
+    // console.log(investedProject.account.investors);
   }, [rowData]);
 
   useEffect(() => {
     if (investedProject !== undefined && tokensData !== undefined) {
-      setRowData(getMappedData(investedProject, tokensData, Date.now()));
+      setRowData(getMappedData(investedProject, tokensData));
     }
   }, [investedProject, tokensData]);
 

@@ -77,7 +77,7 @@ const getProjectOverview = (
         (project.minInvest / BIGINT_CONVERSION_FACTOR).toString() +
         " ETH " +
         "(" +
-        (project.minInvest * project.pricePerToken).toString() +
+        (project.minInvest / project.pricePerToken).toString() +
         " " +
         symbol +
         ")",
@@ -89,7 +89,7 @@ const getProjectOverview = (
         (project.maxInvest / BIGINT_CONVERSION_FACTOR).toString() +
         " ETH " +
         "(" +
-        (project.maxInvest * project.pricePerToken).toString() +
+        (project.maxInvest / project.pricePerToken).toString() +
         " " +
         symbol +
         ")",
@@ -98,7 +98,7 @@ const getProjectOverview = (
     {
       label: "Current Rate",
       data: `1 ETH = ${
-        (project.pricePerToken / BIGINT_CONVERSION_FACTOR)
+        1 / (project.pricePerToken / BIGINT_CONVERSION_FACTOR)
       } ${symbol}`,
       textDataStyle: "text-black",
     },
@@ -168,6 +168,17 @@ const Overview: React.FC<Props> = ({
   const [depositAmount] = depositData?.map(
     (data) => Number(data.result) / BIGINT_CONVERSION_FACTOR
   ) || ["Loading..."];
+
+  const [depositAmountStateValue, setDepositAmountStateValue] = useState(0);
+
+  useEffect(() => {
+    if (depositData !== undefined && depositAmount !== undefined){
+      const [depositAmount] = depositData?.map(
+        (data) => Number(data.result) / BIGINT_CONVERSION_FACTOR
+      ) || ["Loading..."];
+      setDepositAmountStateValue(depositAmount);
+    }
+  }, [depositData, depositAmount]);
 
   const {
     loading: loadingClaimed,
@@ -503,6 +514,8 @@ const Overview: React.FC<Props> = ({
 
   console.log("Allowlist for user: ", data);
 
+  console.log("Deposit value: ", depositAmount);
+
   return (
     <View className="w-full flex flex-col">
       <LoadingModal
@@ -604,8 +617,7 @@ const Overview: React.FC<Props> = ({
                 <View>
                   <Text className="font-readexRegular text-primary">
                     You will receive{" "}
-                    {(investAmount * project.pricePerToken) *
-                      BIGINT_CONVERSION_FACTOR}{" "}
+                    {(investAmount / project.pricePerToken * BIGINT_CONVERSION_FACTOR)}{" "}
                     {symbol}{" "}
                     <Text className="font-readexSemiBold">(Estimated)</Text>
                   </Text>
@@ -617,7 +629,7 @@ const Overview: React.FC<Props> = ({
                     disabled={isLoading}
                   />
                 </View>
-                {depositAmount > 0 && (
+                {Number(depositAmountStateValue) > 0 && (
                   <View className="mt-3">
                     <PrimaryButton
                       disabled={isLoadingCancel}

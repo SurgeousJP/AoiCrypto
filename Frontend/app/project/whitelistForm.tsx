@@ -4,16 +4,22 @@ import Input from "@/components/Inputs/Input/Input";
 import Container from "@/components/Layouts/Container";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { useRegisterPrivatePool } from "@/hooks/smart-contract/IDOPool/useRegisterPrivatePool";
-import { useCreateAllowlistEntry } from "@/hooks/useApiHook";
+import {
+  useCreateAllowlistEntry,
+  useGetAllowlistEntryByPoolAddress,
+  useUpdateAllowlistEntry,
+} from "@/hooks/useApiHook";
 import { UserInfor } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
 import { useApolloClient } from "@apollo/client";
+import { useQueryClient } from "@tanstack/react-query";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useContext, useEffect, useState } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { TransactionReceipt } from "viem";
 
 const WhitelistForm = () => {
+  const queryClient = useQueryClient();
   const client = useApolloClient();
   const params = useLocalSearchParams();
   const { poolId } = params;
@@ -30,6 +36,49 @@ const WhitelistForm = () => {
   };
 
   const createAllowListMutation = useCreateAllowlistEntry();
+
+  const { data: allowData, isLoading: isAllowListLoading } =
+    useGetAllowlistEntryByPoolAddress(address);
+
+  const { mutate: updateAllowlistEntry, isSuccess } = useUpdateAllowlistEntry();
+
+  const handleUpdateStatus = (newStatus: string) => {
+    const selectedEntry =
+      allowData !== undefined && allowData !== null && allowData.length > 0
+        ? allowData.filter((data) => data.userAddress === address)[0]
+        : null;
+    if (selectedEntry) {
+      updateAllowlistEntry(
+        {
+          poolAddress: poolId,
+          userAddress: selectedEntry.userAddress,
+          entry: {
+            ...selectedEntry,
+            status: newStatus,
+          },
+        },
+        {
+          onSuccess: () => {
+            showToast(
+              "success",
+              "Successful mutation",
+              "Allowlist status updated successfully"
+            );
+            queryClient.invalidateQueries({
+              queryKey: ["allowlist", poolId],
+            });
+          },
+          onError: (error) => {
+            showToast(
+              "error",
+              "Error mutation",
+              `Error updating status: ${error.message}`
+            );
+          },
+        }
+      );
+    }
+  };
 
   const handleCreateAllowlist = () => {
     console.log("poolId", poolId);
@@ -76,7 +125,15 @@ const WhitelistForm = () => {
     poolAddress: poolId,
     enabled: isReadyForRegistered(),
     onSuccess: (data: TransactionReceipt) => {
-      handleCreateAllowlist();
+      const selectedEntry =
+        allowData !== undefined && allowData !== null && allowData.length > 0
+          ? allowData.filter((data) => data.userAddress === address)[0]
+          : null;
+      if (selectedEntry === null) {
+        handleUpdateStatus("Pending");
+      } else {
+        handleCreateAllowlist();
+      }
       if (registerModalVisible) {
         setRegisterModalVisible(false);
       }
@@ -131,7 +188,11 @@ const WhitelistForm = () => {
       return;
     }
     if (!isValidEmail(userInformation.emailAddress)) {
-      showToast("error", "Invalid input", "User email is not in correct format");
+      showToast(
+        "error",
+        "Invalid input",
+        "User email is not in correct format"
+      );
       return;
     }
     try {

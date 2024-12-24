@@ -38,8 +38,7 @@ const getTokenDataDisplay = (project: any, token: any) => {
     },
     {
       tile: "Price per token",
-      data:
-        1 / (Number(project.pricePerToken) / BIGINT_CONVERSION_FACTOR) + " ETH",
+      data: Number(project.pricePerToken) / BIGINT_CONVERSION_FACTOR + " ETH",
     },
   ];
 };
@@ -81,7 +80,7 @@ const getLiquidDataDisplay = (project: any) => {
     },
     {
       tile: "Token to List DEX",
-      data: getStringValueFromBigInt(project.liquidityTokenAmount) + " ETH",
+      data: getStringValueFromBigInt(project.liquidityTokenAmount),
     },
     {
       tile: "Action for List DEX",

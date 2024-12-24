@@ -85,7 +85,7 @@ export const createDefaultCreateIDOInput = (): CreateIDOInput => ({
 
 export const sampleCreateIDOInput: CreateIDOInput = {
   poolDetails: {
-    tokenAddress: "0x82a9d5f57483163de82ef5d40d045be974d9d215",
+    tokenAddress: "",
     pricePerToken: BigInt(0.0001 * BIGINT_CONVERSION_FACTOR),
     raisedAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),
     raisedTokenAmount: BigInt(0 * BIGINT_CONVERSION_FACTOR),

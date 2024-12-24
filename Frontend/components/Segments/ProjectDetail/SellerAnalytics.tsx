@@ -300,6 +300,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
         "Transaction success",
         "Withdrawal token successfully"
       );
+      client.resetStore();
     },
     onError: (error?: Error) => {
       if (modalVisible) {
@@ -359,6 +360,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
         setDepositModalVisible(false);
       }
       showToast("success", "Transaction success", "Deposit pool successfully");
+      client.resetStore();
     },
     onError: (error?: Error) => {
       if (depositModalVisible) {
@@ -476,7 +478,7 @@ const SellerAnalyticsSegment: React.FC<Props> = ({ poolAddress }) => {
             The IDO is upcoming.
           </Text>
         )}
-        {project !== undefined && !isProjectEnded && (
+        {project !== undefined && !isProjectUpcoming && !isProjectEnded && (
           <Text className="font-readexRegular text-primary">
             The IDO is ongoing.
           </Text>

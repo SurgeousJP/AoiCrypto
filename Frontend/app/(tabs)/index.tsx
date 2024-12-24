@@ -252,8 +252,7 @@ export default function ProjectScreen() {
                   isPrivateSale={false}
                   softCap={item.item.softCap / BIGINT_CONVERSION_FACTOR}
                   pricePerToken={
-                    1 /
-                    (Number(item.item.pricePerToken) / BIGINT_CONVERSION_FACTOR)
+                    (Number(item.item.pricePerToken) / BIGINT_CONVERSION_FACTOR) 
                   }
                   raisedAmount={
                     item.item.raisedAmount / BIGINT_CONVERSION_FACTOR

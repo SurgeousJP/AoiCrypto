@@ -58,7 +58,7 @@ const getProjectOverview = (
         (project.minInvest / BIGINT_CONVERSION_FACTOR).toString() +
         " ETH " +
         "(" +
-        (project.minInvest * project.pricePerToken).toString() +
+        (project.minInvest / project.pricePerToken).toString() +
         " " +
         symbol +
         ")",
@@ -70,7 +70,7 @@ const getProjectOverview = (
         (project.maxInvest / BIGINT_CONVERSION_FACTOR).toString() +
         " ETH " +
         "(" +
-        (project.maxInvest * project.pricePerToken).toString() +
+        (project.maxInvest / project.pricePerToken).toString() +
         " " +
         symbol +
         ")",
@@ -79,7 +79,7 @@ const getProjectOverview = (
     {
       label: "Current Rate",
       data: `1 ETH = ${
-        (project.pricePerToken / BIGINT_CONVERSION_FACTOR)
+        1 / (project.pricePerToken / BIGINT_CONVERSION_FACTOR)
       } ${symbol}`,
       textDataStyle: "text-black",
     },

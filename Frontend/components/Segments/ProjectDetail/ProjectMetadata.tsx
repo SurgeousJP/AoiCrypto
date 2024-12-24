@@ -143,7 +143,7 @@ const ProjectMetadataSegment: React.FC<Props> = ({ poolAddress }) => {
             showToast(
               "success",
               "Request success",
-              "Updated project successfully"
+              "Updated project metadata successfully"
             );
             setModalVisible(false);
           },
@@ -159,7 +159,7 @@ const ProjectMetadataSegment: React.FC<Props> = ({ poolAddress }) => {
           showToast(
             "success",
             "Request success",
-            "Created project successfully"
+            "Update project metadata successfully"
           );
           setModalVisible(false);
         },

@@ -52,6 +52,8 @@ const ProjectDetail = () => {
       enabled: true,
     });
 
+  console.log("Project: ", project);
+
   const { data: isAllowData, isLoading: isAllowedLoading } =
     useGetIsUserAllowed(poolId, address);
   
@@ -204,6 +206,7 @@ const ProjectDetail = () => {
               status={projectStatus!}
               project={project!}
               token={token!}
+              isRegisteredStatus={isRegistered}
             />
           );
         }

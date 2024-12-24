@@ -24,9 +24,21 @@ interface Props {
   project: any;
   token: any;
   status: ProjectStatus | undefined;
+  isRegisteredStatus: boolean;
 }
 
-const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
+const PrivateSaleSegment: React.FC<Props> = ({
+  project,
+  token,
+  status,
+  isRegisteredStatus,
+}) => {
+  const [isRegistered, setRegistered] = useState(isRegisteredStatus);
+
+  useEffect(() => {
+    setRegistered(isRegisteredStatus);
+  }, [isRegisteredStatus]);
+
   const router = useRouter();
   const client = useApolloClient();
   const navigateToWhitelistApplication = () => {
@@ -49,12 +61,10 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
   const { data: isAllowData, isLoading: isAllowedLoading } =
     useGetIsUserAllowed(project.poolAddress, address);
 
-  console.log(isAllowData);
-
-  const [cancelModalVisible, setCancelModalVisible] = useState(false);
-
   const { data, isLoading: isAllowListLoading } =
     useGetAllowlistEntryByPoolAddress(address);
+
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
 
   const { mutate: updateAllowlistEntry, isSuccess } = useUpdateAllowlistEntry();
 
@@ -155,8 +165,6 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
     await onCancelRegisterPrivatePool();
   };
 
-  // [{"createdAt": "2024-12-21T10:37:45.123Z", "emailAddress": "tienanhnguyen996@gmail.com", "id": "6764442195425156b3c25615", "poolAddress": "0xff1b09c00382e3fc50b1443b6a1c3123c40e7f86", "status": "Accepted", "userAddress": "0xa388bf04d83610ad2aF009f27e9b3A592Ba1ce10", "userFullName": "Nguyen Tien Anh"}]
-
   return (
     <View className="w-full flex flex-col">
       <LoadingModal
@@ -240,9 +248,7 @@ const PrivateSaleSegment: React.FC<Props> = ({ project, token, status }) => {
                 </View>
               )}
               {status === ProjectStatus.Upcoming &&
-                !isAllowedLoading &&
-                isAllowData &&
-                (!isAllowData.isAllowed ? (
+                (!isRegistered ? (
                   <View>
                     <Text className="font-readexRegular">
                       The allowlist for{" "}

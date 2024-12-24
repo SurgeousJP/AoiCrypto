@@ -233,7 +233,7 @@ function createStepThree() {
   useEffect(() => {
     if (createIDOPoolAllowance !== undefined) {
       setAllowanceValue(
-        Number(createIDOPoolAllowance) / BIGINT_CONVERSION_FACTOR
+        Math.floor(Number(createIDOPoolAllowance) / BIGINT_CONVERSION_FACTOR)
       );
     }
   }, [isLoadingAllowance, createIDOPoolAllowance]);
@@ -247,9 +247,12 @@ function createStepThree() {
         ethsAvailable >= Number(liquidityWETH9) / BIGINT_CONVERSION_FACTOR;
       setIsWalletEnoughWETH9(walletEnoughWETH9);
 
-      const requiredTokens =
-        Number(hardCap * pricePerToken) +
-        Number(liquidityToken) / BIGINT_CONVERSION_FACTOR;
+      const requiredTokens = Math.ceil(
+        Number(hardCap * pricePerToken) /
+          BIGINT_CONVERSION_FACTOR /
+          BIGINT_CONVERSION_FACTOR +
+          Number(liquidityToken) / BIGINT_CONVERSION_FACTOR
+      );
 
       setNumsOfTokenRequiredForIDO(requiredTokens);
 
@@ -274,7 +277,7 @@ function createStepThree() {
     chainId,
     tokenAddress: createIDO.poolDetails.tokenAddress,
     spenderAddress: getIDOFactoryAddress(chainId),
-    numOfTokensAllowed: numsOfTokenLacked * BIGINT_CONVERSION_FACTOR,
+    numOfTokensAllowed: numsOfTokenRequiredForIDO * BIGINT_CONVERSION_FACTOR,
     enabled: !isWalletEnoughTokenForIDO,
     onSuccess: (data: TransactionReceipt) => {
       if (isLoadingCreateIDOModalVisible) {
@@ -331,7 +334,7 @@ function createStepThree() {
         setLoadingCreateIDOModalVisible(false);
       }
 
-      if (createIDO.whitelisted !== EMPTY_MERKLE_ROOT){
+      if (createIDO.whitelisted !== EMPTY_MERKLE_ROOT) {
         handleCreateAllowlist();
       }
 
@@ -390,19 +393,23 @@ function createStepThree() {
 
   // UTILS
   const copyTokensDeficit = async () => {
-    await handleCopyToClipboard(numsOfTokenLacked.toString());
+    await handleCopyToClipboard(numsOfTokenRequiredForIDO.toString());
   };
 
   const createAllowListMutation = useCreateAllowlistEntry();
 
   const handleCreateAllowlist = () => {
-    if (config === undefined || config.result === undefined){
-      showToast("error", "Invalid operation", "The pool address is not available for whitelisting.");
+    if (config === undefined || config.result === undefined) {
+      showToast(
+        "error",
+        "Invalid operation",
+        "The pool address is not available for whitelisting."
+      );
       return;
     }
     createAllowListMutation.mutate(
       {
-        poolAddress: config.result, 
+        poolAddress: config.result,
         userInfors: addresses,
         status: "Accepted",
       },
@@ -610,7 +617,7 @@ function createStepThree() {
                       </Text>
                     </View>
 
-                    {numsOfTokenLacked > 0 && (
+                    {/* {numsOfTokenLacked > 0 && (
                       <View className="flex flex-row justify-between">
                         <Text className="font-readexRegular text-sm text-secondary">
                           Lacked tokens:
@@ -626,7 +633,7 @@ function createStepThree() {
                           </TouchableOpacity>
                         </Text>
                       </View>
-                    )}
+                    )} */}
                   </Pressable>
                 </View>
               </Container>

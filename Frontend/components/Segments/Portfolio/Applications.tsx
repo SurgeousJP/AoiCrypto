@@ -64,7 +64,7 @@ const ApplicationSegment = () => {
 
       return [
         {
-          value: project?.name || "Unknown Project", // Use project name
+          value: project?.name || "Aglaea", // Use project name
           style: "font-readexRegular text-sm",
         },
         {
@@ -95,7 +95,7 @@ const ApplicationSegment = () => {
   }
   return (
     <View className="flex flex-col mt-2">
-      <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
+      {/* <View className="overflow-hidden py-4 px-2 border-border border-[0.5px] mb-4 bg-surface">
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -114,7 +114,7 @@ const ApplicationSegment = () => {
             </View>
           </View>
         </ScrollView>
-      </View>
+      </View> */}
       <FlatList
         style={{
           paddingHorizontal: 0,
