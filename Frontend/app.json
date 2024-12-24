@@ -20,7 +20,11 @@
         "foregroundImage": "./assets/images/Coinmoney.png",
         "backgroundColor": "#2F66F6"
       },
-      "package": "com.aoicrypto"
+      "package": "com.aoicrypto",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -43,6 +47,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "669d0728-55bd-44f3-8230-679c8f535060"
+      }
     }
   }
 }
