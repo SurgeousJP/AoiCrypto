@@ -1,0 +1,48 @@
+name: EAS Build
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    name: Install, Build, and Upload
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: npm
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: npm ci
+      - name: Build on EAS
+        working-directory: ./Frontend
+        run: eas build --profile ci --platform android --non-interactive --wait
+      - name: Download .apk file
+        working-directory: ./Frontend
+        run: |
+          mkdir -p artifacts
+          cp $(eas build:list --json | jq -r '.builds[] | select(.platform=="android") | .artifacts.buildUrl' | xargs curl -o artifacts/app.apk) .
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.0 # Update as needed
+          release_name: "Release v1.0.0"
+          draft: false
+          prerelease: false
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./Frontend/artifacts/app.apk
+          asset_name: app.apk
+          asset_content_type: application/vnd.android.package-archive
