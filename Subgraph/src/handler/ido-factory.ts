@@ -39,7 +39,11 @@ export function handlePoolCreated(event: PoolCreated): void {
   IDOPoolTemplate.create(idoPoolAddress);
 
   const idoPoolDetail = getIDOPoolDetail(idoPoolAddress);
-  log.info("idoPoolDetail {}", [idoPoolDetail.tokenAddress.toHexString()]);
+  log.info("idoPoolDetail {}", [
+    idoPoolDetail.tokenAddress.toHexString(),
+    idoPoolDetail.softCap.toString(),
+    idoPoolDetail.hardCap.toString(),
+  ]);
   if (idoPoolDetail.tokenAddress.equals(Address.zero())) {
     return;
   }
@@ -51,7 +55,11 @@ export function handlePoolCreated(event: PoolCreated): void {
     return;
   }
   const idoTimeDetail = getIDOTime(idoPoolAddress);
-  log.info("idoTimeDetail {}", [idoTimeDetail.startTime.toString()]);
+  log.info("idoTimeDetail {}", [
+    idoTimeDetail.startTime.toString(),
+    idoTimeDetail.endTime.toString(),
+    idoTimeDetail.startPublicSale.toString(),
+  ]);
   if (idoTimeDetail.startTime.equals(BigInt.fromI32(0))) {
     return;
   }

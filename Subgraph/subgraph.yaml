@@ -6,9 +6,9 @@ dataSources:
     name: IDOFactory
     network: sepolia
     source:
-      address: "0x12De8e7C39EE62282Af548F1a1E4128101567837"
+      address: "0x287240Be56BDb74A9fb6a6507db3152e69e620F8"
       abi: IDOFactory
-      startBlock: 7154831
+      startBlock: 7335649
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -51,7 +51,7 @@ templates:
   - name: IDOPool
     kind: ethereum/contract
     network: sepolia
-    source: 
+    source:
       abi: IDOPool
     mapping:
       kind: ethereum/events
@@ -64,7 +64,7 @@ templates:
         - Account
         - Investor
         - PoolOwner
-      abis: 
+      abis:
         - name: IDOPool
           file: ./abis/IDOPool.json
       eventHandlers:
