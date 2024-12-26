@@ -50,7 +50,7 @@ export default function AdminProjectScreen() {
       case "Popular":
         return { orderBy: "raisedAmount", orderDirection: "desc" };
       case "Token price":
-        let setOrderDirection = isPriceAscending ? "desc" : "asc";
+        let setOrderDirection = isPriceAscending ? "asc" : "desc";
         let setOrderBy = "pricePerToken";
         return { orderBy: setOrderBy, orderDirection: setOrderDirection };
       default: // "Most recent"
