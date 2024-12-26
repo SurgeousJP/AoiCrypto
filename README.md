@@ -9,12 +9,13 @@
 
 ## Preview UI (Tổng quan UI):
 [Figma UI Design](https://www.figma.com/design/9zYayDe7yRqOHxpqKOWAyA/CryptoExchange-Mobile-App-FREE-(Community))
-![image](https://github.com/user-attachments/assets/c295ba70-47f6-4335-a76e-168b7f3d579a)
-![image](https://github.com/user-attachments/assets/b972e908-3c70-49ea-81c5-0d42d789b93e)
-![image](https://github.com/user-attachments/assets/3912bf1c-2699-4678-b10f-6bb3a581d992)
-![image](https://github.com/user-attachments/assets/0cd29963-c665-4806-9927-24d18f0ca9f8)
-![image](https://github.com/user-attachments/assets/d823f567-4a9e-4a7a-adcd-6e9af2518fcf)
-![image](https://github.com/user-attachments/assets/ea14050d-0647-404d-90c3-d02791e09e86)
+
+<img src="https://github.com/user-attachments/assets/c295ba70-47f6-4335-a76e-168b7f3d579a" alt="Splash Screen" width="98" height="200" />
+<img src="https://github.com/user-attachments/assets/b972e908-3c70-49ea-81c5-0d42d789b93e" alt="Splash Screen" width="98" height="200" />
+<img src="https://github.com/user-attachments/assets/3912bf1c-2699-4678-b10f-6bb3a581d992" alt="Splash Screen" width="98" height="200" />
+<img src="https://github.com/user-attachments/assets/0cd29963-c665-4806-9927-24d18f0ca9f8" alt="Splash Screen" width="98" height="200" />
+<img src="https://github.com/user-attachments/assets/d823f567-4a9e-4a7a-adcd-6e9af2518fcf" alt="Splash Screen" width="98" height="200" />
+<img src="https://github.com/user-attachments/assets/ea14050d-0647-404d-90c3-d02791e09e86" alt="Splash Screen" width="98" height="200" />
 
 ## Installing & Running (Cài đặt và chạy chương trình)
 - Bước 1: Clone repo
@@ -28,7 +29,6 @@
 
 - Bước 4: Mở chương trình
 ![image](https://github.com/user-attachments/assets/02265dcf-638d-4338-a3f9-12983beb1060)
-
 
 ## Nhóm thực hiện
 |STT|Họ và tên          |MSSV       |Chức vụ   |Github|
