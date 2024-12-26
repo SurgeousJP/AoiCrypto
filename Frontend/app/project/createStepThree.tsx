@@ -56,9 +56,7 @@ const getBasicDataDisplay = (createIDO: CreateIDOInput) => {
     {
       tile: "Price per token",
       data:
-        1 /
-          (Number(createIDO.poolDetails.pricePerToken) /
-            BIGINT_CONVERSION_FACTOR) +
+        Number(createIDO.poolDetails.pricePerToken) / BIGINT_CONVERSION_FACTOR +
         " ETH",
     },
   ];
@@ -248,9 +246,7 @@ function createStepThree() {
       setIsWalletEnoughWETH9(walletEnoughWETH9);
 
       const requiredTokens = Math.ceil(
-        Number(hardCap * pricePerToken) /
-          BIGINT_CONVERSION_FACTOR /
-          BIGINT_CONVERSION_FACTOR +
+        Number(hardCap / pricePerToken) +
           Number(liquidityToken) / BIGINT_CONVERSION_FACTOR
       );
 

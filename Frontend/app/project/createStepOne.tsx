@@ -69,7 +69,7 @@ const CreateStepOne = () => {
   const [pricePerToken, setPricePerToken] = useState(BigInt(0.0001 * BIGINT_CONVERSION_FACTOR));
 
   const onChangePricePerToken = (name: string, value: any) => {
-    const setValue = value === 0 ? 0 : 1 / value;
+    const setValue = value === 0 ? 0 : value;
     setPoolDetail({
       ...poolDetails,
       [name]: BigInt((setValue) * BIGINT_CONVERSION_FACTOR),
