@@ -1,7 +1,7 @@
 # AoiCrypto
 
 ## Use cases (Phân tích yêu cầu & chức năng)
-[AoiCrypto - Investor](https://github.com/user-attachments/assets/396ebe5f-8145-4679-a150-a4c4f4d250a4)
+![AoiCrypto - Investor](https://github.com/user-attachments/assets/396ebe5f-8145-4679-a150-a4c4f4d250a4)
 ![AoiCrypto - Seller](https://github.com/user-attachments/assets/c387d0a7-cabe-473d-80e7-fcc56a14f9f2)
 
 ## Architecture (Kiến trúc)
