@@ -125,7 +125,7 @@ const getLiquidDataDisplay = (createIDO: CreateIDOInput) => {
     {
       tile: "Token to List DEX",
       data:
-        getStringValueFromBigInt(createIDO.poolDetails.liquidityToken) + " ETH",
+        getStringValueFromBigInt(createIDO.poolDetails.liquidityToken),
     },
     {
       tile: "Action for List DEX",

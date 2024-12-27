@@ -64,6 +64,7 @@ const ProfileSegment = () => {
     .map((pool) => pool.activities)
     .sort((a, b) => a.timestamp - b.timestamp);
 
+  console.log(investHistory);
   const summaryItems: SummaryItem[] = [
     {
       icon: Wallet,
@@ -81,8 +82,8 @@ const ProfileSegment = () => {
   console.log("Invest history: ", investHistory);
 
   useEffect(() => {
-    if (investHistory !== undefined){
-      console.log("Get invest data: ", getInvestData(investHistory))
+    if (investHistory !== undefined) {
+      console.log("Get invest data: ", getInvestData(investHistory));
     }
   }, [investHistory]);
 
@@ -160,15 +161,21 @@ const ProfileSegment = () => {
               Portfolio Report
             </Text>
             <Text className="font-readexBold text-xl">
-              {totalInvestedAmount}
+              {investHistory !== undefined &&
+              getInvestData(investHistory).length > 0
+                ? getInvestData(investHistory)[
+                    getInvestData(investHistory).length - 1
+                  ]
+                : "Loading"}
               {" ETH"}
             </Text>
-            {investHistory !== undefined && getInvestData(investHistory).length > 0 && (
-              <LineChartComponent
-                legendString="Total ETH invested"
-                input={getInvestData(investHistory)}
-              />
-            )}
+            {investHistory !== undefined &&
+              getInvestData(investHistory).length > 0 && (
+                <LineChartComponent
+                  legendString="Total ETH invested"
+                  input={getInvestData(investHistory)}
+                />
+              )}
           </View>
         </Container>
       </View>
