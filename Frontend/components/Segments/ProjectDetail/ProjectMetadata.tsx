@@ -5,7 +5,6 @@ import ScreenLoadingIndicator from "@/components/Displays/ScreenLoadingIndicator
 import Input from "@/components/Inputs/Input/Input";
 import TextAreaInput from "@/components/Inputs/Input/TextAreaInput";
 import Container from "@/components/Layouts/Container";
-import { colors } from "@/constants/colors";
 import {
   useCreateProject,
   useGetProjectByAddress,
@@ -16,14 +15,7 @@ import { Project } from "@/model/ApiModel";
 import { showToast } from "@/utils/toast";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  Image,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 
 interface Props {
   poolAddress: string;
@@ -161,6 +153,7 @@ const ProjectMetadataSegment: React.FC<Props> = ({ poolAddress }) => {
             "Request success",
             "Update project metadata successfully"
           );
+          setIsExistingProject(true);
           setModalVisible(false);
         },
         onError: (error) => {
@@ -247,8 +240,7 @@ const ProjectMetadataSegment: React.FC<Props> = ({ poolAddress }) => {
               type={"text"}
               value={metadata.description}
               onChange={onInputChange}
-              placeholder={""}
-              isUnitVisible={false}
+              placeholder={"Description"}
               initialValue={metadata.description}
             />
             <View className="mt-3 mb-1">

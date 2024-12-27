@@ -1,16 +1,6 @@
 import { colors } from "@/constants/colors";
-import { BIGINT_CONVERSION_FACTOR } from "@/constants/conversion";
-import { Ionicons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import React, { useEffect, useState } from "react";
-import {
-  Platform,
-  Text,
-  TextInput,
-  TextInputProps,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useState } from "react";
+import { Text, TextInput, View } from "react-native";
 
 interface LabelInputProps {
   type: InputType;
@@ -65,11 +55,13 @@ const TextAreaInput: React.FC<LabelInputProps> = ({
             numberOfLines={6}
             id={props.name}
             value={value}
+            placeholder={props.placeholder}
             style={{
               flex: 1,
               fontFamily: "ReadexPro_400Regular",
               alignSelf: "flex-start",
               height: "100%",
+              width: "100%",
             }}
             keyboardType={"default"}
             onChangeText={handleChangeText}
